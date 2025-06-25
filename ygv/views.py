@@ -219,7 +219,7 @@ def solicitar_cotizacion(request):
                     cotizacion.actualizar_totales()
                     
                     messages.success(request, "¡Cotización creada exitosamente!")
-                    return redirect('home')
+                    return redirect('solicitar')
                     
             except Exception as e:
                 messages.error(request, f"Error al guardar: {str(e)}")

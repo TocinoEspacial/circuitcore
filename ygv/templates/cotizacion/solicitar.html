@@ -339,6 +339,10 @@
                         </button>
                     </div>
                 </form>
+                <div id="form-error-message" class="alert alert-danger text-center mt-3" style="display: none;">
+    ⚠️ Por favor complete todos los campos requeridos y asegúrese de que las cantidades sean mayores a cero.
+</div>
+
             </div>
         </div>
     </div>
@@ -470,25 +474,35 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Validación del formulario
-    document.getElementById('cotizacion-form').addEventListener('submit', function(e) {
-        let isValid = true;
-        
-        formsetContainer.querySelectorAll('.formset-item').forEach(item => {
-            item.querySelectorAll('[required]').forEach(field => {
-                if (!field.value) {
-                    field.classList.add('is-invalid');
-                    isValid = false;
-                } else {
-                    field.classList.remove('is-invalid');
-                }
-            });
+document.getElementById('cotizacion-form').addEventListener('submit', function(e) {
+    let isValid = true;
+    const errorMsg = document.getElementById('form-error-message');
+    errorMsg.style.display = 'none'; // Ocultar mensaje previo
+
+    formsetContainer.querySelectorAll('.formset-item').forEach(item => {
+        item.querySelectorAll('[required]').forEach(field => {
+            const value = parseFloat(field.value);
+            const isNumberField = field.type === 'number';
+
+            const invalid = !field.value || (isNumberField && (isNaN(value) || value <= 0));
+
+            if (invalid) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
         });
-        
-        if (!isValid) {
-            e.preventDefault();
-            alert('Por favor complete todos los campos requeridos');
-        }
     });
+
+    if (!isValid) {
+        e.preventDefault();
+        // Mostrar mensaje visual
+        errorMsg.style.display = 'block';
+        errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
+
 
     // Inicializar
     setupHelpTextBehavior();
