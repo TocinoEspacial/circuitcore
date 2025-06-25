@@ -95,13 +95,15 @@ WSGI_APPLICATION = 'circuitcore.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'circuitcore',
         'USER': 'root',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'PASSWORD': 'aEqoPk0xr5emQtsKbS7vy9ywkJ93qG6g',  # reemplaza con el real
+        'HOST': 'dpg-d1e12gh5pdvs73b331r0-a',
+        'PORT': '5432',
     }
 }
+
 
 # Login Redirect
 LOGIN_URL = 'login'
