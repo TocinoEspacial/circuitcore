@@ -1,0 +1,376 @@
+{% extends 'ingeniero/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="cotizaciones-container">
+    <!-- Tarjeta principal -->
+    <div class="cotizaciones-card">
+        <!-- Encabezado con gradiente -->
+        <div class="cotizaciones-header">
+            <div class="header-title">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <h2>COTIZACIONES PENDIENTES</h2>
+            </div>
+            <div class="header-badge">
+                <span class="badge-naranja">
+                    <i class="fas fa-clock"></i>
+                    {{ cotizaciones|length }} PENDIENTES
+                </span>
+            </div>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="cotizaciones-body">
+            {% if cotizaciones %}
+            <!-- Tabla de cotizaciones -->
+            <div class="cotizaciones-table-container">
+                <table class="cotizaciones-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>CLIENTE</th>
+                            <th>CONTACTO</th>
+                            <th>UBICACIÓN</th>
+                            <th>FECHA</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cot in cotizaciones %}
+                        <tr>
+                            <td class="id-cell">
+                                <span class="badge-azul">#{{ cot.id }}</span>
+                            </td>
+                            <td class="client-cell">
+                                <div class="client-info">
+                                    <div class="client-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="client-details">
+                                        <span class="client-name">{{ cot.cliente.get_full_name|default:cot.cliente.username }}</span>
+                                        <span class="client-id">ID: {{ cot.cliente.id }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="contact-cell">
+                                <i class="fas fa-phone"></i>
+                                {{ cot.contacto }}
+                            </td>
+                            <td class="location-cell">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ cot.ciudad|default:"Sin especificar" }}
+                            </td>
+                            <td class="date-cell">
+                                <span class="date-badge">{{ cot.fecha|date:"d/m/Y" }}</span>
+                                <span class="time-text">{{ cot.fecha|date:"H:i" }}</span>
+                            </td>
+                            <td class="actions-cell">
+                                <a href="{% url 'revisar_cotizacion' cot.id %}" class="action-btn">
+                                    <i class="fas fa-search-plus"></i>
+                                    REVISAR
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pie de tabla -->
+<!-- En tu archivo template (dentro del bloque content) -->
+<div class="table-footer">
+    <div class="footer-info">
+        Mostrando {{ cotizaciones|length }} cotizaciones
+    </div>
+    <form method="post" action="{% url 'generar_reporte_cotizaciones' %}">
+        {% csrf_token %}
+        <button type="submit" class="export-btn">
+            <i class="fas fa-file-pdf"></i>
+            EXPORTAR PDF
+        </button>
+    </form>
+</div>
+            {% else %}
+            <!-- Estado vacío -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3>NO HAY COTIZACIONES PENDIENTES</h3>
+                <p>Cuando recibas nuevas cotizaciones, aparecerán aquí</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --naranja: #FF6B35;
+        --azul: #004E89;
+        --amarillo: #FFD166;
+        --oscuro: #1A1A1D;
+        --claro: #F7F7FF;
+    }
+
+    .cotizaciones-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .cotizaciones-card {
+        background: rgba(26, 26, 29, 0.8);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 107, 53, 0.3);
+    }
+
+    .cotizaciones-header {
+        background: linear-gradient(to right, var(--oscuro), var(--azul));
+        color: var(--amarillo);
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid var(--naranja);
+    }
+
+    .header-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .header-title i {
+        font-size: 1.8rem;
+    }
+
+    .header-title h2 {
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .badge-naranja {
+        background-color: var(--naranja);
+        color: var(--oscuro);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .cotizaciones-body {
+        padding: 2rem;
+    }
+
+    .cotizaciones-table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+    }
+
+    .cotizaciones-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: var(--claro);
+    }
+
+    .cotizaciones-table th {
+        background: linear-gradient(to right, var(--oscuro), var(--azul));
+        color: var(--amarillo);
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid var(--naranja);
+    }
+
+    .cotizaciones-table td {
+        padding: 1.2rem 1rem;
+        border-bottom: 1px solid rgba(255, 107, 53, 0.2);
+        vertical-align: middle;
+        background: rgba(26, 26, 29, 0.7);
+    }
+
+    .cotizaciones-table tr:hover td {
+        background: rgba(255, 107, 53, 0.1);
+    }
+
+    .badge-azul {
+        background-color: var(--azul);
+        color: var(--claro);
+        padding: 0.3rem 0.8rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .client-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .client-avatar {
+        width: 40px;
+        height: 40px;
+        background: rgba(0, 78, 137, 0.3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--amarillo);
+        border: 1px solid var(--naranja);
+    }
+
+    .client-name {
+        font-weight: 500;
+        display: block;
+        margin-bottom: 0.2rem;
+    }
+
+    .client-id {
+        font-size: 0.8rem;
+        color: var(--amarillo);
+        background: rgba(255, 209, 102, 0.1);
+        padding: 0.2rem 0.5rem;
+        border-radius: 10px;
+    }
+
+    .contact-cell i,
+    .location-cell i {
+        color: var(--naranja);
+        margin-right: 0.5rem;
+    }
+
+    .date-badge {
+        background: rgba(247, 247, 255, 0.1);
+        padding: 0.3rem 0.6rem;
+        border-radius: 8px;
+        display: inline-block;
+        margin-bottom: 0.3rem;
+    }
+
+    .time-text {
+        color: var(--amarillo);
+        font-size: 0.85rem;
+        display: block;
+    }
+
+    .action-btn {
+        background: var(--naranja);
+        color: var(--oscuro);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    }
+
+    .table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        color: var(--amarillo);
+    }
+
+    .export-btn {
+        background: transparent;
+        color: var(--amarillo);
+        border: 2px solid var(--amarillo);
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .export-btn:hover {
+        background: var(--amarillo);
+        color: var(--oscuro);
+    }
+
+    /* Estado vacío */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+
+    .empty-icon i {
+        font-size: 3.5rem;
+        color: var(--naranja);
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h3 {
+        color: var(--amarillo);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: rgba(247, 247, 255, 0.7);
+        margin-bottom: 2rem;
+    }
+
+    .new-cotizacion-btn {
+        background: var(--naranja);
+        color: var(--oscuro);
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .new-cotizacion-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .cotizaciones-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.2rem;
+        }
+        
+        .cotizaciones-body {
+            padding: 1.2rem;
+        }
+        
+        .client-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .cotizaciones-table td {
+            padding: 0.8rem 0.5rem;
+        }
+    }
+</style>
+{% endblock %}

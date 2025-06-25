@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Cotizaciones Pendientes</title>
+    <style>
+        @page {
+            size: letter;
+            margin: 2cm;
+            @top-center {
+                content: "Reporte de Cotizaciones Pendientes";
+                font-family: 'Helvetica', sans-serif;
+                font-size: 16px;
+                color: #004E89;
+            }
+            @bottom-right {
+                content: "Página " counter(page) " de " counter(pages);
+                font-family: 'Helvetica', sans-serif;
+                font-size: 12px;
+            }
+        }
+        
+        body {
+            font-family: 'Helvetica', sans-serif;
+            color: #1A1A1D;
+            line-height: 1.5;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #FF6B35;
+            padding-bottom: 15px;
+        }
+        
+        .logo {
+            height: 60px;
+            margin-bottom: 10px;
+        }
+        
+        .title {
+            color: #004E89;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .subtitle {
+            color: #FF6B35;
+            font-size: 14px;
+        }
+        
+        .info-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+        
+        .info-box {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background-color: #F7F7FF;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+        
+        th {
+            background-color: #004E89;
+            color: #FFD166;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #F7F7FF;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 11px;
+        }
+        
+        .badge-orange {
+            background-color: #FF6B35;
+            color: white;
+        }
+        
+        .badge-blue {
+            background-color: #004E89;
+            color: white;
+        }
+        
+        .client-cell {
+            display: flex;
+            align-items: center;
+        }
+        
+        .client-avatar {
+            width: 24px;
+            height: 24px;
+            background-color: #004E89;
+            color: #FFD166;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            font-size: 12px;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: right;
+            font-size: 11px;
+            color: #666;
+            border-top: 1px solid #FF6B35;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">REPORTE DE COTIZACIONES PENDIENTES</div>
+        <div class="subtitle">Generado el {{ fecha_reporte }}</div>
+    </div>
+    
+    <div class="info-section">
+        <div class="info-box">
+            <strong>Generado por:</strong> {{ usuario }}
+        </div>
+        <div class="info-box">
+            <strong>Total cotizaciones:</strong> {{ cotizaciones|length }}
+        </div>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Contacto</th>
+                <th>Ubicación</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cot in cotizaciones %}
+            <tr>
+                <td><span class="badge badge-blue">#{{ cot.id }}</span></td>
+                <td class="client-cell">
+                    <div class="client-avatar">
+                        {{ cot.cliente.get_full_name|default:cot.cliente.username|first|upper }}
+                    </div>
+                    {{ cot.cliente.get_full_name|default:cot.cliente.username }}
+                </td>
+                <td>{{ cot.contacto }}</td>
+                <td>{{ cot.ciudad|default:"-" }}</td>
+                <td>{{ cot.fecha|date:"d/m/Y H:i" }}</td>
+                <td><span class="badge badge-orange">Pendiente</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="footer">
+        Sistema de Gestión de Cotizaciones - {{ fecha_reporte }}
+    </div>
+</body>
+</html>

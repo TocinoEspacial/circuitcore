@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Ingeniero | CircuitCore</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="{% static 'css/ingeniero.css' %}">
+</head>
+<body>
+    <!-- Menú Lateral -->
+    <div class="d-flex" id="wrapper">
+        <div class="bg-dark text-white p-3 sidebar">
+            <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <span class="fs-4">CircuitCore</span>
+            </a>
+            <hr>
+<!-- Menú Lateral (solo cambia los href) -->
+<ul class="nav nav-pills flex-column mb-auto">
+    <li class="nav-item">
+        <a href="{% url 'ingeniero_home' %}" class="nav-link active">
+            <i class="fas fa-home me-2"></i> Inicio
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'cotizaciones_pendientes' %}" class="nav-link text-white">
+            <i class="fas fa-file-invoice me-2"></i> Cotizaciones
+        </a>
+    </li>
+
+    
+
+<!-- Dropdown de usuario -->
+<a href="{% url 'perfil_usuario' %}" class="dropdown-item">Perfil</a>
+            <hr>
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown">
+                    <img src="https://via.placeholder.com/40" alt="Avatar" class="rounded-circle me-2">
+                    <strong>{{ user.username }}</strong>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                    <li><a class="dropdown-item" href="#">Perfil</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Contenido Principal -->
+        <div class="container-fluid main-content">
+            <h1 class="mt-4"><i class="fas fa-cogs me-2"></i>Panel del Ingeniero</h1>
+            <p class="lead">Bienvenido, {{ user.get_full_name|default:user.username }}.</p>
+            
+            <!-- Tarjetas Resumen -->
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-primary text-white h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-file-invoice me-2"></i>Cotizaciones Pendientes</h5>
+                            <p class="card-text display-6">{{ cotizaciones_pendientes_count }}</p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a href="{% url 'cotizaciones_pendientes' %}" class="text-white">Ver todas <i class="fas fa-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-success text-white h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-hard-hat me-2"></i>Proyectos Activos</h5>
+                            <p class="card-text display-6">{{ proyectos_activos_count }}</p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a href="#" class="text-white">Gestionar <i class="fas fa-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-warning text-dark h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-exclamation-triangle me-2"></i>Alertas</h5>
+                            <p class="card-text display-6">{{ alertas_count }}</p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a href="#" class="text-dark">Revisar <i class="fas fa-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Actividad Reciente -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Actividad Reciente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for actividad in actividades_recientes %}
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ actividad.titulo }}</h6>
+                                <small class="text-muted">{{ actividad.fecha|timesince }} ago</small>
+                            </div>
+                            <p class="mb-1">{{ actividad.descripcion }}</p>
+                        </a>
+                        {% empty %}
+                        <p class="text-muted">No hay actividad reciente.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/ingeniero.js' %}"></script>
+</body>
+</html>

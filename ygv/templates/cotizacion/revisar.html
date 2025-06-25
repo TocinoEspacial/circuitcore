@@ -1,0 +1,865 @@
+{% extends 'ingeniero/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Revisar Cotización{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #FF6B35;  /* Naranja energético */
+        --secondary: #004E89; /* Azul profesional */
+        --accent: #FFD166;    /* Amarillo vibrante */
+        --dark: #1A1A1D;     /* Negro sofisticado */
+        --light: #F7F7FF;    /* Blanco suave */
+    }
+
+    body {
+        background-color: var(--dark);
+        color: var(--light);
+        font-family: 'Segoe UI', 'Roboto', sans-serif;
+    }
+
+    #cotizacionForm {
+        background: linear-gradient(145deg, rgba(26, 26, 29, 0.9), rgba(0, 78, 137, 0.2));
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--primary);
+        animation: fadeIn 0.8s ease-out;
+        backdrop-filter: blur(8px);
+        width: 1300px;
+        margin-left: -200px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-backdrop{
+        z-index: -1000;
+    }
+    
+    .form-check-label,
+    .card.bg-light .card-body,
+    .card.bg-light .card-body p {
+        color: white !important;
+    }
+
+    /* Cambiar color del switch de IVA */
+    .form-check-input:checked {
+        background-color: var(--accent) !important; /* Amarillo */
+        border-color: var(--accent) !important;
+    }
+
+    /* Cambiar color de texto en el header */
+    .card-header {
+        color: var(--accent) !important; /* Amarillo para títulos */
+    }
+
+    /* Cambiar color del método de pago */
+    #id_tipo_pago {
+        background-color: var(--secondary) !important; /* Azul profesional */
+        color: white !important;
+        border-color: var(--secondary) !important;
+    }
+
+    /* Cambiar color del fondo de la tabla */
+    .table-responsive {
+        background-color: rgba(26, 26, 29, 0.9) !important;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    /* Ajustar colores de los inputs en la tabla */
+    .table .form-control,
+    .table .form-select {
+        background-color: rgba(26, 26, 29, 0.7) !important;
+    }
+
+    /* Asegurar que los textos en los badges sean legibles */
+    .badge.bg-light {
+        color: var(--dark) !important;
+    }
+
+    /* Color para el texto del resumen financiero */
+    .card.bg-light .card-body div {
+        color: white !important;
+    }
+
+    .card {
+        background: rgba(26, 26, 29, 0.8) !important;
+        border: 1px solid rgba(255, 107, 53, 0.3) !important;
+        margin-bottom: 2rem;
+        border-radius: 12px !important;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        overflow: hidden;
+    }
+
+    .card:hover {
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 15px 35px rgba(255, 107, 53, 0.15);
+        border-color: var(--primary) !important;
+    }
+
+    .card-header {
+        background: linear-gradient(to right, var(--dark), var(--secondary)) !important;
+        color: var(--accent) !important;
+        border-bottom: 1px solid var(--primary) !important;
+        font-size: 1.25rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        padding: 1.3rem 1.8rem !important;
+    }
+
+    .form-label {
+        color: var(--accent) !important;
+        font-weight: 500;
+        margin-bottom: 0.8rem;
+        display: block;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control, .form-select {
+        background: rgba(26, 26, 29, 0.9) !important;
+        border: 1px solid rgba(255, 107, 53, 0.4) !important;
+        color: var(--light) !important;
+        border-radius: 8px;
+        padding: 0.8rem 1rem !important;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 107, 53, 0.2) !important;
+        background: rgba(26, 26, 29, 1) !important;
+    }
+
+    .btn-primary {
+        background: var(--primary) !important;
+        color: var(--dark) !important;
+        border: none !important;
+        font-weight: 600;
+        padding: 0.8rem 2rem;
+        border-radius: 8px;
+        letter-spacing: 0.5px;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+    }
+
+    .btn-outline-secondary {
+        color: var(--light);
+        border: 2px solid var(--light);
+        background: transparent;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-secondary:hover {
+        color: var(--dark);
+        background: var(--light);
+    }
+
+    .btn-outline-danger {
+        color: var(--light);
+        border: 2px solid #dc3545;
+        background: transparent;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-danger:hover {
+        color: var(--light);
+        background: #dc3545;
+    }
+
+    .badge {
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        padding: 0.5rem 0.8rem;
+    }
+
+    .bg-light {
+        background-color: rgba(247, 247, 255, 0.1) !important;
+    }
+
+    .table {
+        color: var(--light);
+    }
+
+    .table th {
+        border-bottom: 2px solid var(--primary);
+        color: var(--accent);
+    }
+
+    .table td {
+        border-bottom: 1px solid rgba(255, 107, 53, 0.2);
+        vertical-align: middle;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(255, 107, 53, 0.05) !important;
+    }
+
+    .delete-item, .remove-item {
+        transition: all 0.3s ease;
+        border-radius: 50% !important;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .delete-item:hover, .remove-item:hover {
+        transform: rotate(90deg) scale(1.1);
+        background: rgba(255, 107, 53, 0.2) !important;
+    }
+
+    .form-icon {
+        color: var(--primary);
+        margin-right: 0.5rem;
+    }
+
+    .input-group-text {
+        background-color: rgba(26, 26, 29, 0.7);
+        border: 1px solid rgba(255, 107, 53, 0.4);
+        color: var(--accent);
+    }
+
+    .alert-danger {
+        background-color: rgba(220, 53, 69, 0.2);
+        border: 1px solid rgba(220, 53, 69, 0.4);
+        color: var(--light);
+    }
+
+    .modal-content {
+        background-color: var(--dark);
+        color: var(--light);
+        border: 1px solid var(--primary);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid var(--primary);
+    }
+
+    .modal-footer {
+        border-top: 1px solid var(--primary);
+    }
+
+    .is-invalid {
+        border-color: #dc3545 !important;
+    }
+
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.85em;
+    }
+
+    .form-control-plaintext {
+        color: var(--light) !important;
+        padding: 0.5rem 0;
+    }
+    
+
+    .form-switch .form-check-input {
+        width: 3em;
+        height: 1.5em;
+        background-color: rgba(26, 26, 29, 0.7);
+        border-color: rgba(255, 107, 53, 0.4);
+    }
+
+    .form-switch .form-check-input:checked {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .glow-effect {
+        position: relative;
+    }
+
+    .glow-effect::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(255, 107, 53, 0);
+        transition: box-shadow 0.5s ease;
+        pointer-events: none;
+    }
+
+    .glow-effect:hover::before {
+        box-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="glow-effect">
+                <form method="post" id="cotizacionForm" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="text-center mb-5">
+                        <h2 class="mb-3" style="color: var(--accent); text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                            <i class="fas fa-file-invoice-dollar form-icon"></i> Revisión de Cotización #{{ cotizacion.id }}
+                        </h2>
+                        <div class="d-flex justify-content-center gap-3">
+                            <span class="badge bg-light text-dark fs-6">
+                                {{ cotizacion.get_estado_display }}
+                            </span>
+                            <span class="badge bg-info text-dark fs-6">
+                                {{ cotizacion.get_tipo_pago_display }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección de Información General -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle form-icon"></i> Información General
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Cliente</label>
+                                        <div class="form-control-plaintext">
+                                            {{ cotizacion.cliente.get_full_name|default:cotizacion.cliente.username }}
+                                            {% if cotizacion.cliente.perfilusuario %}
+                                                ({{ cotizacion.cliente.perfilusuario.get_rol_display }})
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="{{ form.contacto.id_for_label }}" class="form-label">
+                                            <i class="fas fa-phone form-icon"></i> Contacto
+                                        </label>
+                                        <input type="text" 
+                                               name="{{ form.contacto.name }}"
+                                               id="{{ form.contacto.id_for_label }}"
+                                               class="form-control"
+                                               value="{{ cotizacion.cliente.perfilusuario.telefono|default:'' }}">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="{{ form.ciudad.id_for_label }}" class="form-label">
+                                            <i class="fas fa-city form-icon"></i> Ciudad
+                                        </label>
+                                        <select name="{{ form.ciudad.name }}"
+                                                id="{{ form.ciudad.id_for_label }}"
+                                                class="form-select">
+                                            {% for value, label in form.ciudad.field.choices %}
+                                                <option value="{{ value }}" {% if form.ciudad.value == value %}selected{% endif %}>
+                                                    {{ label }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.tipo_pago.id_for_label }}" class="form-label">
+                                            <i class="fas fa-money-bill-wave form-icon"></i> Método de Pago
+                                        </label>
+                                        <select name="{{ form.tipo_pago.name }}"
+                                                id="{{ form.tipo_pago.id_for_label }}"
+                                                class="form-select">
+                                            {% for value, label in form.tipo_pago.field.choices %}
+                                                <option value="{{ value }}" {% if form.tipo_pago.value == value %}selected{% endif %}>
+                                                    {{ label }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="card bg-light mt-2">
+                                        <div class="card-body p-3">
+                                            <h6 class="card-title mb-2" style="color: var(--accent);">
+                                                <i class="fas fa-user-tie form-icon"></i> Detalles del Cliente
+                                            </h6>
+                                            <p class="mb-1">
+                                                <i class="fas fa-user form-icon"></i> 
+                                                Nombre: {{ cotizacion.cliente.first_name|default:"No especificado" }}
+                                            </p>
+                                            <p class="mb-1">
+                                                <i class="fas fa-user form-icon"></i> 
+                                                Apellido: {{ cotizacion.cliente.last_name|default:"No especificado" }}
+                                            </p>
+                                            <p class="mb-1">
+                                                <i class="fas fa-envelope form-icon"></i> 
+                                                Email: {{ cotizacion.cliente.email|default:"No especificado" }}
+                                            </p>
+                                            {% if cotizacion.cliente.perfilusuario %}
+                                                {% if cotizacion.cliente.perfilusuario.telefono %}
+                                                <p class="mb-1">
+                                                    <i class="fas fa-phone form-icon"></i> 
+                                                    Teléfono: {{ cotizacion.cliente.perfilusuario.telefono }}
+                                                </p>
+                                                {% endif %}
+                                                {% if cotizacion.cliente.perfilusuario.direccion %}
+                                                <p class="mb-0">
+                                                    <i class="fas fa-map-marker-alt form-icon"></i> 
+                                                    Dirección: {{ cotizacion.cliente.perfilusuario.direccion }}
+                                                </p>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección de Configuración Financiera -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-calculator form-icon"></i> Configuración Financiera
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch mb-4">
+                                        <input type="checkbox" 
+                                               name="{{ form.aplica_iva.name }}"
+                                               id="{{ form.aplica_iva.id_for_label }}"
+                                               class="form-check-input"
+                                               {% if form.aplica_iva.value %}checked{% endif %}>
+                                        <label class="form-check-label" for="{{ form.aplica_iva.id_for_label }}">
+                                            {{ form.aplica_iva.label }}
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="{{ form.descuento.id_for_label }}" class="form-label">
+                                            <i class="fas fa-percentage form-icon"></i> {{ form.descuento.label }}
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="number"
+                                                   name="{{ form.descuento.name }}"
+                                                   id="{{ form.descuento.id_for_label }}"
+                                                   class="form-control {% if form.descuento.errors %}is-invalid{% endif %}"
+                                                   value="{{ form.descuento.value|default:'0' }}"
+                                                   step="0.01"
+                                                   min="0"
+                                                   max="100">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                        {% if form.descuento.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.descuento.errors|striptags }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Resumen Financiero -->
+                                <div class="col-md-6">
+                                    <div class="card bg-light h-100">
+                                        <div class="card-body">
+                                            <h6 class="card-title border-bottom pb-2" style="color: var(--accent);">
+                                                <i class="fas fa-file-invoice-dollar form-icon"></i> Resumen de Valores
+                                            </h6>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <strong>Subtotal:</strong>
+                                                <span id="subtotal">${{ cotizacion.subtotal|floatformat:2 }}</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <strong>IVA (19%):</strong>
+                                                <span id="iva">${{ cotizacion.iva|floatformat:2 }}</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <strong>Descuento:</strong>
+                                                <span id="descuento">${{ cotizacion.descuento|floatformat:2 }}</span>
+                                            </div>
+                                            <hr style="border-color: rgba(255, 107, 53, 0.3);">
+                                            <div class="d-flex justify-content-between fs-5 fw-bold">
+                                                <strong>Total:</strong>
+                                                <strong id="total">${{ cotizacion.total|floatformat:2 }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+<input type="hidden" id="id_subtotal" name="subtotal" value="{{ cotizacion.subtotal|default:'0' }}">
+<input type="hidden" id="id_iva" name="iva" value="{{ cotizacion.iva|default:'0' }}">
+<input type="hidden" id="id_total" name="total" value="{{ cotizacion.total|default:'0' }}">
+<input type="hidden" id="id_estado" name="estado" value="{{ cotizacion.estado|default:'pendiente' }}">
+                    <!-- Tabla de Ítems -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-list-ul form-icon"></i> Ítems de la Cotización
+                        </div>
+                        <div class="card-body p-0">
+                            {{ formset.management_form }}
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th width="40%">Descripción</th>
+                                            <th width="15%">Cantidad</th>
+                                            <th width="15%">Unidad</th>
+                                            <th width="15%">Valor Unitario</th>
+                                            <th width="15%">Subtotal</th>
+                                            <th width="5%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="itemsTable">
+                                        {% for item_form in formset %}
+                                        <tr class="item-row {% if item_form.DELETE.value %}d-none{% endif %}">
+                                            <td>
+                                                {{ item_form.id }}
+                                                <input type="text"
+                                                       name="{{ item_form.descripcion.html_name }}"
+                                                       id="{{ item_form.descripcion.id_for_label }}"
+                                                       class="form-control {% if item_form.descripcion.errors %}is-invalid{% endif %}"
+                                                       value="{{ item_form.descripcion.value|default:'' }}"
+                                                       {% if not item_form.DELETE.value %}required{% endif %}>
+                                                <input type="hidden" name="{{ item_form.DELETE.html_name }}" 
+                                                       id="{{ item_form.DELETE.id_for_label }}" 
+                                                       value="{% if item_form.DELETE.value %}1{% else %}0{% endif %}">
+                                                {% if item_form.descripcion.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ item_form.descripcion.errors|striptags }}
+                                                </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <input type="number"
+                                                       name="{{ item_form.cantidad.html_name }}"
+                                                       id="{{ item_form.cantidad.id_for_label }}"
+                                                       class="form-control item-cantidad {% if item_form.cantidad.errors %}is-invalid{% endif %}"
+                                                       value="{{ item_form.cantidad.value|default:'' }}"
+                                                       step="0.01"
+                                                       min="0.01"
+                                                       {% if not item_form.DELETE.value %}required{% endif %}>
+                                                {% if item_form.cantidad.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ item_form.cantidad.errors|striptags }}
+                                                </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <select name="{{ item_form.unidad_medida.html_name }}"
+                                                        id="{{ item_form.unidad_medida.id_for_label }}"
+                                                        class="form-select {% if item_form.unidad_medida.errors %}is-invalid{% endif %}"
+                                                        {% if not item_form.DELETE.value %}required{% endif %}>
+                                                    {% for value, label in item_form.unidad_medida.field.choices %}
+                                                        <option value="{{ value }}" {% if item_form.unidad_medida.value == value %}selected{% endif %}>
+                                                            {{ label }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                                {% if item_form.unidad_medida.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ item_form.unidad_medida.errors|striptags }}
+                                                </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">$</span>
+                                                    <input type="number"
+                                                           name="{{ item_form.valor_unidad.html_name }}"
+                                                           id="{{ item_form.valor_unidad.id_for_label }}"
+                                                           class="form-control item-valor {% if item_form.valor_unidad.errors %}is-invalid{% endif %}"
+                                                           value="{{ item_form.valor_unidad.value|default:'' }}"
+                                                           step="0.01"
+                                                           min="0"
+                                                           {% if not item_form.DELETE.value %}required{% endif %}>
+                                                </div>
+                                                {% if item_form.valor_unidad.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ item_form.valor_unidad.errors|striptags }}
+                                                </div>
+                                                {% endif %}
+                                            </td>
+                                            <td class="item-subtotal align-middle">
+                                                $<span>{% if item_form.instance.valor_total %}{{ item_form.instance.valor_total|floatformat:2 }}{% else %}0.00{% endif %}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                {% if item_form.instance.pk %}
+                                                <button type="button" class="btn btn-sm btn-outline-danger delete-item" title="Eliminar">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                                {% else %}
+                                                <button type="button" class="btn btn-sm btn-outline-danger remove-item" title="Quitar">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer text-end">
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="add-item">
+                                    <i class="fas fa-plus me-1"></i> Agregar Ítem
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de Acción -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'cotizaciones_pendientes' %}" class="btn btn-outline-secondary px-4">
+                            <i class="fas fa-arrow-left me-1"></i> Volver
+                        </a>
+                        <div>
+                            <button type="button" class="btn btn-outline-danger me-2 px-4" data-bs-toggle="modal" data-bs-target="#rechazarModal">
+                                <i class="fas fa-times me-1"></i> Rechazar
+                            </button>
+                            <button type="submit" class="btn btn-primary px-4" id="submitBtn">
+                                <i class="fas fa-check-circle me-1"></i> Marcar como Revisado
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Rechazo -->
+<div class="modal fade" id="rechazarModal" tabindex="-1" aria-labelledby="rechazarModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="rechazarModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Confirmar Rechazo
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'rechazar_cotizacion' cotizacion.id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="motivoRechazo" class="form-label">Motivo del rechazo</label>
+                        <textarea class="form-control" id="motivoRechazo" name="motivo" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Confirmar Rechazo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('cotizacionForm');
+    const itemsTable = document.getElementById('itemsTable');
+    const addItemBtn = document.getElementById('add-item');
+    const formPrefix = 'items';
+    let formCount = parseInt('{{ formset.total_form_count }}');
+    const maxForms = parseInt('{{ formset.max_num }}') || 1000;
+
+   // Función para calcular totales - Versión corregida
+function calcularTotales() {
+    let subtotal = 0;
+    
+    // Calcular subtotal sumando todos los ítems visibles
+    document.querySelectorAll('#itemsTable tr.item-row:not(.d-none)').forEach(row => {
+        const cantidadInput = row.querySelector('.item-cantidad, [name$="-cantidad"]');
+        const valorInput = row.querySelector('.item-valor, [name$="-valor_unidad"]');
+        const subtotalSpan = row.querySelector('.item-subtotal span');
+        
+        const cantidad = parseFloat(cantidadInput?.value) || 0;
+        const valor = parseFloat(valorInput?.value) || 0;
+        const itemSubtotal = cantidad * valor;
+        
+        subtotal += itemSubtotal;
+        
+        if (subtotalSpan) {
+            subtotalSpan.textContent = itemSubtotal.toFixed(2);
+        }
+    });
+
+    // Calcular IVA, descuento y total
+    const aplicaIva = document.getElementById('id_aplica_iva').checked;
+    const descuentoInput = document.getElementById('id_descuento');
+    const descuento = parseFloat(descuentoInput?.value) || 0;
+    
+    const iva = aplicaIva ? subtotal * 0.19 : 0;
+    const montoDescuento = subtotal * (descuento / 100);
+    const total = subtotal + iva - montoDescuento;
+
+    // Actualizar los campos ocultos del formulario
+    const subtotalInput = document.getElementById('id_subtotal');
+    const ivaInput = document.getElementById('id_iva');
+    const totalInput = document.getElementById('id_total');
+    
+    if (subtotalInput) subtotalInput.value = subtotal.toFixed(2);
+    if (ivaInput) ivaInput.value = iva.toFixed(2);
+    if (totalInput) totalInput.value = total.toFixed(2);
+    
+    // Actualizar la visualización
+    document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
+    document.getElementById('iva').textContent = '$' + iva.toFixed(2);
+    document.getElementById('descuento').textContent = '$' + montoDescuento.toFixed(2);
+    document.getElementById('total').textContent = '$' + total.toFixed(2);
+}
+
+// Modifica el event listener del submit para asegurar los cálculos
+form.addEventListener('submit', function(e) {
+    // Calcular totales antes de enviar
+    calcularTotales();
+    
+    // Cambiar el estado a revisado
+    const estadoInput = document.getElementById('id_estado');
+    if (estadoInput) estadoInput.value = 'revisado';
+    
+    // Deshabilitar botón para evitar doble envío
+    const btn = document.getElementById('submitBtn');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Procesando...';
+    }
+});
+
+    // Manejar eliminación de ítems
+    itemsTable.addEventListener('click', function(e) {
+        const deleteBtn = e.target.closest('.delete-item');
+        const removeBtn = e.target.closest('.remove-item');
+        
+        if (deleteBtn) {
+            const row = deleteBtn.closest('tr');
+            const deleteInput = row.querySelector('input[id$="-DELETE"]');
+            deleteInput.value = '1';
+            row.classList.add('d-none');
+            deleteBtn.disabled = true;
+            calcularTotales();
+        } else if (removeBtn) {
+            const row = removeBtn.closest('tr');
+            row.remove();
+            updateFormIndices();
+            calcularTotales();
+        }
+    });
+
+    // Agregar nuevo ítem
+    addItemBtn.addEventListener('click', function() {
+        if (formCount >= maxForms) {
+            alert('Has alcanzado el número máximo de ítems permitidos.');
+            return;
+        }
+        
+        const newRow = document.createElement('tr');
+        newRow.className = 'item-row';
+        newRow.innerHTML = `
+            <td>
+                <input type="text" name="${formPrefix}-${formCount}-descripcion" 
+                       class="form-control" required id="id_${formPrefix}-${formCount}-descripcion">
+                <input type="hidden" name="${formPrefix}-${formCount}-id" id="id_${formPrefix}-${formCount}-id">
+                <input type="hidden" name="${formPrefix}-${formCount}-DELETE" id="id_${formPrefix}-${formCount}-DELETE" value="0">
+            </td>
+            <td>
+                <input type="number" name="${formPrefix}-${formCount}-cantidad" step="0.01" 
+                       class="form-control item-cantidad" required id="id_${formPrefix}-${formCount}-cantidad" min="0.01">
+            </td>
+            <td>
+                <select name="${formPrefix}-${formCount}-unidad_medida" class="form-select" 
+                        id="id_${formPrefix}-${formCount}-unidad_medida" required>
+                    <option value="M2">m²</option>
+                    <option value="ML">ml</option>
+                    <option value="M3">m³</option>
+                    <option value="UNIDAD" selected>Unidad</option>
+                    <option value="HORA">Hora</option>
+                    <option value="DIA">Día</option>
+                    <option value="GALON">Galón</option>
+                    <option value="KG">Kg</option>
+                    <option value="LITRO">Litro</option>
+                </select>
+            </td>
+            <td>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" name="${formPrefix}-${formCount}-valor_unidad" step="0.01" 
+                           class="form-control item-valor" required id="id_${formPrefix}-${formCount}-valor_unidad" min="0">
+                </div>
+            </td>
+            <td class="item-subtotal align-middle">$<span>0.00</span></td>
+            <td class="text-center">
+                <button type="button" class="btn btn-sm btn-outline-danger remove-item" title="Quitar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </td>
+        `;
+        
+        itemsTable.appendChild(newRow);
+        
+        // Agregar event listeners a los nuevos campos
+        newRow.querySelector('.item-cantidad').addEventListener('input', calcularTotales);
+        newRow.querySelector('.item-valor').addEventListener('input', calcularTotales);
+        
+        // Actualizar el contador de formularios
+        const totalFormsInput = document.getElementById('id_' + formPrefix + '-TOTAL_FORMS');
+        totalFormsInput.value = ++formCount;
+        
+        calcularTotales();
+    });
+
+    // Actualizar índices de formularios
+    function updateFormIndices() {
+        let i = 0;
+        document.querySelectorAll('#itemsTable tr.item-row').forEach(row => {
+            if (!row.classList.contains('d-none')) {
+                row.querySelectorAll('input, select').forEach(el => {
+                    el.name = el.name.replace(new RegExp(`${formPrefix}-\\d+-`), `${formPrefix}-${i}-`);
+                    el.id = el.id.replace(new RegExp(`${formPrefix}-\\d+-`), `${formPrefix}-${i}-`);
+                });
+                i++;
+            }
+        });
+        updateTotalForms(i);
+    }
+
+    function updateTotalForms(count) {
+        const totalForms = document.getElementById('id_' + formPrefix + '-TOTAL_FORMS');
+        if (totalForms) {
+            totalForms.value = count;
+        }
+        formCount = count;
+    }
+
+    // Configurar event listeners para campos financieros
+    document.getElementById('id_aplica_iva').addEventListener('change', calcularTotales);
+    document.getElementById('id_descuento').addEventListener('input', calcularTotales);
+
+    // Delegación de eventos para campos dinámicos
+    itemsTable.addEventListener('input', function(e) {
+        if (e.target.matches('.item-cantidad, .item-valor, [name$="-cantidad"], [name$="-valor_unidad"]')) {
+            calcularTotales();
+        }
+    });
+
+    // Calcular al cargar la página
+    calcularTotales();
+});
+</script>
+{% endblock %}

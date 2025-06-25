@@ -1,0 +1,17 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Iniciar sesión - YGV</title>
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+</head>
+<body>
+    <h2>Iniciar sesión</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Entrar</button>
+    </form>
+    <p>¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a></p>
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Contrato #{{ cotizacion.id }} - {{ cotizacion.proyecto.tipo_proyecto }}</title>
+    <style>
+        @page {
+            size: letter;
+            margin: 2cm;
+            @top-center {
+                content: "CONTRATO DE SERVICIOS PROFESIONALES";
+                font-family: 'Helvetica', sans-serif;
+                font-size: 14px;
+                color: #004E89;
+            }
+            @bottom-right {
+                content: "Página " counter(page) " de " counter(pages);
+                font-family: 'Helvetica', sans-serif;
+                font-size: 10px;
+            }
+        }
+        
+        body {
+            font-family: 'Helvetica', sans-serif;
+            color: #1A1A1D;
+            line-height: 1.6;
+            font-size: 12px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #004E89;
+            padding-bottom: 15px;
+        }
+        
+        .logo {
+            height: 80px;
+            margin-bottom: 10px;
+        }
+        
+        .titulo-principal {
+            color: #004E89;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 10px 0 5px 0;
+            text-transform: uppercase;
+        }
+        
+        .subtitulo {
+            color: #FF6B35;
+            font-size: 14px;
+            font-weight: normal;
+        }
+        
+        .numero-contrato {
+            font-weight: bold;
+            color: #004E89;
+        }
+        
+        .fecha-contrato {
+            text-align: right;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        
+        .partes {
+            margin-bottom: 30px;
+            background-color: #F7F7FF;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #004E89;
+        }
+        
+        .parte-titulo {
+            font-weight: bold;
+            color: #004E89;
+            margin-bottom: 5px;
+        }
+        
+        .parte-contenido {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .seccion {
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+        
+        .seccion-titulo {
+            color: #004E89;
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 1px solid #FF6B35;
+            padding-bottom: 3px;
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 11px;
+            page-break-inside: avoid;
+        }
+        
+        th {
+            background-color: #004E89;
+            color: #FFD166;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #F7F7FF;
+        }
+        
+        .total {
+            font-weight: bold;
+            text-align: right;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .firmas {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 80px;
+            page-break-inside: avoid;
+        }
+        
+        .firma {
+            width: 45%;
+            text-align: center;
+        }
+        
+        .linea-firma {
+            border-top: 1px solid #000;
+            margin: 0 auto;
+            width: 80%;
+            padding-top: 5px;
+        }
+        
+        .nombre-firma {
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .cargo-firma {
+            font-style: italic;
+            font-size: 10px;
+        }
+        
+        .documento-firma {
+            font-size: 10px;
+            margin-top: 3px;
+        }
+        
+        .sello {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #FF6B35;
+            padding-top: 10px;
+        }
+        
+        .clausula {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .clausula-titulo {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .anexos {
+            margin-top: 30px;
+            font-size: 11px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 11px;
+            background-color: #004E89;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <!-- Reemplaza con tu logo si tienes -->
+        <div style="height: 80px; margin-bottom: 10px;">
+            <span style="font-size: 24px; font-weight: bold; color: #004E89;">Y.G.V CONSTRUCCIONES</span>
+        </div>
+        <div class="titulo-principal">CONTRATO DE SERVICIOS PROFESIONALES</div>
+        <div class="subtitulo">Para la ejecución de {{ cotizacion.proyecto.tipo_proyecto }}</div>
+        <div class="numero-contrato">CONTRATO No. <span class="badge">#{{ cotizacion.id }}</span></div>
+    </div>
+    
+    <div class="fecha-contrato">
+        {{ cotizacion.ciudad|default:"Bogotá D.C." }}, {{ fecha_actual|date:"d \d\e F \d\e Y" }}
+    </div>
+    
+    <div class="partes">
+        <div class="parte-titulo">ENTRE:</div>
+        <div class="parte-contenido">
+            <p><strong>{{ cotizacion.cliente.get_full_name }}</strong>, identificado con {{ cotizacion.cliente.tipo_documento|default:"C.C." }} No. {{ cotizacion.cliente.numero_documento|default:"XXXXXXXX" }}, 
+            en su calidad de Representante Legal de <strong>Y.G.V CONSTRUCCIONES</strong>, sociedad legalmente constituida, 
+            con NIT {{ cotizacion.cliente.empresa.nit|default:"XXXXXXXX-X" }}, con domicilio en {{ cotizacion.cliente.empresa.direccion|default:"dirección no especificada" }}, 
+            en adelante denominado <strong>"EL CLIENTE"</strong></p>
+        </div>
+        
+        <div class="parte-titulo">Y:</div>
+        <div class="parte-contenido">
+            <p><strong>{{ cotizacion.ingeniero.get_full_name }}</strong>, identificado con {{ cotizacion.ingeniero.tipo_documento|default:"C.C." }} No. {{ cotizacion.ingeniero.numero_documento|default:"XXXXXXXX" }}, 
+            profesional en ingeniería matriculado bajo el número {{ cotizacion.ingeniero.matricula_profesional|default:"XXXXXX" }} del Consejo Profesional correspondiente, 
+            con domicilio en {{ cotizacion.ingeniero.direccion|default:"dirección no especificada" }}, 
+            en adelante denominado <strong>"EL PROFESIONAL"</strong>,</p>
+        </div>
+    </div>
+    
+    <div class="seccion">
+        <div class="seccion-titulo">PRIMERO: OBJETO</div>
+        <div class="clausula">
+            <div class="clausula-titulo">1.1 Objeto del Contrato</div>
+            <p>EL PROFESIONAL se obliga a prestar los servicios profesionales de {{ cotizacion.proyecto.tipo_proyecto }} conforme a las especificaciones técnicas descritas en la cotización No. {{ cotizacion.id }} de fecha {{ cotizacion.fecha|date:"d \d\e F \d\e Y" }}, la cual hace parte integral del presente contrato como <strong>Anexo 1</strong>.</p>
+        </div>
+        
+        <div class="clausula">
+            <div class="clausula-titulo">1.2 Alcance de los Servicios</div>
+            <p>Los servicios profesionales incluyen, pero no se limitan a: diseño, supervisión, asesoría técnica y elaboración de informes relacionados con {{ cotizacion.proyecto.tipo_proyecto }}, de acuerdo con las normas técnicas y legales vigentes en Colombia.</p>
+        </div>
+    </div>
+    
+    <div class="seccion">
+        <div class="seccion-titulo">SEGUNDO: OBLIGACIONES DE LAS PARTES</div>
+        
+        <div class="clausula">
+            <div class="clausula-titulo">2.1 Obligaciones del PROFESIONAL</div>
+            <p>EL PROFESIONAL se obliga a:</p>
+            <ul>
+                <li>Realizar los servicios con la debida diligencia y conforme a las normas técnicas y éticas de su profesión.</li>
+                <li>Entregar los informes, planos y documentos técnicos en los plazos establecidos.</li>
+                <li>Mantener confidencialidad sobre toda la información del proyecto.</li>
+                <li>Contar con los seguros profesionales requeridos por la ley.</li>
+                <li>Asistir a las reuniones técnicas que sean necesarias.</li>
+            </ul>
+        </div>
+        
+        <div class="clausula">
+            <div class="clausula-titulo">2.2 Obligaciones del CLIENTE</div>
+            <p>EL CLIENTE se obliga a:</p>
+            <ul>
+                <li>Proporcionar toda la información necesaria para la ejecución de los servicios.</li>
+                <li>Realizar los pagos en los plazos y condiciones establecidos.</li>
+                <li>Facilitar el acceso a las instalaciones cuando sea requerido.</li>
+                <li>Designar un representante técnico para coordinación del proyecto.</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="seccion">
+        <div class="seccion-titulo">TERCERO: HONORARIOS Y FORMA DE PAGO</div>
+        
+        <div class="clausula">
+            <div class="clausula-titulo">3.1 Valor del Contrato</div>
+            <p>El valor total de los servicios profesionales asciende a la suma de <strong>${{ cotizacion.total|floatformat:2 }} ({{ total_en_palabras|upper }} PESOS M/L)</strong>, IVA incluido cuando aplique, desglosado según la siguiente tabla:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ítem</th>
+                        <th>Descripción</th>
+                        <th>Cantidad</th>
+                        <th>Valor Unitario</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ item.descripcion }}</td>
+                        <td>{{ item.cantidad }}</td>
+                        <td>${{ item.valor_unidad|floatformat:2 }}</td>
+                        <td>${% widthratio item.cantidad 1 item.valor_unidad as subtotal %}{{ subtotal|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" style="text-align: right;"><strong>Subtotal:</strong></td>
+                        <td>${{ cotizacion.subtotal|floatformat:2 }}</td>
+                    </tr>
+                    {% if cotizacion.iva > 0 %}
+                    <tr>
+                        <td colspan="4" style="text-align: right;"><strong>IVA (19%):</strong></td>
+                        <td>${{ cotizacion.iva|floatformat:2 }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td colspan="4" style="text-align: right;"><strong>TOTAL:</strong></td>
+                        <td>${{ cotizacion.total|floatformat:2 }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        
+        <div class="clausula">
+            <div class="clausula-titulo">3.2 Forma de Pago</div>
+            <p>El pago se realizará de la siguiente forma:</p>
+            <ul>
+                <li><strong>30%</strong> al momento de la firma del presente contrato (Anticipo).</li>
+                <li><strong>40%</strong> al cumplimiento del 50% de los servicios.</li>
+                <li><strong>30%</strong> contra entrega de los informes finales y aprobación del proyecto.</li>
+            </ul>
+            <p>Los pagos se realizarán mediante transferencia bancaria a la cuenta No. XXXX-XXXX-XXXX-XXXX del Banco XXXXX, a nombre de {{ cotizacion.ingeniero.get_full_name }}.</p>
+        </div>
+    </div>
+    
+    <div class="seccion">
+        <div class="seccion-titulo">CUARTO: PLAZO Y TERMINACIÓN</div>
+        
+        <div class="clausula">
+            <div class="clausula-titulo">4.1 Plazo de Ejecución</div>
+            <p>El plazo para la ejecución de los servicios será de {{ cotizacion.proyecto.plazo|default:"60" }} días calendario contados a partir de la fecha de firma del presente contrato.</p>
+        </div>
+        
+        <div class="clausula">
+            <div class="clausula-titulo">4.2 Terminación Anticipada</div>
+            <p>Cualquiera de las partes podrá dar por terminado el contrato mediante escrito dirigido a la otra parte con 15 días de antelación, sin perjuicio de las obligaciones ya contraídas.</p>
+        </div>
+    </div>
+    
+    <div class="seccion">
+        <div class="seccion-titulo">QUINTO: RÉGIMEN DE RESPONSABILIDAD</div>
+        
+        <div class="clausula">
+            <div class="clausula-titulo">5.1 Responsabilidad Profesional</div>
+            <p>EL PROFESIONAL será responsable por los daños ocasionados por su culpa o dolo en la ejecución de los servicios, conforme a las normas legales aplicables.</p>
+        </div>
+        
+        <div class="clausula">
+            <div class="clausula-titulo">5.2 Seguro de Responsabilidad</div>
+            <p>EL PROFESIONAL declara tener vigente su póliza de seguro de responsabilidad profesional con cobertura mínima de $500,000,000 (Quinientos millones de pesos m/l).</p>
+        </div>
+    </div>
+    
+    <div class="seccion">
+        <div class="seccion-titulo">SEXTO: PROPIEDAD INTELECTUAL</div>
+        
+        <div class="clausula">
+            <div class="clausula-titulo">6.1 Derechos de Autor</div>
+            <p>Los documentos, planos y diseños elaborados por EL PROFESIONAL serán propiedad exclusiva de EL CLIENTE una vez cancelados todos los pagos establecidos en este contrato.</p>
+        </div>
+    </div>
+    
+    <div class="seccion">
+        <div class="seccion-titulo">SÉPTIMO: CONFIDENCIALIDAD</div>
+        
+        <div class="clausula">
+            <div class="clausula-titulo">7.1 Obligación de Confidencialidad</div>
+            <p>Las partes se comprometen a mantener estricta confidencialidad sobre toda la información técnica, comercial o de cualquier otra índole que conozcan con motivo de la ejecución de este contrato.</p>
+        </div>
+    </div>
+    
+    <div class="seccion">
+        <div class="seccion-titulo">OCTAVO: LEGISLACIÓN APLICABLE Y SOLUCIÓN DE CONTROVERSIAS</div>
+        
+        <div class="clausula">
+            <div class="clausula-titulo">8.1 Legislación Aplicable</div>
+            <p>El presente contrato se regirá por las leyes de la República de Colombia.</p>
+        </div>
+        
+        <div class="clausula">
+            <div class="clausula-titulo">8.2 Solución de Controversias</div>
+            <p>Cualquier controversia derivada de este contrato se resolverá en primera instancia por mutuo acuerdo. De no lograrse acuerdo, las partes someterán sus diferencias a los jueces y tribunales competentes de Bogotá D.C., con renuncia expresa a cualquier otro fuero o jurisdicción que pudiera corresponderles.</p>
+        </div>
+    </div>
+    
+    <div class="firmas">
+        <div class="firma">
+            <div class="linea-firma"></div>
+            <div class="nombre-firma">{{ cotizacion.cliente.get_full_name }}</div>
+            <div class="cargo-firma">Representante Legal</div>
+            <div class="documento-firma">{{ cotizacion.cliente.tipo_documento|default:"C.C." }} No. {{ cotizacion.cliente.numero_documento|default:"XXXXXXXX" }}</div>
+            <div class="sello">Firma y sello</div>
+        </div>
+        
+        <div class="firma">
+            <div class="linea-firma"></div>
+            <div class="nombre-firma">{{ cotizacion.ingeniero.get_full_name }}</div>
+            <div class="cargo-firma">Ingeniero Profesional</div>
+            <div class="documento-firma">Matrícula Profesional No. {{ cotizacion.ingeniero.matricula_profesional|default:"XXXXXX" }}</div>
+            <div class="sello">Firma y sello</div>
+        </div>
+    </div>
+    
+    <div class="anexos">
+        <p><strong>ANEXOS QUE FORMAN PARTE INTEGRAL DEL CONTRATO:</strong></p>
+        <p>1. Cotización No. {{ cotizacion.id }} con fecha {{ cotizacion.fecha|date:"d \d\e F \d\e Y" }}</p>
+        <p>2. Especificaciones técnicas del proyecto</p>
+        <p>3. Cronograma de ejecución</p>
+    </div>
+    
+    <div class="footer">
+        <p>Este documento consta de {{ pages }} páginas y se firma en dos ejemplares de igual tenor y valor legal, quedando una copia en poder de cada una de las partes.</p>
+        <p>Sistema de Gestión de Contratos - Y.G.V Construcciones - {{ fecha_actual|date:"d/m/Y H:i" }}</p>
+    </div>
+</body>
+</html>

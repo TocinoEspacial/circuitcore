@@ -1,0 +1,654 @@
+{% extends 'ingeniero/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #FF6B35;  /* Naranja energético */
+        --secondary: #004E89; /* Azul profesional */
+        --accent: #FFD166;    /* Amarillo vibrante */
+        --dark: #1A1A1D;     /* Negro sofisticado */
+        --light: #F7F7FF;    /* Blanco suave */
+        --success: #06D6A0;  /* Verde para estados */
+    }
+
+    .profile-edit-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        animation: fadeIn 0.8s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .profile-edit-card {
+        background: linear-gradient(145deg, rgba(26, 26, 29, 0.9), rgba(0, 78, 137, 0.2));
+        border: 1px solid var(--primary);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        backdrop-filter: blur(8px);
+    }
+    
+    .profile-edit-header {
+        background: linear-gradient(to right, var(--dark), var(--secondary)) !important;
+        color: var(--accent) !important;
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--primary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .profile-edit-header h3 {
+        margin: 0;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        font-size: 1.5rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .profile-edit-header i {
+        margin-right: 12px;
+        font-size: 1.3rem;
+    }
+    
+    .profile-edit-body {
+        padding: 2rem;
+    }
+    
+    /* Sección de avatar - Mejorada */
+    .avatar-edit-section {
+        text-align: center;
+        padding: 2rem;
+        background: rgba(26, 26, 29, 0.7);
+        border-radius: 12px;
+        border: 1px dashed var(--primary);
+        margin-bottom: 2rem;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    }
+
+    .avatar-edit-section:hover {
+        border-color: var(--accent);
+        box-shadow: 0 8px 25px rgba(255, 107, 53, 0.15);
+    }
+    
+    .avatar-edit-container {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+    }
+    
+    #avatar-preview {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border: 3px solid var(--primary);
+        border-radius: 50%;
+        box-shadow: 0 0 25px rgba(255, 107, 53, 0.3);
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    
+    .avatar-edit-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .avatar-edit-container:hover .avatar-edit-overlay {
+        opacity: 1;
+    }
+    
+    .avatar-edit-container:hover #avatar-preview {
+        transform: scale(1.05);
+        box-shadow: 0 0 35px rgba(255, 107, 53, 0.5);
+    }
+    
+    .avatar-edit-overlay i {
+        color: var(--accent);
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .avatar-edit-overlay p {
+        color: var(--light);
+        margin: 0;
+        font-weight: 500;
+    }
+
+    /* Estilos para los botones del avatar */
+    .avatar-edit-section .btn-sm {
+        padding: 0.4rem 1rem;
+        font-size: 0.85rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+
+    .avatar-edit-section .btn-outline-accent {
+        color: var(--accent);
+        border-color: var(--accent);
+    }
+
+    .avatar-edit-section .btn-outline-accent:hover {
+        background-color: var(--accent);
+        color: var(--dark);
+    }
+
+    .avatar-edit-section .btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    /* Tarjetas de formulario */
+    .form-section-card {
+        background: rgba(26, 26, 29, 0.8);
+        border: 1px solid rgba(255, 107, 53, 0.3);
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    }
+
+    .form-section-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(255, 107, 53, 0.15);
+        border-color: var(--primary);
+    }
+    
+    .form-section-header {
+        background: linear-gradient(to right, var(--dark), var(--secondary)) !important;
+        color: var(--accent) !important;
+        padding: 1.2rem 1.8rem;
+        border-bottom: 1px solid var(--primary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .form-section-header h5 {
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-section-header i {
+        margin-right: 10px;
+    }
+    
+    .form-section-body {
+        padding: 1.8rem;
+    }
+    
+    /* Formularios */
+    .form-label {
+        color: white !important;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-label i {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+        color: var(--accent);
+    }
+    
+    .form-control, .form-select {
+        background: rgba(26, 26, 29, 0.9) !important;
+        border: 1px solid rgba(255, 107, 53, 0.4) !important;
+        color: white !important;
+        border-radius: 8px;
+        padding: 1rem !important;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 107, 53, 0.2) !important;
+        background: rgba(26, 26, 29, 1) !important;
+    }
+    
+    textarea.form-control {
+        min-height: 120px;
+    }
+    
+    /* Alertas de error */
+    .alert-danger {
+        background: rgba(220, 53, 69, 0.2) !important;
+        border: 1px solid rgba(220, 53, 69, 0.5);
+        color: white !important;
+        border-radius: 8px;
+    }
+    
+    /* Botones */
+    .btn-outline-secondary {
+        color: white !important;
+        border: 2px solid rgba(255, 255, 255, 0.3) !important;
+        background: transparent !important;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border-radius: 8px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        letter-spacing: 0.5px;
+    }
+    
+    .btn-outline-secondary:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        transform: translateY(-3px);
+    }
+    
+    .btn-outline-danger {
+        color: #dc3545 !important;
+        border: 2px solid #dc3545 !important;
+        background: transparent !important;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border-radius: 8px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        letter-spacing: 0.5px;
+    }
+    
+    .btn-outline-danger:hover {
+        background: #dc3545 !important;
+        color: white !important;
+        transform: translateY(-3px);
+    }
+    
+    .btn-primary {
+        background: var(--primary) !important;
+        color: var(--dark) !important;
+        border: none !important;
+        font-weight: 600;
+        padding: 0.9rem 1.8rem;
+        border-radius: 8px;
+        letter-spacing: 0.5px;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+    }
+
+    .btn-primary::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -60%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0) 20%,
+            rgba(255, 255, 255, 0.1) 50%,
+            rgba(255, 255, 255, 0) 80%
+        );
+        transform: rotate(30deg);
+        transition: all 0.6s ease;
+    }
+
+    .btn-primary:hover::after {
+        left: 100%;
+    }
+    
+    .btn-primary i {
+        margin-right: 8px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .profile-edit-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+            padding: 1.5rem 1rem;
+        }
+        
+        .profile-edit-header h3 {
+            font-size: 1.3rem;
+        }
+        
+        .avatar-edit-section {
+            padding: 1.5rem;
+        }
+        
+        #avatar-preview {
+            width: 160px;
+            height: 160px;
+        }
+        
+        .form-section-body, .profile-edit-body {
+            padding: 1.5rem;
+        }
+        
+        .btn-group-responsive {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn-group-responsive .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-edit-container">
+    <div class="profile-edit-card">
+        <div class="profile-edit-header">
+            <h3><i class="fas fa-user-edit me-2"></i>Editar Perfil</h3>
+            <a href="{% url 'perfil_ingeniero' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Volver al Perfil
+            </a>
+        </div>
+        
+        <div class="profile-edit-body">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                
+                <!-- Mostrar errores generales del formulario -->
+                {% if user_form.non_field_errors or perfil_form.non_field_errors %}
+                <div class="alert alert-danger mb-4">
+                    {% for error in user_form.non_field_errors %}
+                        <i class="fas fa-exclamation-circle me-2"></i>{{ error }}<br>
+                    {% endfor %}
+                    {% for error in perfil_form.non_field_errors %}
+                        <i class="fas fa-exclamation-circle me-2"></i>{{ error }}<br>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="row">
+                    <!-- Columna izquierda - Avatar -->
+                    <div class="col-md-4">
+                        <div class="avatar-edit-section">
+                            <div class="avatar-edit-container">
+                                <img src="{% if perfil_form.instance.avatar %}{{ perfil_form.instance.avatar.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" 
+                                     class="img-fluid" 
+                                     alt="Avatar"
+                                     id="avatar-preview">
+                                <div class="avatar-edit-overlay">
+                                    <i class="fas fa-camera"></i>
+                                    <p>Cambiar foto</p>
+                                </div>
+                                <input type="file" name="avatar" accept="image/*" id="id_avatar" style="display: none;">
+                            </div>
+                            
+                            {% if perfil_form.avatar.errors %}
+                                <div class="alert alert-danger mt-3">
+                                    <i class="fas fa-exclamation-circle me-2"></i>{{ perfil_form.avatar.errors }}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="d-flex justify-content-center gap-3 mt-3">
+                                <button type="button" id="change-avatar-btn" class="btn btn-sm btn-outline-accent">
+                                    <i class="fas fa-camera me-1"></i> Cambiar
+                                </button>
+                                {% if perfil_form.instance.avatar %}
+                                <button type="button" id="remove-avatar-btn" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash me-1"></i> Eliminar
+                                </button>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mt-3">
+                                <p class="text-white text-center small">
+                                    <i class="fas fa-info-circle text-accent me-2"></i>
+                                    Formatos soportados: JPG, PNG (Max. 2MB)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Columna derecha - Formularios -->
+                    <div class="col-md-8">
+                        <!-- Tarjeta de datos personales -->
+                        <div class="form-section-card">
+                            <div class="form-section-header">
+                                <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Datos Personales</h5>
+                            </div>
+                            
+                            <div class="form-section-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-user"></i>{{ user_form.first_name.label }}
+                                        </label>
+                                        {{ user_form.first_name }}
+                                        {% if user_form.first_name.errors %}
+                                            <div class="text-danger small mt-2">
+                                                <i class="fas fa-exclamation-circle me-2"></i>{{ user_form.first_name.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-user"></i>{{ user_form.last_name.label }}
+                                        </label>
+                                        {{ user_form.last_name }}
+                                        {% if user_form.last_name.errors %}
+                                            <div class="text-danger small mt-2">
+                                                <i class="fas fa-exclamation-circle me-2"></i>{{ user_form.last_name.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-envelope"></i>{{ user_form.email.label }}
+                                    </label>
+                                    {{ user_form.email }}
+                                    {% if user_form.email.errors %}
+                                        <div class="text-danger small mt-2">
+                                            <i class="fas fa-exclamation-circle me-2"></i>{{ user_form.email.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tarjeta de información adicional -->
+                        <div class="form-section-card">
+                            <div class="form-section-header">
+                                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información Adicional</h5>
+                            </div>
+                            
+                            <div class="form-section-body">
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-phone"></i>{{ perfil_form.telefono.label }}
+                                    </label>
+                                    {{ perfil_form.telefono }}
+                                    {% if perfil_form.telefono.errors %}
+                                        <div class="text-danger small mt-2">
+                                            <i class="fas fa-exclamation-circle me-2"></i>{{ perfil_form.telefono.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-map-marker-alt"></i>{{ perfil_form.direccion.label }}
+                                    </label>
+                                    {{ perfil_form.direccion }}
+                                    {% if perfil_form.direccion.errors %}
+                                        <div class="text-danger small mt-2">
+                                            <i class="fas fa-exclamation-circle me-2"></i>{{ perfil_form.direccion.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Botones de acción -->
+                <div class="d-flex justify-content-between mt-4 btn-group-responsive">
+                    <button type="reset" class="btn btn-outline-secondary">
+                        <i class="fas fa-undo me-1"></i> Restablecer
+                    </button>
+                    <div class="d-flex gap-3">
+                        <a href="{% url 'perfil_ingeniero' %}" class="btn btn-outline-danger">
+                            <i class="fas fa-times me-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Elementos del avatar
+    const avatarInput = document.getElementById('id_avatar');
+    const avatarPreview = document.getElementById('avatar-preview');
+    const changeAvatarBtn = document.getElementById('change-avatar-btn');
+    const removeAvatarBtn = document.getElementById('remove-avatar-btn');
+    const avatarContainer = document.querySelector('.avatar-edit-container');
+    const defaultAvatar = "{% static 'images/default-avatar.png' %}";
+
+    // Click en el contenedor del avatar o botón de cambiar
+    if (avatarContainer) {
+        avatarContainer.addEventListener('click', function() {
+            avatarInput.click();
+        });
+    }
+
+    if (changeAvatarBtn) {
+        changeAvatarBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            avatarInput.click();
+        });
+    }
+
+    // Click en el botón de eliminar avatar
+    if (removeAvatarBtn) {
+        removeAvatarBtn.addEventListener('click', function() {
+            // Crear un checkbox para indicar que se quiere borrar el avatar
+            let clearCheckbox = document.getElementById('avatar-clear_id');
+            if (!clearCheckbox) {
+                clearCheckbox = document.createElement('input');
+                clearCheckbox.type = 'checkbox';
+                clearCheckbox.name = 'avatar-clear';
+                clearCheckbox.id = 'avatar-clear_id';
+                clearCheckbox.style.display = 'none';
+                avatarInput.parentNode.appendChild(clearCheckbox);
+            }
+            clearCheckbox.checked = true;
+            
+            // Restablecer la vista previa
+            avatarPreview.src = defaultAvatar;
+            avatarInput.value = '';
+            
+            // Animación
+            avatarPreview.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                avatarPreview.style.transform = 'scale(1)';
+            }, 300);
+            
+            // Ocultar el botón de eliminar
+            removeAvatarBtn.style.display = 'none';
+        });
+    }
+
+    // Cambio de imagen con efectos visuales
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) { // 2MB
+                    alert('La imagen no debe exceder los 2MB');
+                    return;
+                }
+                
+                // Si hay un checkbox de clear, desmarcarlo
+                const clearCheckbox = document.getElementById('avatar-clear_id');
+                if (clearCheckbox) {
+                    clearCheckbox.checked = false;
+                }
+                
+                // Mostrar el botón de eliminar si estaba oculto
+                if (removeAvatarBtn) {
+                    removeAvatarBtn.style.display = 'inline-block';
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    // Efecto de transición
+                    avatarPreview.style.opacity = 0;
+                    setTimeout(() => {
+                        avatarPreview.src = event.target.result;
+                        avatarPreview.style.opacity = 1;
+                        
+                        // Efecto de animación
+                        avatarPreview.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            avatarPreview.style.transform = 'scale(1)';
+                        }, 300);
+                    }, 200);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Efecto hover en tarjetas mejorado
+    const cards = document.querySelectorAll('.form-section-card, .avatar-edit-section');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+            card.style.boxShadow = '0 15px 35px rgba(255, 107, 53, 0.2)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = '';
+            card.style.boxShadow = '';
+        });
+    });
+    
+    // Efecto para botones
+    const buttons = document.querySelectorAll('.btn-primary, .btn-outline-danger, .btn-outline-secondary, .btn-outline-accent');
+    buttons.forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            btn.style.transform = 'translateY(-3px)';
+        });
+        
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = '';
+        });
+    });
+});
+</script>
+{% endblock %}

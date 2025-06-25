@@ -1,0 +1,502 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YGV Construcciones | Innovación en Cada Proyecto</title>
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
+</head>
+<body>
+    <div id="particles-js"></div>
+    
+    <header id="main-header">
+        <div class="container">
+            <div class="logo">
+                <a href="{% url 'home' %}"><img src="{% static 'images/Logo.png' %}" alt="YGV Construcciones" class="floating"/></a>
+            </div>
+<nav class="user-nav">
+    <ul class="user-nav-list">
+        {% if user.is_authenticated %}
+            <!-- Área de usuario con foto y menú desplegable -->
+            <li class="user-profile" data-aos="fade-left" data-aos-delay="100">
+                <div class="user-dropdown">
+                    <a href="#" class="user-toggle">
+                        {% if user.perfilusuario.avatar %}
+                            <img src="{{ user.perfilusuario.avatar.url }}" alt="{{ user.username }}" class="user-avatar">
+                        {% else %}
+                            <div class="default-avatar">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                        {% endif %}
+                        <span class="user-name">{{ user.username }}</span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+
+                        {% for group in user.groups.all %}
+                            {% if group.id == 2 %}
+                        <li data-aos="fade-left" data-aos-delay="150"></li>
+                            <a href="{% url 'perfil_ingeniero' %}" class="dropdown-link">
+                                <i class="fas fa-user"></i> 
+                                <span>Mi perfil</span>
+                            </a>
+                        </li>
+                            {% elif group.id == 1 %}
+                        <li data-aos="fade-left" data-aos-delay="150"></li>
+                            <a href="{% url 'perfil_cliente' %}" class="dropdown-link">
+                                <i class="fas fa-user"></i> 
+                                <span>Mi perfil</span>
+                            </a>
+                        </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        <!-- Opciones según grupo -->
+                        {% for group in user.groups.all %}
+                            {% if group.id == 1 %}
+                                <li data-aos="fade-left" data-aos-delay="200">
+                                    <a href="{% url 'cotizaciones_pendientes' %}" class="dropdown-link">
+                                        <i class="fas fa-file-invoice-dollar"></i>
+                                        <span>Cotizaciones</span>
+                                    </a>
+                                </li>
+                            {% elif group.id == 2 %}
+                                <li data-aos="fade-left" data-aos-delay="200">
+                                    <a href="{% url 'solicitar' %}" class="dropdown-link">
+                                        <i class="fas fa-tools"></i>
+                                        <span>Solicitar Cotización</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        <li data-aos="fade-left" data-aos-delay="250">
+<form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                                <button type="submit" class="dropdown-link logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Cerrar sesión</span>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            
+        {% else %}
+            <!-- Opciones para usuarios no autenticados -->
+            <li data-aos="fade-left" data-aos-delay="100">
+                <a href="{% url 'login' %}" class="nav-link">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Iniciar Sesión</span>
+                </a>
+            </li>
+            <li data-aos="fade-left" data-aos-delay="150">
+                <a href="{% url 'register' %}" class="nav-link">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Registrarse</span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <video autoplay muted loop class="hero-video">
+            <source src="{% static 'videos/construction.mp4' %}" type="video/mp4">
+            <!-- Fallback image -->
+            <img src="{% static 'images/hero-fallback.jpg' %}" alt="Construcción moderna">
+        </video>
+        <div class="hero-content" data-aos="fade-up" data-aos-duration="1000">
+            <h1>CONSTRUYENDO EL FUTURO</h1>
+            <p>Innovación, calidad y excelencia en cada proyecto</p>
+            <a href="#contacto" class="cta-button animate__animated animate__pulse animate__infinite">CONTÁCTANOS</a>
+        </div>
+    </section>
+
+    <!-- Servicios -->
+    <section class="services-section" id="servicios">
+        <div class="section-title" data-aos="fade-up">
+            <h2>NUESTROS SERVICIOS</h2>
+        </div>
+        <div class="services-grid">
+            <div class="service-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="service-img">
+                    <img src="{% static 'images/images(4).webp' %}" alt="Diseño arquitectónico">
+                </div>
+                <div class="service-content">
+                    <h3>Mantenimiento de edificios</h3>
+                    <p>Creación de diseños innovadores y funcionales que se adaptan a tus necesidades y visión.</p>
+                    <a href="{% url 'Mantenimiento' %}"  class="read-more">Ver más →</a>
+                </div>
+            </div>
+            
+            <div class="service-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="service-img">
+                    <img src="{% static 'images/images(8).jpg' %}" alt="Construcción">
+                </div>
+                <div class="service-content">
+                    <h3>Construcción Integral</h3>
+                    <p>Ejecución de obras con los más altos estándares de calidad y seguridad industrial.</p>
+                    <a href="{% url 'Construccion' %}" class="read-more">Ver más →</a>
+                </div>
+            </div>
+            
+            <div class="service-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="service-img">
+                    <img src="{% static 'images/images(11).jpg' %}" alt="Supervisión">
+                </div>
+                <div class="service-content">
+                    <h3>Gestión de Proyectos</h3>
+                    <p>Supervisión profesional que garantiza el cumplimiento de plazos, presupuestos y calidad.</p>
+                    <a href="{% url 'Proyectos' %}" class="read-more">Ver más →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Proyectos -->
+    <section class="projects-section" id="proyectos">
+        <div class="section-title">
+            <h2>Proyectos Destacados</h2>
+        </div>
+        <div class="projects-grid">
+            <div class="project-card">
+                <img src="https://images.unsplash.com/photo-1600607688969-a5bfcd646154?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Residencial Las Lomas" class="project-image">
+                <div class="project-overlay">
+                    <h3 class="project-title">Residencial Las Lomas</h3>
+                    <p>24 viviendas sostenibles en zona residencial</p>
+                </div>
+            </div>
+            
+            <div class="project-card">
+                <img src="https://images.unsplash.com/photo-1517502884422-41eaead166d4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Centro Comercial Plaza Mayor" class="project-image">
+                <div class="project-overlay">
+                    <h3 class="project-title">Centro Comercial Plaza Mayor</h3>
+                    <p>15,000 m² de superficie comercial</p>
+                </div>
+            </div>
+            
+            <div class="project-card">
+                <img src="https://images.unsplash.com/photo-1605152276897-4f618f831968?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Nave Industrial Logística" class="project-image">
+                <div class="project-overlay">
+                    <h3 class="project-title">Nave Industrial Logística</h3>
+                    <p>8,000 m² para distribución regional</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contacto -->
+    <section class="contact-section" id="contacto">
+        <div class="section-title" data-aos="fade-up">
+            <h2>CONTÁCTANOS</h2>
+        </div>
+        <div class="contact-container">
+            <div class="contact-info" data-aos="fade-right">
+                <h3>Información de Contacto</h3>
+                <div class="contact-details">
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div class="contact-text">
+                            <h4>Dirección</h4>
+                            <p>Calle 123 #45-67, Bogotá, Colombia</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div class="contact-text">
+                            <h4>Teléfono</h4>
+                            <p><a href="tel:+573100000000">+57 310 000 0000</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">✉️</div>
+                        <div class="contact-text">
+                            <h4>Email</h4>
+                            <p><a href="mailto:contacto@ygvconstrucciones.com">contacto@ygvconstrucciones.com</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">🕒</div>
+                        <div class="contact-text">
+                            <h4>Horario</h4>
+                            <p>Lunes a Viernes: 8:00 am - 6:00 pm</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="contact-form" data-aos="fade-left">
+                <h3>Envíanos un Mensaje</h3>
+                <form action="#" method="POST">
+                    <div class="form-group">
+                        <label for="name">Nombre</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Teléfono</label>
+                        <input type="tel" id="phone" name="phone" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Mensaje</label>
+                        <textarea id="message" name="message" class="form-control" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">ENVIAR</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="{% static 'images/Logo.png' %}" alt="YGV Construcciones">
+                <p>Líderes en construcción e innovación arquitectónica con más de 15 años de experiencia en el mercado.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook">📘</a>
+                    <a href="#" aria-label="Instagram">📷</a>
+                    <a href="#" aria-label="LinkedIn">💼</a>
+                    <a href="#" aria-label="YouTube">▶️</a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Enlaces Rápidos</h4>
+                <ul>
+                    <li><a href="#servicios">Servicios</a></li>
+                    <li><a href="#proyectos">Proyectos</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Trabaja con Nosotros</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Servicios</h4>
+                <ul>
+                    <li><a href="#">Diseño Arquitectónico</a></li>
+                    <li><a href="#">Construcción</a></li>
+                    <li><a href="#">Remodelaciones</a></li>
+                    <li><a href="#">Consultoría</a></li>
+                    <li><a href="#">Mantenimiento</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Términos y Condiciones</a></li>
+                    <li><a href="#">Política de Privacidad</a></li>
+                    <li><a href="#">Aviso Legal</a></li>
+                    <li><a href="#">Política de Cookies</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2023 YGV Construcciones. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        // Inicializar AOS (Animate On Scroll)
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        
+        // Efecto de partículas
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#FFD166"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 2,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#FFD166",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 1,
+                    "direction": "none",
+                    "random": true,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": true,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+        
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('main-header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+                // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 100, // Ajuste para el header fijo
+                        behavior: 'smooth'
+                    });
+                    
+                    // Actualizar la URL sin recargar la página
+                    if(history.pushState) {
+                        history.pushState(null, null, targetId);
+                    } else {
+                        location.hash = targetId;
+                    }
+                }
+            });
+        });
+
+        // Validación del formulario de contacto
+        const contactForm = document.querySelector('.contact-form form');
+        if(contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = this.querySelector('#name').value.trim();
+                const email = this.querySelector('#email').value.trim();
+                const message = this.querySelector('#message').value.trim();
+                
+                if(!name || !email || !message) {
+                    alert('Por favor complete todos los campos requeridos');
+                    return;
+                }
+                
+                if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    alert('Por favor ingrese un email válido');
+                    return;
+                }
+                
+                alert('Mensaje enviado correctamente. Nos pondremos en contacto pronto.');
+                this.reset();
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const lazyImages = [].slice.call(document.querySelectorAll('img.lazy'));
+            
+            if('IntersectionObserver' in window) {
+                let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+                    entries.forEach(function(entry) {
+                        if(entry.isIntersecting) {
+                            let lazyImage = entry.target;
+                            lazyImage.src = lazyImage.dataset.src;
+                            lazyImage.classList.remove('lazy');
+                            lazyImageObserver.unobserve(lazyImage);
+                        }
+                    });
+                });
+                
+                lazyImages.forEach(function(lazyImage) {
+                    lazyImageObserver.observe(lazyImage);
+                });
+            }
+        });
+
+        document.querySelectorAll('a[href="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>

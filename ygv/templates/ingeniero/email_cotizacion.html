@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.5; }
+        h1 { color: #004E89; text-align: center; }
+        h2 { color: #FF6B35; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .total-row { font-weight: bold; background-color: #f2f2f2; }
+        .empresa-info { margin-bottom: 20px; }
+        .nota { margin-top: 20px; font-style: italic; }
+    </style>
+</head>
+<body>
+    <h1>COTIZACION {{ cotizacion.codigo }}</h1>
+    
+    <div class="empresa-info">
+        <h2>{{ empresa.nombre }}</h2>
+        <p>NIT. {{ empresa.nit }}</p>
+        <p>{{ empresa.propietario }}</p>
+        <p>Teléfono: {{ empresa.telefono }}</p>
+        <p>Correo: {{ empresa.email }}</p>
+    </div>
+    
+    <p>Nos especializamos en construcción, ampliación, reparación y remodelación en drywall, Servicio de plomería, electricidad, carpintería, pintura, impermeabilizaciones, pisos cerámica, madera, laminado y techos PVC.</p>
+    <p>Atendiendo su amable solicitud estamos enviando cotización de los productos requeridos, para nosotros es un placer poner nuestra compañía a su servicio.</p>
+    
+    <table>
+        <tr>
+            <th>NIT</th>
+            <th>CLIENTE</th>
+            <th>CONTACTO</th>
+            <th>FECHA</th>
+            <th>CIUDAD</th>
+        </tr>
+        <tr>
+            <td>{{ cotizacion.cliente.nit|default:"" }}</td>
+            <td>{{ cotizacion.cliente.get_full_name }}</td>
+            <td>{{ cotizacion.contacto|default:"" }}</td>
+            <td>{{ cotizacion.fecha|date:"d/m/Y" }}</td>
+            <td>{{ cotizacion.get_ciudad_display }}</td>
+        </tr>
+        <tr>
+            <th>TELEFONO</th>
+            <th>DIRECCIÓN</th>
+            <th>E-MAIL</th>
+            <th>DESCUENTO</th>
+            <th>T.PAGO</th>
+        </tr>
+        <tr>
+            <td>{{ cotizacion.cliente.telefono|default:"" }}</td>
+            <td>{{ cotizacion.direccion|default:"" }}</td>
+            <td>{{ cotizacion.cliente.email }}</td>
+            <td>${{ cotizacion.descuento }}</td>
+            <td>{{ cotizacion.get_tipo_pago_display }}</td>
+        </tr>
+    </table>
+    
+    <hr>
+    
+    <h2>COTIZACION {{ cotizacion.codigo }}</h2>
+    
+    <table>
+        <tr>
+            <th>ITEM</th>
+            <th>DESCRIPCIÓN</th>
+            <th>CANTIDAD</th>
+            <th>VR UND</th>
+            <th>VR TOTAL</th>
+        </tr>
+        {% for item in cotizacion.items.all %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.descripcion }}</td>
+            <td>{{ item.cantidad }}</td>
+            <td>${{ item.valor_unidad }}</td>
+            <td>${% widthratio item.cantidad 1 item.valor_unidad as subtotal %}{{ subtotal|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="total-row">
+            <td colspan="3">SUBTOTAL</td>
+            <td></td>
+            <td>${{ cotizacion.subtotal }}</td>
+        </tr>
+        <tr class="total-row">
+            <td colspan="3">IVA</td>
+            <td></td>
+            <td>${{ cotizacion.iva }}</td>
+        </tr>
+        <tr class="total-row">
+            <td colspan="3">TOTAL</td>
+            <td></td>
+            <td>${{ cotizacion.total }}</td>
+        </tr>
+    </table>
+    
+    <div class="nota">
+        <p>NOTA: Estos trabajos con seguridad social, cursos de alturas y todos los equipos necesarios para el trabajo seguro, y cumplimiento de trabajo, la obra se entregará totalmente limpia, estos trabajos se realizarán con herramientas manuales y eléctricas. Se entrega factura electrónica.</p>
+    </div>
+</body>
+</html>

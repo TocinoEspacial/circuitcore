@@ -1,0 +1,17 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Panel Constructor</title>
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+</head>
+<body>
+    <h1>Hola, Constructor {{ user.username }}</h1>
+    <p>Aquí puedes consultar tus proyectos asignados, tus días trabajados, y tus pagos estimados.</p>
+
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Cerrar sesión</button>
+    </form>
+</body>
+</html>

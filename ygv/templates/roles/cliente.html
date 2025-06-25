@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Panel Cliente</title>
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+</head>
+<body>
+    <h1>Bienvenido, {{ user.username }}</h1>
+    <p>Desde aquí puedes revisar tus proyectos, ver cotizaciones y hacer nuevas solicitudes.</p>\
+    <div style="position: absolute; top: 10px; right: 10px;"></div>
+    <a href="{% url 'solicitar' %}" class="btn">¡Solicita tu cotización!</a>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Cerrar sesión</button>
+    </form>
+    
+</body>
+</html>

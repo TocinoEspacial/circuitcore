@@ -1,0 +1,322 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - YGV Construcciones</title>
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
+    <style>
+        body {
+            background-color: #1a1a1d;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .register-container {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 78, 137, 0.521);
+            padding: 40px;
+            width: 500px;
+            max-width: 90%;
+            margin: 50px auto;
+            text-align: center;
+            margin-top: 1px;
+            min-height: 1100px;
+        }
+        
+        .register-container h2 {
+            margin-top: 160px;
+            font-family: 'Bebas Neue', sans-serif;
+            color: #004e89;
+            font-size: 2.5rem;
+            letter-spacing: 1px;
+        }
+        
+        .register-form .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .register-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .register-form input, 
+        .register-form select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .register-form input:focus,
+        .register-form select:focus {
+            border-color: #004e89;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 78, 137, 0.2);
+        }
+        
+        .register-btn {
+            background-color: #004e89;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+        
+        .register-btn:hover {
+            background-color: #003b66;
+            transform: translateY(-2px);
+        }
+        
+        .login-link {
+            margin-top: 25px;
+            color: #666;
+        }
+        
+        .login-link a {
+            color: #004e89;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .form-errors {
+            color: #d9534f;
+            margin-bottom: 20px;
+            text-align: left;
+            padding: 10px;
+            background-color: #f8d7da;
+            border-radius: 5px;
+            border-left: 4px solid #d9534f;
+        }
+        
+        .password-requirements {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+            text-align: left;
+        }
+        
+        /* Estilos para los campos del formulario */
+        .register-form p {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        
+        .register-form p label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .register-form p input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .register-form p .helptext {
+            font-size: 0.8rem;
+            color: #666;
+            display: block;
+            margin-top: 0.3rem;
+        }
+        
+        /* Header */
+        #main-header {
+            background: rgba(26, 26, 29, 0.9);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 3px solid #FFD166;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 150px;
+            transition: all 0.3s ease;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 30px 20px;
+                margin-top: 70px;
+                min-height: auto;
+            }
+            
+            .register-container h2 {
+                margin-top: 20px;
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Efecto de partículas -->
+    <div id="particles-js"></div>
+    
+    <!-- Header -->
+    <header id="main-header">
+        <div class="container">
+            <div class="logo">
+                <a href="{% url 'home' %}"><img src="{% static 'images/Logo.png' %}" alt="YGV Construcciones" class="floating"/></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor del formulario de registro -->
+    <div class="register-container" data-aos="fade-up">
+        <h2 class="animate__animated animate__fadeInDown">CREAR CUENTA</h2>
+        
+        {% if form.errors %}
+        <div class="form-errors">
+            <strong>Por favor corrige los siguientes errores:</strong>
+            <ul>
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        <form method="post" class="register-form">
+            {% csrf_token %}
+            
+            <!-- Nombre de usuario -->
+            <div class="form-group">
+                <label for="id_username">Nombre de usuario:</label>
+                <input type="text" name="username" id="id_username" required placeholder="Elige un nombre de usuario">
+                <small class="helptext">Requerido. 150 caracteres o menos. Letras, dígitos y @/./+/-/_ solamente.</small>
+            </div>
+            
+            <!-- Nombre -->
+            <div class="form-group">
+                <label for="id_first_name">Nombre:</label>
+                <input type="text" name="first_name" id="id_first_name" placeholder="Tu nombre">
+            </div>
+            
+            <!-- Apellido -->
+            <div class="form-group">
+                <label for="id_last_name">Apellido:</label>
+                <input type="text" name="last_name" id="id_last_name" placeholder="Tu apellido">
+            </div>
+            
+            <!-- Correo electrónico -->
+            <div class="form-group">
+                <label for="id_email">Correo electrónico:</label>
+                <input type="email" name="email" id="id_email" required placeholder="tu@email.com">
+            </div>
+            
+            <!-- Contraseña -->
+            <div class="form-group">
+                <label for="id_password1">Contraseña:</label>
+                <input type="password" name="password1" id="id_password1" required placeholder="Crea una contraseña segura">
+                <div class="password-requirements">
+                    <span class="length">✓ Al menos 8 caracteres</span><br>
+                    <span>✓ No puede ser similar a tu información personal</span><br>
+                    <span>✓ No puede ser una contraseña común</span><br>
+                    <span>✓ Debe contener números y letras</span>
+                </div>
+            </div>
+            
+            <!-- Confirmación de contraseña -->
+            <div class="form-group">
+                <label for="id_password2">Confirmar contraseña:</label>
+                <input type="password" name="password2" id="id_password2" required placeholder="Repite tu contraseña">
+                <small class="helptext">Ingresa la misma contraseña que antes, para verificación.</small>
+            </div>
+            
+            <button type="submit" class="register-btn animate__animated animate__pulse">REGISTRARSE</button>
+        </form>
+        
+        <p class="login-link">
+            ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a>
+        </p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        // Inicializar AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        
+        // Efecto de partículas
+        particlesJS("particles-js", {
+            "particles": {
+                "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#FFD166" },
+                "shape": { "type": "circle" },
+                "opacity": { "value": 0.5, "random": true, "anim": { "enable": true, "speed": 1 } },
+                "size": { "value": 3, "random": true, "anim": { "enable": true, "speed": 2 } },
+                "line_linked": { "enable": true, "distance": 150, "color": "#FFD166", "opacity": 0.4, "width": 1 },
+                "move": { "enable": true, "speed": 1, "direction": "none", "random": true }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": { "enable": true, "mode": "grab" },
+                    "onclick": { "enable": true, "mode": "push" },
+                    "resize": true
+                }
+            }
+        });
+        
+        // Validación visual de contraseña
+        document.getElementById('id_password1').addEventListener('input', function() {
+            const password = this.value;
+            const requirements = this.nextElementSibling;
+            const items = requirements.querySelectorAll('span');
+            
+            // Validar longitud
+            if (password.length >= 8) {
+                items[0].style.color = 'green';
+                items[0].textContent = '✓ Al menos 8 caracteres';
+            } else {
+                items[0].style.color = 'red';
+                items[0].textContent = '✗ Al menos 8 caracteres';
+            }
+        });
+    </script>
+</body>
+</html>
