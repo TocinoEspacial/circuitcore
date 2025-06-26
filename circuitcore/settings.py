@@ -89,6 +89,8 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 WSGI_APPLICATION = 'circuitcore.wsgi.application'
 
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 
 ALLOWED_HOSTS = ['*']
 
