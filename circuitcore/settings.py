@@ -89,24 +89,8 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 WSGI_APPLICATION = 'circuitcore.wsgi.application'
 
-
-DEBUG = False  # Obligatorio para producción
-
-ALLOWED_HOSTS = [
-    'circuitcore.onrender.com',
-    'localhost',
-    '127.0.0.1'
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://circuitcore.onrender.com',
-    'https://*.onrender.com'
-]
-
-# Configuraciones adicionales críticas
-CSRF_COOKIE_SECURE = True    # Solo envía CSRF cookie sobre HTTPS
-SESSION_COOKIE_SECURE = True # Solo envía session cookie sobre HTTPS
-CSRF_COOKIE_SAMESITE = 'Lax' # o 'None' si usas CORS entre dominios
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 
 ALLOWED_HOSTS = ['*']
 
