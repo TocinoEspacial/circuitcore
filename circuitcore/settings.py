@@ -90,6 +90,8 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 WSGI_APPLICATION = 'circuitcore.wsgi.application'
 
 
+ALLOWED_HOSTS = ['*']
+
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
