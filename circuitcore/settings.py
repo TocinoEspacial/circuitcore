@@ -27,6 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://circuitcore.onrender.com',
+]
+
 
 # Application definition
 
@@ -89,8 +93,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 WSGI_APPLICATION = 'circuitcore.wsgi.application'
 
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_SECURE = False
+
 
 ALLOWED_HOSTS = ['*']
 
