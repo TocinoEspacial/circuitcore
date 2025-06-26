@@ -93,17 +93,20 @@ WSGI_APPLICATION = 'circuitcore.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+import os
+from urllib.parse import urlparse
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'circuitcore',
-        'USER': 'root',
-        'PASSWORD': 'aEqoPk0xr5emQtsKbS7vy9ywkJ93qG6g',  # reemplaza con el real
-        'HOST': 'dpg-d1e12gh5pdvs73b331r0-a',
-        'PORT': '5432',
+        'NAME': os.getenv('PGDATABASE'),
+        'USER': os.getenv('PGUSER'),
+        'PASSWORD': os.getenv('PGPASSWORD'),
+        'HOST': os.getenv('PGHOST'),
+        'PORT': os.getenv('PGPORT', '5432'),
     }
 }
-
 
 # Login Redirect
 LOGIN_URL = 'login'
