@@ -100,11 +100,11 @@ from urllib.parse import urlparse
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('PGDATABASE'),
-        'USER': os.getenv('PGUSER'),
-        'PASSWORD': os.getenv('PGPASSWORD'),
-        'HOST': os.getenv('PGHOST'),
-        'PORT': os.getenv('PGPORT', '5432'),
+        'NAME': 'circuitcore_0tem',
+        'USER': 'root',
+        'PASSWORD': 'pjINsmeHsEHMY4AXVsmFUVEa6756AJKu',
+        'HOST': 'dpg-d1eq8kvdiees73b0gp2g-a.oregon-postgres.render.com',  
+        'PORT': '5432',
     }
 }
 
