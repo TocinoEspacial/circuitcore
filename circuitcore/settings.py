@@ -89,7 +89,10 @@ TEMPLATES = [
 ]
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'ygv/static')]
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'ygv/static')]  # Si está dentro de tu app
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 
