@@ -1048,14 +1048,14 @@
             <li class="user-profile" data-aos="fade-left" data-aos-delay="100">
                 <div class="user-dropdown">
                     <a href="#" class="user-toggle">
-                        {% if user.perfilusuario.avatar %}
-                            <img src="{{ user.perfilusuario.avatar.url }}" alt="{{ user.username }}" class="user-avatar">
-                        {% else %}
-                            <div class="default-avatar">
-                                <i class="fas fa-user-circle"></i>
-                            <img src="{% static 'ygv/images/default-client.png' %}" alt="{{ user.username }}" class="user-avatar">
-                            </div>
-                        {% endif %}
+                        {% load static %}
+
+{% if user.perfilusuario.avatar and user.perfilusuario.avatar.url %}
+    <img src="{{ user.perfilusuario.avatar.url }}" alt="{{ user.username }}" class="user-avatar">
+{% else %}
+    <img src="{% static 'ygv/images/default-client.png' %}" alt="{{ user.username }}" class="user-avatar">
+{% endif %}
+
                         <span class="user-name">{{ user.username }}</span>
                         <i class="fas fa-chevron-down dropdown-arrow"></i>
                     </a>
