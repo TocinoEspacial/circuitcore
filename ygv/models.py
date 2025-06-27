@@ -239,18 +239,10 @@ class Cotizacion(models.Model):
         verbose_name='Observaciones adicionales'
     )
 
-    firma = models.ImageField(
-    upload_to='firmas/',
-    blank=True,
-    null=True,
-    verbose_name='Firma del cliente'
-)
-    
-    def save(self, *args, **kwargs):
-        import os
-        from django.conf import settings
-        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'firmas'), exist_ok=True)
-        super().save(*args, **kwargs)
+    firma_base64 = models.TextField(
+        blank=True, 
+        null=True, 
+        verbose_name='Firma del cliente')
 
     class Meta:
         verbose_name = 'Cotización'
