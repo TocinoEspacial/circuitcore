@@ -236,6 +236,13 @@ class Cotizacion(models.Model):
         verbose_name='Observaciones adicionales'
     )
 
+    firma = models.ImageField(
+    upload_to='firmas/',
+    blank=True,
+    null=True,
+    verbose_name='Firma del cliente'
+)
+
     class Meta:
         verbose_name = 'Cotización'
         verbose_name_plural = 'Cotizaciones'

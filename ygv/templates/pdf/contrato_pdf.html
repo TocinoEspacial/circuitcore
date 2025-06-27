@@ -399,13 +399,20 @@
     </div>
     
     <div class="firmas">
-        <div class="firma">
-            <div class="linea-firma"></div>
-            <div class="nombre-firma">{{ cotizacion.cliente.get_full_name }}</div>
-            <div class="cargo-firma">Representante Legal</div>
-            <div class="documento-firma">{{ cotizacion.cliente.tipo_documento|default:"C.C." }} No. {{ cotizacion.cliente.numero_documento|default:"XXXXXXXX" }}</div>
-            <div class="sello">Firma y sello</div>
-        </div>
+        <div class="firma text-center mt-5">
+    {% if cotizacion.cliente.perfil.firma %}
+        <img src="{{ cotizacion.cliente.perfil.firma.url }}" alt="Firma del cliente" style="max-height: 120px; object-fit: contain;">
+    {% else %}
+        <div class="linea-firma" style="border-top: 1px solid #ccc; width: 200px; margin: 0 auto 10px;"></div>
+    {% endif %}
+    
+    <div class="nombre-firma text-white">{{ cotizacion.cliente.get_full_name }}</div>
+    <div class="cargo-firma text-muted">Representante Legal</div>
+    <div class="documento-firma text-white">
+        {{ cotizacion.cliente.tipo_documento|default:"C.C." }} No. {{ cotizacion.cliente.numero_documento|default:"XXXXXXXX" }}
+    </div>
+    <div class="sello text-muted mt-1">Firma</div>
+</div>
         
         <div class="firma">
             <div class="linea-firma"></div>
