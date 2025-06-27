@@ -162,16 +162,28 @@ class CotizacionItemIngenieroForm(forms.ModelForm):
             }),
         }
 
-# Registro de nuevos usuarios
 class CustomUserCreationForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=True, help_text='Requerido.')
     last_name = forms.CharField(max_length=30, required=True, help_text='Requerido.')
     email = forms.EmailField(max_length=254, required=True, help_text='Requerido. Usa una dirección válida.')
+    
+    # Nuevos campos para el perfil
+    telefono = forms.CharField(max_length=20, required=False, help_text='Opcional.')
+    direccion = forms.CharField(widget=forms.Textarea, required=False, help_text='Opcional.')
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
-        from django import forms
+        fields = ('username', 'first_name', 'last_name', 'email', 'telefono', 'direccion', 'password1', 'password2')
+
+    def save(self, commit=True):
+        user = super().save(commit)
+        telefono = self.cleaned_data.get('telefono')
+        direccion = self.cleaned_data.get('direccion')
+
+        # Crear perfil asociado
+        PerfilUsuario.objects.create(user=user, telefono=telefono, direccion=direccion)
+        return user
+    
 from .models import PerfilUsuario
 
 class PerfilForm(forms.ModelForm):
