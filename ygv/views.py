@@ -598,4 +598,4 @@ def guardar_firma(request, cotizacion_id):
             cotizacion.firma = file
             cotizacion.save()
         
-    return redirect('detalle_cotizacion', cotizacion_id=cotizacion.id)
+    return redirect('detalle_cotizacion', id=cotizacion.id)
