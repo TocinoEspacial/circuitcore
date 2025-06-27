@@ -96,7 +96,7 @@ STATICFILES_FINDERS = [
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'ygv', 'static'),  # Aquí están tus logos, CSS, etc.
+    os.path.join(BASE_DIR, 'static'),  # Aquí están tus logos, CSS, etc.
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Django copiará todo aquí
