@@ -88,11 +88,19 @@ TEMPLATES = [
     },
 ]
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'ygv' / 'static']  # Ajusta según tu estructura
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+]
 
-TEMPLATES[0]['DIRS'] = [BASE_DIR / 'ygv' / 'templates']  # Para que use tu base_site.html
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'ygv', 'static'),  # Aquí están tus logos, CSS, etc.
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Django copiará todo aquí
+
 
 
 WSGI_APPLICATION = 'circuitcore.wsgi.application'
