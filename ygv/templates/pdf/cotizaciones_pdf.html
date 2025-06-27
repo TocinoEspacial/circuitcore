@@ -2,13 +2,13 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Reporte de cotizacion Pendientes</title>
+    <title>Reporte de Cotizaciones Pendientes</title>
     <style>
         @page {
             size: letter;
             margin: 2cm;
             @top-center {
-                content: "Reporte de cotizacion Pendientes";
+                content: "Reporte de Cotizaciones Pendientes";
                 font-family: 'Helvetica', sans-serif;
                 font-size: 16px;
                 color: #004E89;
@@ -137,7 +137,7 @@
 </head>
 <body>
     <div class="header">
-        <div class="title">REPORTE DE cotizacion PENDIENTES</div>
+        <div class="title">REPORTE DE COTIZACIONES PENDIENTES</div>
         <div class="subtitle">Generado el {{ fecha_reporte }}</div>
     </div>
     
@@ -146,7 +146,7 @@
             <strong>Generado por:</strong> {{ usuario }}
         </div>
         <div class="info-box">
-            <strong>Total cotizacion:</strong> {{ cotizacion|length }}
+            <strong>Total cotizaciones:</strong> {{ cotizaciones|length }}
         </div>
     </div>
     
@@ -162,7 +162,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for cot in cotizacion %}
+            {% for cot in cotizaciones %}
             <tr>
                 <td><span class="badge badge-blue">#{{ cot.id }}</span></td>
                 <td class="client-cell">
@@ -181,7 +181,7 @@
     </table>
     
     <div class="footer">
-        Sistema de Gestión de cotizacion - {{ fecha_reporte }}
+        Sistema de Gestión de Cotizaciones - {{ fecha_reporte }}
     </div>
 </body>
 </html>
