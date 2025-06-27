@@ -4,6 +4,7 @@ from ygv.views import (
     editar_perfil,
     enviar_cotizacion,
     generar_reporte_cotizaciones,
+    guardar_firma,
     perfil_ingeniero,
     register, 
     home,
@@ -85,6 +86,7 @@ urlpatterns = [
     path('recuperar/completado/', auth_views.PasswordResetCompleteView.as_view(
         template_name='registration/password_reset_complete.html'
     ), name='password_reset_complete'),
+    path('firmar/<int:cotizacion_id>/', guardar_firma, name='guardar_firma'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

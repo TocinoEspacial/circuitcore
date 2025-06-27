@@ -42,6 +42,15 @@
     .text-accent {
         color: var(--accent);
     }
+
+    .signature-pad {
+        background: #fff;
+        border: 2px dashed #FFD166;
+        border-radius: 6px;
+        width: 100%;
+        height: 200px;
+        cursor: crosshair;
+    }
 </style>
 {% endblock %}
 
@@ -54,14 +63,12 @@
                     <i class="fas fa-file-invoice-dollar me-2"></i>
                     Cotización #{{ cotizacion.id }}
                 </h3>
-                
                 <div class="d-flex align-items-center gap-3">
                    <span class="badge bg-{% if cotizacion.estado == 'aprobado' %}success
                                      {% elif cotizacion.estado == 'rechazado' %}danger
                                      {% else %}warning{% endif %}">
                     {{ cotizacion.get_estado_display }}
                 </span>
-                    
                     {% if cotizacion.estado == 'rechazado' and cotizacion.motivo_rechazo %}
                     <span class="badge bg-light text-dark">
                         <i class="fas fa-comment-exclamation me-1"></i> {{ cotizacion.motivo_rechazo|truncatechars:20 }}
@@ -70,13 +77,12 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="card-body">
             <div class="row mb-4">
                 <div class="col-md-6">
                     <h5 class="text-accent"><i class="fas fa-user me-2"></i>Cliente:</h5>
                     <p class="text-white">{{ cotizacion.cliente.get_full_name }}</p>
-                    
                     <h5 class="mt-3 text-accent"><i class="fas fa-calendar-alt me-2"></i>Fecha:</h5>
                     <p class="text-white">{{ cotizacion.fecha|date:"d/m/Y" }}</p>
                 </div>
@@ -85,7 +91,6 @@
                     <h5 class="text-accent"><i class="fas fa-user-tie me-2"></i>Ingeniero:</h5>
                     <p class="text-white">{{ cotizacion.ingeniero.get_full_name }}</p>
                     {% endif %}
-                    
                     {% if cotizacion.proyecto %}
                     <h5 class="mt-3 text-accent"><i class="fas fa-project-diagram me-2"></i>Proyecto:</h5>
                     <p class="text-white">{{ cotizacion.proyecto.tipo_proyecto }}</p>
@@ -103,7 +108,6 @@
                             <th>Unidad</th>
                             <th>Precio Unitario</th>
                             <th>Subtotal</th>
-                            
                         </tr>
                     </thead>
                     <tbody>
@@ -134,18 +138,33 @@
                 <a href="{% url 'perfil_ingeniero' %}" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-1"></i> Volver
                 </a>
-                
-                <div class="d-flex gap-2">
+
+                <div class="d-flex gap-2 flex-wrap">
                     {% if cotizacion.estado == 'aprobado' %}
                     <a href="{% url 'generar_contrato_pdf' cotizacion.id %}" class="btn btn-danger">
                         <i class="fas fa-file-pdf me-1"></i> Descargar Contrato
                     </a>
-                <div class="mt-4 text-center w-100">
+                    {% if cotizacion.firma %}
+                    <div class="mt-4 text-center w-100">
                         <p class="text-accent mb-1"><i class="fas fa-signature me-1"></i> Firma del cliente:</p>
                         <img src="{{ cotizacion.firma.url }}" alt="Firma del cliente" class="img-fluid" style="max-height: 150px;">
-                </div>
+                    </div>
                     {% endif %}
-                    
+                    {% endif %}
+
+                    {% if cotizacion.estado == 'revisado' and user == cotizacion.cliente %}
+                    <form method="post" action="{% url 'guardar_firma' cotizacion.id %}" enctype="multipart/form-data" class="w-100">
+                        {% csrf_token %}
+                        <h5 class="text-accent mt-4"><i class="fas fa-pen-nib me-2"></i> Firmar cotización:</h5>
+                        <canvas id="firmaCanvas" class="signature-pad mb-2"></canvas>
+                        <input type="hidden" name="firma" id="firmaInput">
+                        <div class="d-flex gap-2">
+                            <button type="button" onclick="limpiarFirma()" class="btn btn-warning">Limpiar</button>
+                            <button type="submit" onclick="guardarFirma()" class="btn btn-success">Guardar Firma</button>
+                        </div>
+                    </form>
+                    {% endif %}
+
                     {% if cotizacion.estado == 'revisado' %}
                     <form method="post" action="{% url 'detalle_cotizacion' cotizacion.id %}" class="d-inline">
                         {% csrf_token %}
@@ -154,7 +173,7 @@
                         </button>
                     </form>
                     {% endif %}
-                    
+
                     {% if puede_editar %}
                     <a href="#" class="btn btn-primary">
                         <i class="fas fa-edit me-1"></i> Editar
@@ -165,6 +184,38 @@
         </div>
     </div>
 </div>
+
+<script>
+    const canvas = document.getElementById('firmaCanvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let dibujando = false;
+
+        canvas.addEventListener('mousedown', () => dibujando = true);
+        canvas.addEventListener('mouseup', () => {
+            dibujando = false;
+            ctx.beginPath();
+        });
+        canvas.addEventListener('mousemove', function (event) {
+            if (!dibujando) return;
+            const rect = canvas.getBoundingClientRect();
+            ctx.lineWidth = 2;
+            ctx.lineCap = "round";
+            ctx.strokeStyle = "#000000";
+            ctx.lineTo(event.clientX - rect.left, event.clientY - rect.top);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(event.clientX - rect.left, event.clientY - rect.top);
+        });
+
+        window.limpiarFirma = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        };
+
+        window.guardarFirma = () => {
+            const dataURL = canvas.toDataURL('image/png');
+            document.getElementById('firmaInput').value = dataURL;
+        };
+    }
+</script>
 {% endblock %}
-
-

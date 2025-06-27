@@ -577,3 +577,25 @@ def enviar_cotizacion(request, cotizacion_id):
         messages.error(request, f'Error al enviar: {str(e)}')
     
     return redirect('home')
+
+
+import base64
+from django.core.files.base import ContentFile
+from django.shortcuts import get_object_or_404, redirect
+from .models import Cotizacion
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def guardar_firma(request, cotizacion_id):
+    if request.method == 'POST':
+        data_url = request.POST.get('firma')
+        cotizacion = get_object_or_404(Cotizacion, id=cotizacion_id, cliente=request.user)
+        
+        if data_url:
+            format, imgstr = data_url.split(';base64,')
+            ext = format.split('/')[-1]
+            file = ContentFile(base64.b64decode(imgstr), name=f"firma_{cotizacion.id}.{ext}")
+            cotizacion.firma = file
+            cotizacion.save()
+        
+    return redirect('detalle_cotizacion', cotizacion_id=cotizacion.id)
