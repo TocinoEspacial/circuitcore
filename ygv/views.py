@@ -580,55 +580,16 @@ def enviar_cotizacion(request, cotizacion_id):
 
 
 import base64
-from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404, redirect
 from .models import Cotizacion
-from django.contrib.auth.decorators import login_required
 
-
-import base64
-from django.core.files.base import ContentFile
-from django.shortcuts import get_object_or_404, redirect
-import os
-from django.conf import settings
 
 def guardar_firma(request, cotizacion_id):
     if request.method == 'POST':
-        cotizacion = get_object_or_404(Cotizacion, pk=cotizacion_id)
-        
-        try:
-            # Crear directorio con permisos adecuados
-            firmas_dir = os.path.join(settings.MEDIA_ROOT, 'firmas')
-            os.makedirs(firmas_dir, mode=0o755, exist_ok=True)
-            
-            # Verificar permisos de escritura
-            if not os.access(firmas_dir, os.W_OK):
-                raise PermissionError(f"No hay permisos de escritura en {firmas_dir}")
-            
-            data_url = request.POST.get('firma')
-            if data_url and data_url.startswith('data:image'):
-                format, imgstr = data_url.split(';base64,')
-                ext = format.split('/')[-1]
-                file_name = f"firma_{cotizacion.id}_{cotizacion.cliente.id}.{ext}"
-                file_path = os.path.join(firmas_dir, file_name)
-                
-                # Guardar archivo directamente
-                with open(file_path, 'wb') as f:
-                    f.write(base64.b64decode(imgstr))
-                
-                # Actualizar modelo
-                if cotizacion.firma:
-                    old_path = cotizacion.firma.path
-                    if os.path.exists(old_path):
-                        os.remove(old_path)
-                
-                cotizacion.firma.name = f"firmas/{file_name}"
-                cotizacion.save()
-                
-                return redirect('detalle_cotizacion', id=cotizacion_id)
-                
-        except Exception as e:
-            print(f"Error crítico al guardar firma: {str(e)}")
-            # Aquí podrías registrar el error o mostrar un mensaje al usuario
-        
-        return redirect('detalle_cotizacion', id=cotizacion_id)
+        cotizacion = get_object_or_404(Cotizacion, id=cotizacion_id)
+        firma_data = request.POST.get('firma')
+        if firma_data:
+            cotizacion.firma_base64 = firma_data
+            cotizacion.estado = 'aprobado'
+            cotizacion.save()
+        return redirect('detalle_cotizacion', id=cotizacion.id)
