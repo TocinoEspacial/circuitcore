@@ -468,12 +468,11 @@
     <div class="firmas">
         <div class="firma">
             {% if cotizacion.firma %}
-            <div class="firma-img-container">
-                <img src="{{ cotizacion.firma.url }}" alt="Firma del cliente" class="firma-img">
-            </div>
-            {% else %}
-            <div class="linea-firma"></div>
-            {% endif %}
+    <img src="{{ cotizacion.firma.url }}" alt="Firma del cliente" style="max-height: 120px;">
+{% else %}
+    <p>Firma no disponible.</p>
+{% endif %}
+
             <div class="nombre-firma">{{ cotizacion.cliente.get_full_name|upper }}</div>
             <div class="cargo-firma">Representante Legal</div>
             <div class="documento-firma">
