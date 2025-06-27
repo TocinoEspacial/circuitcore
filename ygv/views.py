@@ -586,18 +586,46 @@ from .models import Cotizacion
 from django.contrib.auth.decorators import login_required
 
 
+import base64
+from django.core.files.base import ContentFile
+from django.shortcuts import get_object_or_404, redirect
+import os
+from django.conf import settings
+
 def guardar_firma(request, cotizacion_id):
     if request.method == 'POST':
         cotizacion = get_object_or_404(Cotizacion, pk=cotizacion_id)
-
+        
+        # Asegurarse que el directorio existe
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'firmas'), exist_ok=True)
+        
         data_url = request.POST.get('firma')
         if data_url and data_url.startswith('data:image'):
-            format, imgstr = data_url.split(';base64,')  # divide en tipo y base64
-            ext = format.split('/')[-1]  # png o jpg
-            file_name = f"firma_{cotizacion.id}.{ext}"
-            data = ContentFile(base64.b64decode(imgstr), name=file_name)
-            cotizacion.firma = data
-            cotizacion.save()
-
+            try:
+                # Extraer la extensión del archivo
+                format, imgstr = data_url.split(';base64,') 
+                ext = format.split('/')[-1]  # png, jpeg, etc.
+                
+                # Generar nombre único para el archivo
+                file_name = f"firma_{cotizacion.id}_{cotizacion.cliente.id}.{ext}"
+                
+                # Decodificar y guardar
+                data = ContentFile(base64.b64decode(imgstr), name=file_name)
+                
+                # Eliminar firma anterior si existe
+                if cotizacion.firma:
+                    old_file = cotizacion.firma.path
+                    if os.path.exists(old_file):
+                        os.remove(old_file)
+                
+                # Guardar nueva firma
+                cotizacion.firma.save(file_name, data, save=True)
+                
+                return redirect('detalle_cotizacion', id=cotizacion_id)
+                
+            except Exception as e:
+                # Manejar errores adecuadamente
+                print(f"Error al guardar firma: {str(e)}")
+                # Aquí podrías agregar mensajes de error al usuario
+        
         return redirect('detalle_cotizacion', id=cotizacion_id)
-

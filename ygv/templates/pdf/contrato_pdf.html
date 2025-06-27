@@ -9,20 +9,22 @@
             margin: 2cm;
             @top-center {
                 content: "CONTRATO DE SERVICIOS PROFESIONALES";
-                font-family: 'Helvetica', sans-serif;
+                font-family: 'Helvetica Neue', Arial, sans-serif;
                 font-size: 14px;
                 color: #004E89;
+                font-weight: bold;
             }
             @bottom-right {
                 content: "Página " counter(page) " de " counter(pages);
-                font-family: 'Helvetica', sans-serif;
+                font-family: 'Helvetica Neue', Arial, sans-serif;
                 font-size: 10px;
+                color: #666;
             }
         }
         
         body {
-            font-family: 'Helvetica', sans-serif;
-            color: #1A1A1D;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #333;
             line-height: 1.6;
             font-size: 12px;
         }
@@ -34,9 +36,15 @@
             padding-bottom: 15px;
         }
         
-        .logo {
-            height: 80px;
-            margin-bottom: 10px;
+        .logo-container {
+            margin-bottom: 15px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #004E89;
+            letter-spacing: 1px;
         }
         
         .titulo-principal {
@@ -45,46 +53,65 @@
             font-weight: bold;
             margin: 10px 0 5px 0;
             text-transform: uppercase;
+            letter-spacing: 1.5px;
         }
         
         .subtitulo {
             color: #FF6B35;
             font-size: 14px;
-            font-weight: normal;
+            font-weight: 500;
+            margin-bottom: 10px;
         }
         
         .numero-contrato {
             font-weight: bold;
             color: #004E89;
+            font-size: 13px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 12px;
+            background-color: #004E89;
+            color: white;
+            margin-left: 5px;
         }
         
         .fecha-contrato {
             text-align: right;
-            margin-bottom: 20px;
-            font-style: italic;
+            margin-bottom: 25px;
+            color: #555;
+            font-size: 12px;
         }
         
         .partes {
             margin-bottom: 30px;
-            background-color: #F7F7FF;
-            padding: 15px;
-            border-radius: 5px;
-            border-left: 4px solid #004E89;
+            background-color: #F7F9FC;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #004E89;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         
         .parte-titulo {
             font-weight: bold;
             color: #004E89;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            text-transform: uppercase;
         }
         
         .parte-contenido {
-            margin-left: 20px;
+            margin-left: 15px;
             margin-bottom: 15px;
+            line-height: 1.7;
         }
         
         .seccion {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             page-break-inside: avoid;
         }
         
@@ -92,48 +119,72 @@
             color: #004E89;
             font-size: 16px;
             font-weight: bold;
-            border-bottom: 1px solid #FF6B35;
-            padding-bottom: 3px;
-            margin-bottom: 10px;
+            border-bottom: 2px solid #FF6B35;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .clausula {
+            margin-bottom: 18px;
+            text-align: justify;
+        }
+        
+        .clausula-titulo {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #004E89;
+            font-size: 13px;
+        }
+        
+        ul {
+            padding-left: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
+            margin: 20px 0;
             font-size: 11px;
             page-break-inside: avoid;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
         th {
             background-color: #004E89;
             color: #FFD166;
-            padding: 8px 10px;
+            padding: 10px;
             text-align: left;
             font-weight: bold;
             text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
         }
         
         td {
-            padding: 8px 10px;
+            padding: 10px;
             border-bottom: 1px solid #eee;
+            vertical-align: top;
         }
         
         tr:nth-child(even) {
-            background-color: #F7F7FF;
+            background-color: #F7F9FC;
         }
         
-        .total {
+        tfoot tr {
+            background-color: #f1f1f1 !important;
             font-weight: bold;
-            text-align: right;
-            margin-top: 10px;
-            font-size: 14px;
         }
         
         .firmas {
             display: flex;
             justify-content: space-between;
-            margin-top: 80px;
+            margin-top: 100px;
             page-break-inside: avoid;
         }
         
@@ -142,100 +193,116 @@
             text-align: center;
         }
         
+        .firma-img-container {
+            height: 120px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        
+        .firma-img {
+            max-height: 100%;
+            max-width: 80%;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        
         .linea-firma {
             border-top: 1px solid #000;
-            margin: 0 auto;
             width: 80%;
+            margin: 0 auto 15px;
             padding-top: 5px;
         }
         
         .nombre-firma {
             font-weight: bold;
-            margin-top: 5px;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #004E89;
         }
         
         .cargo-firma {
             font-style: italic;
-            font-size: 10px;
-        }
-        
-        .documento-firma {
-            font-size: 10px;
-            margin-top: 3px;
-        }
-        
-        .sello {
-            text-align: center;
-            margin-top: 20px;
-            font-style: italic;
+            font-size: 11px;
             color: #666;
-        }
-        
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 10px;
-            color: #666;
-            border-top: 1px solid #FF6B35;
-            padding-top: 10px;
-        }
-        
-        .clausula {
-            margin-bottom: 15px;
-            text-align: justify;
-        }
-        
-        .clausula-titulo {
-            font-weight: bold;
             margin-bottom: 5px;
         }
         
-        .anexos {
-            margin-top: 30px;
+        .documento-firma {
             font-size: 11px;
+            color: #555;
         }
         
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
+        .sello {
+            font-size: 10px;
+            color: #999;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .anexos {
+            margin-top: 40px;
+            font-size: 12px;
+            background-color: #F7F9FC;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .anexos-title {
             font-weight: bold;
-            font-size: 11px;
-            background-color: #004E89;
-            color: white;
+            margin-bottom: 10px;
+            color: #004E89;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #777;
+            border-top: 1px solid #FF6B35;
+            padding-top: 10px;
+            font-style: italic;
+        }
+        
+        .valor-total {
+            font-size: 14px;
+            font-weight: bold;
+            color: #004E89;
+            text-align: right;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <!-- Reemplaza con tu logo si tienes -->
-        <div style="height: 80px; margin-bottom: 10px;">
-            <span style="font-size: 24px; font-weight: bold; color: #004E89;">Y.G.V CONSTRUCCIONES</span>
+        <div class="logo-container">
+            <div class="logo-text">Y.G.V CONSTRUCCIONES</div>
         </div>
-        <div class="titulo-principal">CONTRATO DE SERVICIOS PROFESIONALES </div>
+        <div class="titulo-principal">CONTRATO DE SERVICIOS PROFESIONALES</div>
         <div class="subtitulo">Para la ejecución de {{ cotizacion.proyecto.tipo_proyecto }}</div>
         <div class="numero-contrato">CONTRATO No. <span class="badge">#{{ cotizacion.id }}</span></div>
     </div>
     
     <div class="fecha-contrato">
-        {{ cotizacion.ciudad|default:"Bogotá D.C" }}, {{ fecha_actual|date:"d \d\e F \d\e Y" }}
+        {{ cotizacion.ciudad|default:"Bogotá D.C" }}, {{ fecha_actual|date:"d \d\e F \d\e Y"|upper }}
     </div>
     
     <div class="partes">
         <div class="parte-titulo">ENTRE:</div>
         <div class="parte-contenido">
-            <p><strong>{{ cotizacion.cliente.get_full_name }}</strong>, identificado con {{ cotizacion.cliente.tipo_documento|default:"C.C." }} No. {{ cotizacion.cliente.numero_documento|default:"XXXXXXXX" }}, 
+            <p><strong>{{ cotizacion.cliente.get_full_name|upper }}</strong>, identificado con {{ cotizacion.cliente.tipo_documento|default:"C.C." }} No. {{ cotizacion.cliente.numero_documento|default:"XXXXXXXX" }}, 
             en su calidad de Representante Legal de <strong>Y.G.V CONSTRUCCIONES</strong>, sociedad legalmente constituida, 
             con NIT {{ cotizacion.cliente.empresa.nit|default:"XXXXXXXX-X" }}, con domicilio en {{ cotizacion.cliente.empresa.direccion|default:"dirección no especificada" }}, 
-            en adelante denominado <strong>"EL CLIENTE"</strong></p>
+            en adelante denominado <strong>"EL CLIENTE"</strong>.</p>
         </div>
         
         <div class="parte-titulo">Y:</div>
         <div class="parte-contenido">
-            <p><strong>{{ cotizacion.ingeniero.get_full_name }}</strong>, identificado con {{ cotizacion.ingeniero.tipo_documento|default:"C.C." }} No. {{ cotizacion.ingeniero.numero_documento|default:"XXXXXXXX" }}, 
+            <p><strong>{{ cotizacion.ingeniero.get_full_name|upper }}</strong>, identificado con {{ cotizacion.ingeniero.tipo_documento|default:"C.C." }} No. {{ cotizacion.ingeniero.numero_documento|default:"XXXXXXXX" }}, 
             profesional en ingeniería matriculado bajo el número {{ cotizacion.ingeniero.matricula_profesional|default:"XXXXXX" }} del Consejo Profesional correspondiente, 
             con domicilio en {{ cotizacion.ingeniero.direccion|default:"dirección no especificada" }}, 
-            en adelante denominado <strong>"EL PROFESIONAL"</strong>,</p>
+            en adelante denominado <strong>"EL PROFESIONAL"</strong>.</p>
         </div>
     </div>
     
@@ -399,24 +466,25 @@
     </div>
     
     <div class="firmas">
-        <div class="firma text-center mt-5">
-{% if cotizacion.firma %}
-    <img src="{{ cotizacion.firma.url }}" alt="Firma del cliente" style="max-height: 120px;">
-{% else %}
-    <div class="linea-firma" style="border-top: 1px solid #ccc; width: 200px; margin: 0 auto 10px;"></div>
-{% endif %}
-    
-    <div class="nombre-firma text-white">{{ cotizacion.cliente.get_full_name }}</div>
-    <div class="cargo-firma text-muted">Representante Legal</div>
-    <div class="documento-firma text-white">
-        {{ cotizacion.cliente.tipo_documento|default:"C.C." }} No. {{ cotizacion.cliente.numero_documento|default:"XXXXXXXX" }}
-    </div>
-    <div class="sello text-muted mt-1">Firma</div>
-</div>
+        <div class="firma">
+            {% if cotizacion.firma %}
+            <div class="firma-img-container">
+                <img src="{{ cotizacion.firma.url }}" alt="Firma del cliente" class="firma-img">
+            </div>
+            {% else %}
+            <div class="linea-firma"></div>
+            {% endif %}
+            <div class="nombre-firma">{{ cotizacion.cliente.get_full_name|upper }}</div>
+            <div class="cargo-firma">Representante Legal</div>
+            <div class="documento-firma">
+                {{ cotizacion.cliente.tipo_documento|default:"C.C." }} No. {{ cotizacion.cliente.numero_documento|default:"XXXXXXXX" }}
+            </div>
+            <div class="sello">Firma</div>
+        </div>
         
         <div class="firma">
             <div class="linea-firma"></div>
-            <div class="nombre-firma">{{ cotizacion.ingeniero.get_full_name }}</div>
+            <div class="nombre-firma">{{ cotizacion.ingeniero.get_full_name|upper }}</div>
             <div class="cargo-firma">Ingeniero Profesional</div>
             <div class="documento-firma">Matrícula Profesional No. {{ cotizacion.ingeniero.matricula_profesional|default:"XXXXXX" }}</div>
             <div class="sello">Firma y sello</div>
@@ -424,7 +492,7 @@
     </div>
     
     <div class="anexos">
-        <p><strong>ANEXOS QUE FORMAN PARTE INTEGRAL DEL CONTRATO:</strong></p>
+        <div class="anexos-title">ANEXOS QUE FORMAN PARTE INTEGRAL DEL CONTRATO:</div>
         <p>1. Cotización No. {{ cotizacion.id }} con fecha {{ cotizacion.fecha|date:"d \d\e F \d\e Y" }}</p>
         <p>2. Especificaciones técnicas del proyecto</p>
         <p>3. Cronograma de ejecución</p>

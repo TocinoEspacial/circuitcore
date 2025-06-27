@@ -8,6 +8,9 @@ from django.db import models
 from decimal import Decimal
 from django.core.validators import MinValueValidator
 from django.db.models import Sum, F
+import os
+from django.conf import settings
+from django.db import models
 
 class PerfilUsuario(models.Model):
     ROLES = [
@@ -242,6 +245,7 @@ class Cotizacion(models.Model):
     null=True,
     verbose_name='Firma del cliente'
 )
+    
 
     class Meta:
         verbose_name = 'Cotización'
@@ -254,6 +258,11 @@ class Cotizacion(models.Model):
 
     def __str__(self):
         return f"Cotización #{self.id} - {self.cliente.get_full_name() or self.cliente.username}"
+
+    def save(self, *args, **kwargs):
+        # Crear directorio si no existe
+    os.makedirs(os.path.join(settings.MEDIA_ROOT, 'firmas'), exist_ok=True)
+    super().save(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         """
