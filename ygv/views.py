@@ -453,21 +453,26 @@ def detalle_cotizacion(request, id):
         id=id
     )
     total_en_palabras = num2words(cotizacion.total, lang='es')
-    
-    if request.method == 'POST' and 'aprobar_cotizacion' in request.POST:
+
+    if request.method == 'POST':
+        if 'aprobar_cotizacion' in request.POST:
             cotizacion.estado = 'aprobado'
             cotizacion.save()
             messages.success(request, 'Cotización aprobada exitosamente')
             return redirect('detalle_cotizacion', id=id)
-
+        
+        if 'rechazar_cotizacion' in request.POST:
+            cotizacion.estado = 'rechazado'
+            cotizacion.save()
+            messages.warning(request, 'Cotización rechazada exitosamente')
+            return redirect('detalle_cotizacion', id=id)
 
     if not (request.user == cotizacion.cliente or 
             request.user == cotizacion.ingeniero or 
             request.user.is_superuser):
         messages.error(request, 'No tienes permiso para ver esta cotización')
         return redirect('home')
-    
-    
+
     context = {
         'total_en_palabras': total_en_palabras,
         'cotizacion': cotizacion,
@@ -475,8 +480,9 @@ def detalle_cotizacion(request, id):
         'puede_editar': request.user == cotizacion.cliente and cotizacion.estado == 'BORRADOR',
         'puede_revisar': request.user == cotizacion.ingeniero and cotizacion.estado == 'pendiente',
     }
-    
+
     return render(request, 'cotizacion/detalle.html', context)
+
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
