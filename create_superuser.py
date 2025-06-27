@@ -1,19 +1,20 @@
-print("📣 SCRIPT EJECUTÁNDOSE")
-
 import os
-from django.contrib.auth import get_user_model
+import django
 
+print("📣 INICIANDO SCRIPT DE SUPERUSUARIO...")
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "circuitcore.settings")
+django.setup()  # ⚠️ Esto es lo que faltaba
+
+from django.contrib.auth import get_user_model
 User = get_user_model()
 
-username = os.environ.get('DJANGO_SUPERUSER_USERNAME')
-email = os.environ.get('DJANGO_SUPERUSER_EMAIL')
-password = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
+username = "daniel"
+email = "pasta0868@gmail.com"
+password = "12345678"
 
-if username and email and password:
-    if not User.objects.filter(username=username).exists():
-        User.objects.create_superuser(username=username, email=email, password=password)
-        print("✅ Superusuario creado con éxito.")
-    else:
-        print("⚠️ El superusuario ya existe.")
+if not User.objects.filter(username=username).exists():
+    User.objects.create_superuser(username=username, email=email, password=password)
+    print("✅ Superusuario creado con éxito.")
 else:
-    print("❌ Variables de entorno faltantes.")
+    print("⚠️ El superusuario ya existe.")
