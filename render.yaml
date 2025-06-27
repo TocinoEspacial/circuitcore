@@ -4,9 +4,8 @@ services:
     env: python
     buildCommand: >
       pip install -r requirements.txt &&
-      python manage.py collectstatic --noinput &&
       python manage.py migrate &&
-      python manage.py createsuperuser --noinput --username daniel --email pasta0868@gmail.com
+      python manage.py createsuperuser --noinput
 
     startCommand: gunicorn circuitcore.wsgi:application --bind 0.0.0.0:$PORT
     plan: free
