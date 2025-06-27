@@ -90,10 +90,8 @@ def es_ingeniero(user):
 # ---------- Cotizaciones ----------
 @login_required
 def cotizaciones_pendientes(request):
-    if es_ingeniero(request.user):
-        cotizaciones = Cotizacion.objects.filter(estado='borrador')
-    else:
-        cotizaciones = Cotizacion.objects.filter(cliente=request.user, estado='pendiente')
+    
+    cotizaciones = Cotizacion.objects.filter(estado='borrador')
     
     return render(request, 'cotizacion/lista_pendientes.html', {
         'cotizaciones': cotizaciones
