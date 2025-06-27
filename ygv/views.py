@@ -426,7 +426,7 @@ def detalle_cotizacion(request, id):
         'total_en_palabras': total_en_palabras,
         'cotizacion': cotizacion,
         'items': cotizacion.items.all(),
-        'puede_editar': request.user == cotizacion.cliente and cotizacion.estado == 'borrador',
+        'puede_editar': request.user == cotizacion.cliente and cotizacion.estado == 'BORRADOR',
         'puede_revisar': request.user == cotizacion.ingeniero and cotizacion.estado == 'pendiente',
     }
     
@@ -467,7 +467,7 @@ def Proyectos(request):
 @login_required
 def generar_reporte_cotizaciones(request):
     # Obtener cotizaciones pendientes
-    cotizaciones = Cotizacion.objects.filter(estado='borrador').order_by('-fecha')
+    cotizaciones = Cotizacion.objects.filter(estado='BORRADOR').order_by('-fecha')
 
     # Preparar contexto
     context = {
