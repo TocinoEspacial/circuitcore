@@ -181,7 +181,10 @@ class CustomUserCreationForm(UserCreationForm):
         direccion = self.cleaned_data.get('direccion')
 
         # Crear perfil asociado
-        PerfilUsuario.objects.create(user=user, telefono=telefono, direccion=direccion)
+        perfil, creado = PerfilUsuario.objects.get_or_create(user=user)
+        perfil.telefono = telefono
+        perfil.direccion = direccion
+        perfil.save()
         return user
     
 from .models import PerfilUsuario
