@@ -144,10 +144,10 @@
                     <a href="{% url 'generar_contrato_pdf' cotizacion.id %}" class="btn btn-danger">
                         <i class="fas fa-file-pdf me-1"></i> Descargar Contrato
                     </a>
-                    <div class="mt-4 text-center w-100">
-                        <p class="text-accent mb-1"><i class="fas fa-signature me-1"></i> Firma del cliente:</p>
-                        <img src="{{ cotizacion.firma.url }}" alt="Firma del cliente" class="img-fluid" style="max-height: 150px;">
-                    </div>
+                        <div class="mt-4 text-center w-100">
+        <p class="text-accent mb-1"><i class="fas fa-signature me-1"></i> Firma del cliente:</p>
+        <img src="{{ cotizacion.firma.url }}" alt="Firma del cliente" class="img-fluid" style="max-height: 150px;">
+    </div>
                     {% endif %}
 
                     {% if cotizacion.estado == 'revisado' and user == cotizacion.cliente %}
