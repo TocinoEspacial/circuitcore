@@ -25,6 +25,8 @@ from ygv.views import (
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
+from ygv.forms import CustomPasswordResetForm
+
 
 urlpatterns = [
     
@@ -59,24 +61,27 @@ urlpatterns = [
     path('servicios/Mantenimiento/', Mantenimiento, name='Mantenimiento'),
     path('servicios/Construccion/', Construccion, name='Construccion'),
     path('servicios/Proyectos/', Proyectos, name='Proyectos'),
-
-    #dave pass
     path('recuperar/', auth_views.PasswordResetView.as_view(
+        form_class=CustomPasswordResetForm,
         template_name='registration/password_reset_form.html',
         email_template_name='registration/password_reset_email.html',
+        html_email_template_name='registration/password_reset_email.html',  # <- ESTA LÍNEA
         subject_template_name='registration/password_reset_subject.txt',
         success_url='/recuperar/enviado/'
     ), name='password_reset'),
 
+    # Confirmación de que el correo fue enviado
     path('recuperar/enviado/', auth_views.PasswordResetDoneView.as_view(
         template_name='registration/password_reset_done.html'
     ), name='password_reset_done'),
 
+    # Vista para ingresar la nueva contraseña
     path('recuperar/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
         template_name='registration/password_reset_confirm.html',
         success_url='/recuperar/completado/'
     ), name='password_reset_confirm'),
 
+    # Confirmación de contraseña restablecida
     path('recuperar/completado/', auth_views.PasswordResetCompleteView.as_view(
         template_name='registration/password_reset_complete.html'
     ), name='password_reset_complete'),

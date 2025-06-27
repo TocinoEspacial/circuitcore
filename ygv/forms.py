@@ -207,3 +207,21 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
+
+from django import forms
+from django.contrib.auth.forms import PasswordResetForm
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
+class CustomPasswordResetForm(PasswordResetForm):
+    def send_mail(self, subject_template_name, email_template_name,
+                  context, from_email, to_email, html_email_template_name=None):
+        
+        subject = render_to_string(subject_template_name, context).strip()
+        html_message = render_to_string(html_email_template_name, context)
+        plain_message = strip_tags(html_message)
+
+        email = EmailMultiAlternatives(subject, plain_message, from_email, [to_email])
+        email.attach_alternative(html_message, "text/html")
+        email.send()
