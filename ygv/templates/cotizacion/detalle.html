@@ -3,85 +3,208 @@
 
 {% block extra_css %}
 <style>
+    :root {
+        --primary: #FF6B35;
+        --secondary: #004E89;
+        --accent: #FFD166;
+        --dark: #1A1A1D;
+        --light: #F7F7FF;
+    }
+    
     .card {
-        background: rgba(26, 26, 29, 0.9);
-        border: 1px solid rgba(255, 107, 53, 0.3);
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        background: rgba(26, 26, 29, 0.95);
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        overflow: hidden;
     }
 
     .card-header {
-        background: linear-gradient(to right, var(--secondary), var(--dark)) !important;
+        background: linear-gradient(135deg, var(--secondary), var(--dark)) !important;
         color: var(--accent) !important;
-        border-bottom: 1px solid var(--primary) !important;
+        border-bottom: 2px solid var(--primary) !important;
+        padding: 1.5rem;
     }
 
     .table {
         color: var(--light);
-        background-color: rgba(26, 26, 29, 0.7);
+        background-color: rgba(26, 26, 29, 0.8);
+        border-radius: 10px;
+        overflow: hidden;
     }
 
     .table th {
-        border-bottom: 2px solid var(--primary);
+        background-color: var(--secondary);
         color: var(--accent);
+        border: none;
+        padding: 12px 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
     }
 
     .table td {
-        border-bottom: 1px solid rgba(255, 107, 53, 0.2);
+        border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+        padding: 12px 15px;
+        vertical-align: middle;
     }
 
     .table-striped tbody tr:nth-of-type(odd) {
-        background-color: rgba(255, 107, 53, 0.05);
+        background-color: rgba(255, 107, 53, 0.08);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(255, 214, 102, 0.1);
     }
 
     .btn-secondary {
         background-color: var(--secondary);
         border-color: var(--secondary);
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background-color: #003b66;
+        border-color: #003b66;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     .text-accent {
         color: var(--accent);
     }
 
+    .badge {
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+    .badge.bg-success {
+        background-color: #28a745 !important;
+    }
+
+    .badge.bg-warning {
+        background-color: #ffc107 !important;
+        color: var(--dark);
+    }
+
+    .badge.bg-danger {
+        background-color: #dc3545 !important;
+    }
+
+    .badge.bg-light {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        color: var(--light) !important;
+    }
+
+    .signature-container {
+        background: rgba(26, 26, 29, 0.7);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 30px;
+    }
+
     .signature-pad {
-        background: #fff;
-        border: 2px dashed #FFD166;
-        border-radius: 6px;
+        background: #ffffff;
+        border: 2px dashed var(--accent);
+        border-radius: 10px;
         width: 100%;
         height: 200px;
         cursor: crosshair;
+        margin: 0 auto;
     }
-    .signature-pad {
-    background: #ffffff;
-    border: 2px dashed #FFD166;
-    border-radius: 10px;
-    width: 100%;
-    max-width: 600px;
-    height: 200px;
-    cursor: crosshair;
-}
 
+    .info-box {
+        background: rgba(26, 26, 29, 0.7);
+        border-left: 4px solid var(--primary);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .info-box h5 {
+        color: var(--accent);
+        margin-bottom: 10px;
+    }
+
+    .info-box p {
+        color: var(--light);
+        margin-bottom: 0;
+    }
+
+    .total-box {
+        background: rgba(0, 78, 137, 0.3);
+        border-radius: 10px;
+        padding: 20px;
+        display: inline-block;
+        border: 1px solid rgba(255, 214, 102, 0.2);
+    }
+
+    .btn-action {
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        min-width: 150px;
+        text-align: center;
+        margin: 5px;
+    }
+
+    .btn-action i {
+        margin-right: 8px;
+    }
+
+    .section-title {
+        color: var(--accent);
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 8px;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .card-header {
+            padding: 1rem;
+        }
+        
+        .table th, 
+        .table td {
+            padding: 8px 10px;
+            font-size: 0.8rem;
+        }
+        
+        .btn-action {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-lg">
+<div class="container py-4">
+    <div class="card">
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <h3 class="mb-0 text-accent">
-                    <i class="fas fa-file-invoice-dollar me-2"></i>
-                    Cotización #{{ cotizacion.id }}
-                </h3>
-                <div class="d-flex align-items-center gap-3">
+                <div>
+                    <h3 class="mb-0 text-accent">
+                        <i class="fas fa-file-invoice-dollar me-2"></i>
+                        Cotización #{{ cotizacion.id }}
+                    </h3>
+                    <small class="text-white-50">Creada el {{ cotizacion.fecha|date:"d/m/Y" }}</small>
+                </div>
+                <div class="d-flex align-items-center gap-3 mt-2 mt-md-0">
                    <span class="badge bg-{% if cotizacion.estado == 'aprobado' %}success
                                      {% elif cotizacion.estado == 'rechazado' %}danger
                                      {% else %}warning{% endif %}">
-                    {{ cotizacion.get_estado_display }}
+                    {{ cotizacion.get_estado_display|upper }}
                 </span>
                     {% if cotizacion.estado == 'rechazado' and cotizacion.motivo_rechazo %}
-                    <span class="badge bg-light text-dark">
-                        <i class="fas fa-comment-exclamation me-1"></i> {{ cotizacion.motivo_rechazo|truncatechars:20 }}
+                    <span class="badge bg-light" data-bs-toggle="tooltip" title="{{ cotizacion.motivo_rechazo }}">
+                        <i class="fas fa-comment-exclamation me-1"></i> Motivo
                     </span>
                     {% endif %}
                 </div>
@@ -89,115 +212,122 @@
         </div>
 
         <div class="card-body">
+            <!-- Información del Cliente y Proyecto -->
             <div class="row mb-4">
-                <div class="col-md-6">
-                    <h5 class="text-accent"><i class="fas fa-user me-2"></i>Cliente:</h5>
-                    <p class="text-white">{{ cotizacion.cliente.get_full_name }}</p>
-                    <h5 class="mt-3 text-accent"><i class="fas fa-calendar-alt me-2"></i>Fecha:</h5>
-                    <p class="text-white">{{ cotizacion.fecha|date:"d/m/Y" }}</p>
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <div class="info-box">
+                        <h5><i class="fas fa-user me-2"></i>CLIENTE</h5>
+                        <p>{{ cotizacion.cliente.get_full_name }}</p>
+                        {% if cotizacion.cliente.empresa %}
+                        <p class="mt-2"><strong>Empresa:</strong> {{ cotizacion.cliente.empresa.nombre }}</p>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    {% if cotizacion.ingeniero %}
-                    <h5 class="text-accent"><i class="fas fa-user-tie me-2"></i>Ingeniero:</h5>
-                    <p class="text-white">{{ cotizacion.ingeniero.get_full_name }}</p>
-                    {% endif %}
-                    {% if cotizacion.proyecto %}
-                    <h5 class="mt-3 text-accent"><i class="fas fa-project-diagram me-2"></i>Proyecto:</h5>
-                    <p class="text-white">{{ cotizacion.proyecto.tipo_proyecto }}</p>
-                    {% endif %}
+                    <div class="info-box">
+                        <h5><i class="fas fa-project-diagram me-2"></i>PROYECTO</h5>
+                        {% if cotizacion.proyecto %}
+                        <p>{{ cotizacion.proyecto.tipo_proyecto }}</p>
+                        <p class="mt-2"><strong>Ingeniero:</strong> {{ cotizacion.ingeniero.get_full_name }}</p>
+                        {% else %}
+                        <p>No asociado a un proyecto</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
-            <h5 class="text-accent"><i class="fas fa-list-ul me-2"></i>Items:</h5>
+            <!-- Tabla de Items -->
+            <h4 class="section-title"><i class="fas fa-list-ul me-2"></i>DETALLE DE ITEMS</h4>
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>Descripción</th>
-                            <th>Cantidad</th>
-                            <th>Unidad</th>
-                            <th>Precio Unitario</th>
-                            <th>Subtotal</th>
+                            <th class="text-center">Cantidad</th>
+                            <th class="text-center">Unidad</th>
+                            <th class="text-end">Precio Unitario</th>
+                            <th class="text-end">Subtotal</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for item in items %}
                         <tr>
                             <td>{{ item.descripcion }}</td>
-                            <td>{{ item.cantidad }}</td>
-                            <td>{{ item.unidad_medida }}</td>
-                            <td>${{ item.valor_unidad|floatformat:2 }}</td>
-                            <td>${% widthratio item.cantidad 1 item.valor_unidad as subtotal %}{{ subtotal|floatformat:2 }}</td>
+                            <td class="text-center">{{ item.cantidad }}</td>
+                            <td class="text-center">{{ item.unidad_medida }}</td>
+                            <td class="text-end">${{ item.valor_unidad|floatformat:2 }}</td>
+                            <td class="text-end">${% widthratio item.cantidad 1 item.valor_unidad as subtotal %}{{ subtotal|floatformat:2 }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
 
+            <!-- Totales -->
             <div class="text-end mt-4">
-                <div class="d-inline-block border-top border-accent pt-2 px-4">
-                    <h6 class="text-white">Sub-total: ${{ cotizacion.subtotal|floatformat:2 }}</h6>
-                    {% if cotizacion.descuento > 0 %}
-                    <h6 class="text-white">Descuento: ${{ cotizacion.descuento|floatformat:2 }}</h6>
-                    {% endif %}
-                    <h5 class="text-accent mt-2">Total: ${{ cotizacion.total|floatformat:2 }}</h5>
+                <div class="total-box">
+                    <div class="d-flex flex-column">
+                        <h6 class="text-white mb-2">Sub-total: <span class="text-accent">${{ cotizacion.subtotal|floatformat:2 }}</span></h6>
+                        {% if cotizacion.descuento > 0 %}
+                        <h6 class="text-white mb-2">Descuento: <span class="text-danger">-${{ cotizacion.descuento|floatformat:2 }}</span></h6>
+                        {% endif %}
+                        <h4 class="text-accent mt-2 mb-0">Total: ${{ cotizacion.total|floatformat:2 }}</h4>
+                    </div>
                 </div>
             </div>
 
-            <div class="mt-4 d-flex flex-wrap justify-content-between">
-                <a href="{% url 'perfil_ingeniero' %}" class="btn btn-outline-secondary">
+            <!-- Sección de Firma (solo para estados específicos) -->
+            {% if cotizacion.estado == 'aprobado' or cotizacion.estado == 'revisado' and user == cotizacion.cliente %}
+            <div class="signature-container mt-4">
+                <h4 class="section-title"><i class="fas fa-pen-nib me-2"></i>FIRMA DIGITAL</h4>
+                <p class="text-white mb-3">Por favor, dibuje su firma en el área inferior:</p>
+                
+                <form method="post" action="{% url 'guardar_firma' cotizacion.id %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="text-center mb-3">
+                        <canvas id="firmaCanvas" class="signature-pad" width="600" height="200"></canvas>
+                        <input type="hidden" name="firma" id="firmaInput">
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <button type="button" onclick="limpiarFirma()" class="btn btn-action btn-warning">
+                            <i class="fas fa-eraser me-1"></i> Limpiar
+                        </button>
+                        <button type="submit" onclick="guardarFirma()" class="btn btn-action btn-success">
+                            <i class="fas fa-save me-1"></i> Guardar Firma
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Botones de Acción -->
+            <div class="d-flex flex-wrap justify-content-between mt-5">
+                <a href="{% url 'perfil_ingeniero' %}" class="btn btn-action btn-outline-secondary">
                     <i class="fas fa-arrow-left me-1"></i> Volver
                 </a>
 
-                <div class="d-flex gap-2 flex-wrap">
+                <div class="d-flex flex-wrap gap-2">
                     {% if cotizacion.estado == 'aprobado' %}
-                    <a href="{% url 'generar_contrato_pdf' cotizacion.id %}" class="btn btn-danger">
+                    <a href="{% url 'generar_contrato_pdf' cotizacion.id %}" class="btn btn-action btn-danger">
                         <i class="fas fa-file-pdf me-1"></i> Descargar Contrato
                     </a>
-                        <form method="post" action="{% url 'guardar_firma' cotizacion.id %}" enctype="multipart/form-data" class="w-100">
-    {% csrf_token %}
-    <h5 class="text-accent mt-4"><i class="fas fa-pen-nib me-2"></i> Firmar cotización:</h5>
-
-    <div class="text-center mb-3">
-        <canvas id="firmaCanvas" class="signature-pad" width="600" height="200"></canvas>
-        <input type="hidden" name="firma" id="firmaInput">
-    </div>
-
-    <div class="d-flex justify-content-center gap-3">
-        <button type="button" onclick="limpiarFirma()" class="btn btn-warning">
-            <i class="fas fa-eraser me-1"></i> Limpiar
-        </button>
-        <button type="submit" onclick="guardarFirma()" class="btn btn-success">
-            <i class="fas fa-save me-1"></i> Guardar Firma
-        </button>
-    </div>
-</form>
                     {% endif %}
 
                     {% if cotizacion.estado == 'revisado' and user == cotizacion.cliente %}
-                    <form method="post" action="{% url 'guardar_firma' cotizacion.id %}" enctype="multipart/form-data" class="w-100">
-                        {% csrf_token %}
-                        <h5 class="text-accent mt-4"><i class="fas fa-pen-nib me-2"></i> Firmar cotización:</h5>
-                        <canvas id="firmaCanvas" class="signature-pad mb-2"></canvas>
-                        <input type="hidden" name="firma" id="firmaInput">
-                        <div class="d-flex gap-2">
-                            <button type="button" onclick="limpiarFirma()" class="btn btn-warning">Limpiar</button>
-                            <button type="submit" onclick="guardarFirma()" class="btn btn-success">Guardar Firma</button>
-                        </div>
-                    </form>
-                    {% endif %}
-
-                    {% if cotizacion.estado == 'revisado' %}
                     <form method="post" action="{% url 'detalle_cotizacion' cotizacion.id %}" class="d-inline">
                         {% csrf_token %}
-                        <button type="submit" name="aprobar_cotizacion" class="btn btn-success">
+                        <button type="submit" name="aprobar_cotizacion" class="btn btn-action btn-success">
                             <i class="fas fa-check me-1"></i> Aprobar
+                        </button>
+                        <button type="submit" name="rechazar_cotizacion" class="btn btn-action btn-danger">
+                            <i class="fas fa-times me-1"></i> Rechazar
                         </button>
                     </form>
                     {% endif %}
 
                     {% if puede_editar %}
-                    <a href="#" class="btn btn-primary">
+                    <a href="#" class="btn btn-action btn-primary">
                         <i class="fas fa-edit me-1"></i> Editar
                     </a>
                     {% endif %}
@@ -206,38 +336,120 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-    const canvas = document.getElementById('firmaCanvas');
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        let dibujando = false;
+    // Configuración del canvas para firma
+    document.addEventListener('DOMContentLoaded', function() {
+        const canvas = document.getElementById('firmaCanvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let dibujando = false;
+            let posicionAnterior = { x: 0, y: 0 };
 
-        canvas.addEventListener('mousedown', () => dibujando = true);
-        canvas.addEventListener('mouseup', () => {
-            dibujando = false;
-            ctx.beginPath();
+            // Ajustar tamaño del canvas para alta resolución
+            function resizeCanvas() {
+                const ratio = window.devicePixelRatio || 1;
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                ctx.scale(ratio, ratio);
+                canvas.style.width = canvas.offsetWidth + 'px';
+                canvas.style.height = canvas.offsetHeight + 'px';
+                ctx.lineWidth = 2;
+                ctx.lineCap = "round";
+                ctx.strokeStyle = "#000000";
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // Eventos para dibujar
+            canvas.addEventListener('mousedown', (e) => {
+                dibujando = true;
+                const rect = canvas.getBoundingClientRect();
+                posicionAnterior = {
+                    x: (e.clientX - rect.left) * (canvas.width / rect.width),
+                    y: (e.clientY - rect.top) * (canvas.height / rect.height)
+                };
+                e.preventDefault();
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (!dibujando) return;
+                const rect = canvas.getBoundingClientRect();
+                const nuevaPosicion = {
+                    x: (e.clientX - rect.left) * (canvas.width / rect.width),
+                    y: (e.clientY - rect.top) * (canvas.height / rect.height)
+                };
+                
+                ctx.beginPath();
+                ctx.moveTo(posicionAnterior.x, posicionAnterior.y);
+                ctx.lineTo(nuevaPosicion.x, nuevaPosicion.y);
+                ctx.stroke();
+                
+                posicionAnterior = nuevaPosicion;
+                e.preventDefault();
+            });
+
+            canvas.addEventListener('mouseup', () => {
+                dibujando = false;
+            });
+
+            canvas.addEventListener('mouseout', () => {
+                dibujando = false;
+            });
+
+            // Eventos táctiles para móviles
+            canvas.addEventListener('touchstart', (e) => {
+                dibujando = true;
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                posicionAnterior = {
+                    x: (touch.clientX - rect.left) * (canvas.width / rect.width),
+                    y: (touch.clientY - rect.top) * (canvas.height / rect.height)
+                };
+                e.preventDefault();
+            });
+
+            canvas.addEventListener('touchmove', (e) => {
+                if (!dibujando) return;
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                const nuevaPosicion = {
+                    x: (touch.clientX - rect.left) * (canvas.width / rect.width),
+                    y: (touch.clientY - rect.top) * (canvas.height / rect.height)
+                };
+                
+                ctx.beginPath();
+                ctx.moveTo(posicionAnterior.x, posicionAnterior.y);
+                ctx.lineTo(nuevaPosicion.x, nuevaPosicion.y);
+                ctx.stroke();
+                
+                posicionAnterior = nuevaPosicion;
+                e.preventDefault();
+            });
+
+            canvas.addEventListener('touchend', () => {
+                dibujando = false;
+            });
+
+            // Funciones globales
+            window.limpiarFirma = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            };
+
+            window.guardarFirma = () => {
+                const dataURL = canvas.toDataURL('image/png');
+                document.getElementById('firmaInput').value = dataURL;
+            };
+        }
+
+        // Inicializar tooltips de Bootstrap
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
         });
-        canvas.addEventListener('mousemove', function (event) {
-            if (!dibujando) return;
-            const rect = canvas.getBoundingClientRect();
-            ctx.lineWidth = 2;
-            ctx.lineCap = "round";
-            ctx.strokeStyle = "#000000";
-            ctx.lineTo(event.clientX - rect.left, event.clientY - rect.top);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(event.clientX - rect.left, event.clientY - rect.top);
-        });
-
-        window.limpiarFirma = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        };
-
-        window.guardarFirma = () => {
-            const dataURL = canvas.toDataURL('image/png');
-            document.getElementById('firmaInput').value = dataURL;
-        };
-    }
+    });
 </script>
 {% endblock %}
