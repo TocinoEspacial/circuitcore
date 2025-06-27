@@ -482,7 +482,7 @@
                         <form id="avatar-form" method="post" action="{% url 'editar_perfil' %}" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="avatar-container">
-                                <img src="{% if perfil.avatar %}{{ perfil.avatar.url }}{% else %}{% static 'images/default-client.png' %}{% endif %}" 
+                                <img src="{% if perfil.avatar %}{{ perfil.avatar.url }}{% else %}{% static 'ygv/images/default-client.png' %}{% endif %}" 
                                      class="img-fluid" 
                                      alt="Avatar"
                                      id="avatar-preview">
