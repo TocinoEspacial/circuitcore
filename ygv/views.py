@@ -585,17 +585,19 @@ from django.shortcuts import get_object_or_404, redirect
 from .models import Cotizacion
 from django.contrib.auth.decorators import login_required
 
-@login_required
+
 def guardar_firma(request, cotizacion_id):
     if request.method == 'POST':
+        cotizacion = get_object_or_404(Cotizacion, pk=cotizacion_id)
+
         data_url = request.POST.get('firma')
-        cotizacion = get_object_or_404(Cotizacion, id=cotizacion_id, cliente=request.user)
-        
-        if data_url:
-            format, imgstr = data_url.split(';base64,')
-            ext = format.split('/')[-1]
-            file = ContentFile(base64.b64decode(imgstr), name=f"firma_{cotizacion.id}.{ext}")
-            cotizacion.firma = file
+        if data_url and data_url.startswith('data:image'):
+            format, imgstr = data_url.split(';base64,')  # divide en tipo y base64
+            ext = format.split('/')[-1]  # png o jpg
+            file_name = f"firma_{cotizacion.id}.{ext}"
+            data = ContentFile(base64.b64decode(imgstr), name=file_name)
+            cotizacion.firma = data
             cotizacion.save()
-        
-    return redirect('detalle_cotizacion', id=cotizacion.id)
+
+        return redirect('detalle_cotizacion', id=cotizacion_id)
+
