@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from decimal import Decimal
 from django.contrib.auth.models import Group
 from django.contrib import messages
+from openpyxl import Workbook
 
 from .models import Cotizacion, CotizacionItem
 from .forms import (
@@ -187,6 +188,12 @@ from decimal import Decimal
 from .models import Cotizacion, CotizacionItem
 from .forms import CotizacionForm
 
+from openpyxl import load_workbook
+from decimal import Decimal
+from django.db import transaction
+from django.contrib import messages
+
+@login_required
 def solicitar_cotizacion(request):
     CotizacionItemFormset = inlineformset_factory(
         Cotizacion,
@@ -197,32 +204,70 @@ def solicitar_cotizacion(request):
     )
     
     if request.method == 'POST':
-        form = CotizacionForm(request.POST)
-        formset = CotizacionItemFormset(request.POST, prefix='items')
-        
-        if form.is_valid() and formset.is_valid():
+        # Si se envió archivo Excel, procesarlo
+        if 'excel_file' in request.FILES and request.FILES['excel_file']:
+            excel_file = request.FILES['excel_file']
             try:
+                wb = load_workbook(filename=excel_file, data_only=True)
+                ws = wb.active
+                
                 with transaction.atomic():
-                    # PASO 1: Guardar la cotización principal
-                    cotizacion = form.save(commit=False)
-                    cotizacion.cliente = request.user
-                    cotizacion.save()  # Esto genera el PK
+                    # Aquí asumo que el archivo Excel tiene las columnas: descripción, cantidad, unidad_medida (ajusta según tu archivo)
+                    cotizacion = Cotizacion(
+                        cliente=request.user,
+                        contacto=request.user.get_full_name() or request.user.username,
+                        ciudad=Cotizacion.Ciudades.BOGOTA,
+                        tipo_pago=Cotizacion.TipoPago.CONTADO,
+                        estado=Cotizacion.Estados.BORRADOR,
+                        aplica_iva=True,
+                    )
+                    cotizacion.save()
                     
-                    # PASO 2: Guardar los ítems
-                    instances = formset.save(commit=False)
-                    for instance in instances:
-                        instance.cotizacion = cotizacion
-                        instance.valor_unidad = Decimal('0.00')  # Valor por defecto
-                        instance.save()
+                    # Empezar a leer desde fila 2 por ejemplo, para saltar encabezado
+                    for row in ws.iter_rows(min_row=2, values_only=True):
+                        descripcion, cantidad, unidad_medida = row[:3]
+                        if descripcion and cantidad:
+                            item = CotizacionItem(
+                                cotizacion=cotizacion,
+                                descripcion=descripcion,
+                                cantidad=Decimal(cantidad),
+                                unidad_medida=unidad_medida,
+                                valor_unidad=Decimal('0.00'),  # Valor por defecto
+                            )
+                            item.save()
                     
-                    # PASO 3: Actualizar totales usando el método correcto
                     cotizacion.actualizar_totales()
                     
-                    messages.success(request, "¡Cotización creada exitosamente!")
+                    messages.success(request, "¡Cotización cargada exitosamente desde Excel!")
                     return redirect('solicitar')
-                    
             except Exception as e:
-                messages.error(request, f"Error al guardar: {str(e)}")
+                messages.error(request, f"Error al procesar el archivo Excel: {e}")
+                # Al mostrar el error, dejamos el formulario normal para que pueda reintentar
+                
+        else:
+            # Procesar formulario normal con formset
+            form = CotizacionForm(request.POST)
+            formset = CotizacionItemFormset(request.POST, prefix='items')
+            
+            if form.is_valid() and formset.is_valid():
+                try:
+                    with transaction.atomic():
+                        cotizacion = form.save(commit=False)
+                        cotizacion.cliente = request.user
+                        cotizacion.save()
+                        
+                        instances = formset.save(commit=False)
+                        for instance in instances:
+                            instance.cotizacion = cotizacion
+                            instance.valor_unidad = Decimal('0.00')
+                            instance.save()
+                        
+                        cotizacion.actualizar_totales()
+                        
+                        messages.success(request, "¡Cotización creada exitosamente!")
+                        return redirect('solicitar')
+                except Exception as e:
+                    messages.error(request, f"Error al guardar: {e}")
     else:
         form = CotizacionForm(initial={
             'contacto': request.user.get_full_name() or request.user.username,
@@ -237,6 +282,7 @@ def solicitar_cotizacion(request):
         'form': form,
         'formset': formset
     })
+
 def actualizar_totales(self, cotizacion):
     """Función auxiliar para actualizar los totales de la cotización"""
     from django.db.models import Sum, F
