@@ -246,6 +246,11 @@ class Cotizacion(models.Model):
     verbose_name='Firma del cliente'
 )
     
+    def save(self, *args, **kwargs):
+        import os
+        from django.conf import settings
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'firmas'), exist_ok=True)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Cotización'
@@ -259,10 +264,7 @@ class Cotizacion(models.Model):
     def __str__(self):
         return f"Cotización #{self.id} - {self.cliente.get_full_name() or self.cliente.username}"
 
-    def save(self, *args, **kwargs):
-        # Crear directorio si no existe
-    os.makedirs(os.path.join(settings.MEDIA_ROOT, 'firmas'), exist_ok=True)
-    super().save(*args, **kwargs)
+
 
     def save(self, *args, **kwargs):
         """
