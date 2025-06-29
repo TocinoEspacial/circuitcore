@@ -174,7 +174,7 @@
     
     /* Formularios - Estilo consistente con el formulario de cotización */
     .form-label {
-        color: white !important;  /* Cambiado a blanco */
+        color: white !important;
         font-weight: 600;
         margin-bottom: 0.8rem;
         display: flex;
@@ -185,13 +185,13 @@
         margin-right: 10px;
         width: 20px;
         text-align: center;
-        color: var(--accent);  /* Iconos en amarillo */
+        color: var(--accent);
     }
     
     .form-control, .form-select {
         background: rgba(26, 26, 29, 0.9) !important;
         border: 1px solid rgba(255, 107, 53, 0.4) !important;
-        color: white !important;  /* Cambiado a blanco */
+        color: white !important;
         border-radius: 8px;
         padding: 1rem !important;
         transition: all 0.3s ease;
@@ -222,7 +222,7 @@
     }
     
     .table {
-        color: white !important;  /* Texto blanco */
+        color: white !important;
         margin-bottom: 0;
         background: rgba(26, 26, 29, 0.9);
     }
@@ -374,7 +374,7 @@
     }
     
     .user-name {
-        color: white !important;  /* Cambiado a blanco */
+        color: white !important;
         font-size: 1.5rem;
         font-weight: 600;
         margin-bottom: 0.5rem;
@@ -390,7 +390,7 @@
     }
     
     .user-detail {
-        color: white !important;  /* Cambiado a blanco */
+        color: white !important;
         margin-bottom: 0.3rem;
         display: flex;
         align-items: center;
@@ -424,8 +424,28 @@
         white-space: nowrap;
     }
     
-    /* Responsive */
-    @media (max-width: 768px) {
+    /* Media Queries para Responsividad */
+    @media (max-width: 1199.98px) {
+        .profile-container {
+            max-width: 95%;
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .profile-body {
+            padding: 1.5rem;
+        }
+        
+        .avatar-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-body {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 767.98px) {
         .profile-header {
             flex-direction: column;
             text-align: center;
@@ -454,11 +474,77 @@
         }
         
         .info-body, .profile-body {
-            padding: 1.5rem;
+            padding: 1rem;
         }
         
         .table-actions {
-            justify-content: flex-start;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+        
+        .table-actions .btn-sm {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .table td, .table th {
+            padding: 0.75rem;
+            font-size: 0.85rem;
+        }
+        
+        .user-name {
+            font-size: 1.3rem;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .profile-container {
+            margin: 1rem auto;
+        }
+        
+        .form-control, .form-select {
+            padding: 0.75rem !important;
+        }
+        
+        .btn-primary, .btn-outline-accent {
+            padding: 0.7rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+        
+        .empty-state i {
+            font-size: 2.5rem;
+        }
+        
+        .empty-state h5 {
+            font-size: 1.2rem;
+        }
+        
+        /* Ocultar columnas menos importantes en móviles */
+        .table thead th:nth-child(3),
+        .table tbody td:nth-child(3) {
+            display: none;
+        }
+    }
+
+    @media (max-width: 400px) {
+        #avatar-preview {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .profile-header h3 {
+            font-size: 1.2rem;
+        }
+        
+        /* Más ajustes para pantallas muy pequeñas */
+        .table thead th:nth-child(2),
+        .table tbody td:nth-child(2) {
+            display: none;
         }
     }
 </style>
@@ -474,7 +560,7 @@
         <div class="profile-body">
             <div class="row">
                 <!-- Columna izquierda - Avatar e información básica -->
-                <div class="col-md-4">
+                <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
                     <div class="avatar-section">
                         <form id="avatar-form" method="post" action="{% url 'editar_perfil' %}" enctype="multipart/form-data">
                             {% csrf_token %}
@@ -507,7 +593,7 @@
                 </div>
                 
                 <!-- Columna derecha - Información detallada -->
-                <div class="col-md-8">
+                <div class="col-lg-8 col-md-12">
                     <!-- Tarjeta de información personal -->
                     <div class="info-card">
                         <div class="info-header">
@@ -546,73 +632,81 @@
                         </div>
                     </div>
                     
-                   <!-- Tarjeta de cotizaciones como ingeniero -->
-<div class="quotations-card mt-4">
-    <div class="info-header">
-        <h5 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> Mis Cotizaciones Asignadas</h5>
-    </div>
-    
-    <div class="info-body">
-        {% if cotizaciones %}
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Fecha</th>
-                        <th>Cliente</th>
-                        <th>Proyecto</th>
-                        <th>Estado</th>
-                        <th class="text-end">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for cotizacion in cotizaciones %}
-                    <tr>
-                        <td><strong>#{{ cotizacion.id }}</strong></td>
-                        <td class="table-date">{{ cotizacion.fecha|date:"d/m/Y" }}</td>
-                        <td>
-                            <span class="project-name">
-                                {{ cotizacion.cliente.get_full_name|default:cotizacion.cliente.username }}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="project-name">
-                                {% if cotizacion.proyecto %}
-                                    {{ cotizacion.proyecto.tipo_proyecto|truncatechars:25 }}
-                                {% else %}
-                                    Sin proyecto asociado
-                                {% endif %}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="badge 
-                                {% if cotizacion.estado == 'aprobado' %}bg-success
-                                {% elif cotizacion.estado == 'rechazado' %}bg-danger
-                                {% else %}bg-warning{% endif %}">
-                                {{ cotizacion.estado|title }}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="table-actions">
-                                <a href="{% url 'enviar_cotizacion' cotizacion.id %}" 
-                                   class="btn-outline-accent btn-sm">
-                                    <i class="fas fa-mail"></i> Enviar Cotizacion
-                                </a>
+                    <!-- Tarjeta de cotizaciones como ingeniero -->
+                    <div class="quotations-card mt-4">
+                        <div class="info-header">
+                            <h5 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> Mis Cotizaciones Asignadas</h5>
+                        </div>
+                        
+                        <div class="info-body">
+                            {% if cotizaciones %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="d-none d-sm-table-cell">ID</th>
+                                            <th class="d-none d-md-table-cell">Fecha</th>
+                                            <th class="d-none d-lg-table-cell">Cliente</th>
+                                            <th>Proyecto</th>
+                                            <th>Estado</th>
+                                            <th class="text-end">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for cotizacion in cotizaciones %}
+                                        <tr>
+                                            <td class="d-none d-sm-table-cell"><strong>#{{ cotizacion.id }}</strong></td>
+                                            <td class="table-date d-none d-md-table-cell">{{ cotizacion.fecha|date:"d/m/Y" }}</td>
+                                            <td class="d-none d-lg-table-cell">
+                                                <span class="project-name">
+                                                    {{ cotizacion.cliente.get_full_name|default:cotizacion.cliente.username }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="project-name">
+                                                    {% if cotizacion.proyecto %}
+                                                        {{ cotizacion.proyecto.tipo_proyecto|truncatechars:20 }}
+                                                    {% else %}
+                                                        Sin proyecto
+                                                    {% endif %}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge 
+                                                    {% if cotizacion.estado == 'aprobado' %}bg-success
+                                                    {% elif cotizacion.estado == 'rechazado' %}bg-danger
+                                                    {% else %}bg-warning{% endif %}">
+                                                    {{ cotizacion.estado|title|slice:":3" }}
+                                                    <span class="d-none d-sm-inline">{{ cotizacion.estado|title|slice:"3:" }}</span>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="table-actions">
+                                                    <a href="{% url 'enviar_cotizacion' cotizacion.id %}" 
+                                                       class="btn-outline-accent btn-sm">
+                                                        <i class="fas fa-mail d-none d-sm-inline"></i>
+                                                        <span class="d-sm-none">Enviar</span>
+                                                        <span class="d-none d-sm-inline">Enviar Cotizacion</span>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-file-alt"></i>
+                                <h5>No tienes cotizaciones asignadas</h5>
+                                <p>Actualmente no hay cotizaciones asignadas a tu perfil de ingeniero</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        {% else %}
-        <div class="empty-state">
-            <i class="fas fa-file-alt"></i>
-            <h5>No tienes cotizaciones asignadas</h5>
-            <p>Actualmente no hay cotizaciones asignadas a tu perfil de ingeniero</p>
-        </div>
-        {% endif %}
     </div>
 </div>
 
@@ -697,6 +791,36 @@ document.addEventListener('DOMContentLoaded', function() {
             row.style.transform = '';
         });
     });
+    
+    // Ajustar tamaño del avatar en móviles
+    function adjustAvatarSize() {
+        if (window.innerWidth < 400) {
+            avatarPreview.style.width = '120px';
+            avatarPreview.style.height = '120px';
+        } else if (window.innerWidth < 768) {
+            avatarPreview.style.width = '140px';
+            avatarPreview.style.height = '140px';
+        } else {
+            avatarPreview.style.width = '180px';
+            avatarPreview.style.height = '180px';
+        }
+    }
+    
+    // Ejecutar al cargar y al redimensionar
+    adjustAvatarSize();
+    window.addEventListener('resize', adjustAvatarSize);
+    
+    // Desactivar animaciones hover en dispositivos táctiles
+    function detectTouch() {
+        if ('ontouchstart' in window || navigator.maxTouchPoints) {
+            const cards = document.querySelectorAll('.info-card, .quotations-card, .avatar-section');
+            cards.forEach(card => {
+                card.style.transition = 'none';
+            });
+        }
+    }
+    
+    detectTouch();
 });
 </script>
 {% endblock %}
