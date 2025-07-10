@@ -710,3 +710,42 @@ def marcar_como_pagada(request, id):
     
     messages.success(request, f'Factura {cotizacion.numero_factura} marcada como pagada')
     return redirect('detalle_cotizacion', id=id)
+
+from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from num2words import num2words
+
+@login_required
+def ver_factura(request, id):
+    cotizacion = get_object_or_404(
+        Cotizacion.objects.select_related('cliente', 'ingeniero')
+                         .prefetch_related('items'),
+        id=id
+    )
+    
+    # Verificar permisos
+    if not (request.user == cotizacion.cliente or 
+            request.user == cotizacion.ingeniero or 
+            request.user.is_superuser):
+        messages.error(request, 'No tienes permiso para ver esta factura')
+        return redirect('home')
+    
+    # Convertir total a palabras
+    total_en_palabras = num2words(cotizacion.total, lang='es').capitalize()
+    
+    # Datos para la factura
+    context = {
+        'cotizacion': cotizacion,
+        'items': cotizacion.items.all(),
+        'total_en_palabras': total_en_palabras,
+        'puede_facturar': (
+            request.user == cotizacion.ingeniero and 
+            cotizacion.estado == Cotizacion.Estados.APROBADA and
+            not cotizacion.factura_generada
+        ),
+        'es_cliente': request.user == cotizacion.cliente,
+        'hoy': timezone.now().strftime("%d/%m/%Y"),
+    }
+    
+    return render(request, 'factura/factura.html', context)
