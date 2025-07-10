@@ -331,24 +331,32 @@ def editar_perfil(request):
 @login_required
 def perfil_ingeniero(request):
     user = request.user
-    
+
     if not user.groups.filter(name='Ingeniero').exists():
         return redirect('home')
-    
+
     perfil, created = PerfilUsuario.objects.get_or_create(user=user)
-    
-    # Obtener cotizaciones donde el usuario actual es el ingeniero asignado
-    cotizaciones = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')
-    
+
+    # Capturar filtro por estado desde GET
+    estado = request.GET.get('estado')
+    cotizaciones = Cotizacion.objects.filter(ingeniero=user)
+
+    if estado:
+        cotizaciones = cotizaciones.filter(estado=estado)
+
+    cotizaciones = cotizaciones.order_by('-fecha')
+
     context = {
         'cotizaciones': cotizaciones,
         'user': user,
         'perfil': perfil,
         'rol': 'Ingeniero',
+        'estado_actual': estado,
         'avatar_url': perfil.avatar.url if perfil.avatar else '/static/images/default-avatar.png'
     }
-    
+
     return render(request, 'ingeniero/perfil_ingeniero.html', context)
+
 
 @login_required
 def perfil_cliente(request):
