@@ -672,3 +672,60 @@ def guardar_firma(request, cotizacion_id):
             cotizacion.estado = 'aprobado'
             cotizacion.save()
         return redirect('detalle_cotizacion', id=cotizacion.id)
+
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.conf import settings
+import os
+
+@login_required
+def descargar_factura(request, factura_id):
+    factura = get_object_or_404(Factura, id=factura_id, cotizacion__ingeniero=request.user)
+    
+    # Datos de la empresa (puedes mover esto a tu modelo de configuración)
+    empresa = {
+        'nombre': "Y.G.V construcciones",
+        'direccion': "calle 100c #130-61",
+        'ciudad': "Bogota D.C",
+        'pais': "Colombia",
+        'telefono': "+57 3163810053",
+        'email': "contacto@ygvconstrucciones.com",
+        'rut': "76.543.210-9",
+        'banco_nombre': "Banco Nacional",
+        'banco_cuenta': "Cuenta Corriente 123456789",
+        'banco_rut': "76.543.210-9",
+        'email_pagos': "pagos@ygvconstrucciones.com",
+        'website': "https://circuitcore.onrender.com",
+        'lema': "construyendo futuo, manteniendo excelencia"
+    }
+    
+    # Cálculos para la factura
+    subtotal = factura.monto_total / (1 + factura.iva / 100)
+    iva_amount = factura.monto_total - subtotal
+    
+    # Ruta del logo (asegúrate de tener un logo en tu directorio static)
+    logo_path = os.path.join(settings.STATIC_ROOT, 'ygv/images/logo.png')
+    logo_url = "file://" + logo_path
+    
+    context = {
+        'factura': factura,
+        'empresa': empresa,
+        'subtotal': subtotal,
+        'iva_amount': iva_amount,
+        'logo_url': logo_url
+    }
+    
+    template = get_template('ingeniero/factura.html')
+    html = template.render(context)
+    
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="factura_{factura.numero_factura}.pdf"'
+    
+    # Crear el PDF
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    
+    if pisa_status.err:
+        return HttpResponse('Error al generar el PDF', status=500)
+    
+    return response

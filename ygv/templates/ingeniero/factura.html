@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura {{ factura.numero_factura }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #FF6B35;
+            padding-bottom: 20px;
+        }
+        .company-info {
+            width: 60%;
+        }
+        .invoice-info {
+            width: 35%;
+            text-align: right;
+        }
+        .logo {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+        .client-info {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #FF6B35;
+        }
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .details-table th {
+            background-color: #004E89;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        .details-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .details-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .totals {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .totals-table {
+            width: 300px;
+            margin-left: auto;
+            border-collapse: collapse;
+        }
+        .totals-table td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        .totals-table tr:last-child td {
+            font-weight: bold;
+            border-top: 2px solid #004E89;
+            border-bottom: none;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .status-paid {
+            background-color: #06D6A0;
+            color: white;
+        }
+        .status-pending {
+            background-color: #FFD166;
+            color: #333;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="header">
+            <div class="company-info">
+                <img src="{{ logo_url }}" alt="Logo" class="logo">
+                <h2>{{ empresa.nombre }}</h2>
+                <p>{{ empresa.direccion }}</p>
+                <p>{{ empresa.ciudad }}, {{ empresa.pais }}</p>
+                <p>Tel: {{ empresa.telefono }} | Email: {{ empresa.email }}</p>
+                <p>RUT: {{ empresa.rut }}</p>
+            </div>
+            <div class="invoice-info">
+                <h1>FACTURA</h1>
+                <p><strong>N°:</strong> {{ factura.numero_factura }}</p>
+                <p><strong>Fecha:</strong> {{ factura.fecha_factura|date:"d/m/Y" }}</p>
+                <p><strong>Estado:</strong> 
+                    <span class="status-badge status-paid">PAGADA</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="client-info">
+            <h3>DATOS DEL CLIENTE</h3>
+            <p><strong>Nombre:</strong> {{ factura.cotizacion.cliente.get_full_name }}</p>
+            <p><strong>RUT:</strong> {{ factura.cotizacion.cliente.perfil.rut|default:"No especificado" }}</p>
+            <p><strong>Dirección:</strong> {{ factura.cotizacion.cliente.perfil.direccion|default:"No especificado" }}</p>
+            <p><strong>Teléfono:</strong> {{ factura.cotizacion.cliente.perfil.telefono|default:"No especificado" }}</p>
+            <p><strong>Email:</strong> {{ factura.cotizacion.cliente.email }}</p>
+        </div>
+
+        <table class="details-table">
+            <thead>
+                <tr>
+                    <th>Descripción</th>
+                    <th class="text-right">Cantidad</th>
+                    <th class="text-right">Precio Unitario</th>
+                    <th class="text-right">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ factura.cotizacion.proyecto.tipo_proyecto }}</td>
+                    <td class="text-right">1</td>
+                    <td class="text-right">${{ factura.monto_total|floatformat:2 }}</td>
+                    <td class="text-right">${{ factura.monto_total|floatformat:2 }}</td>
+                </tr>
+                <!-- Puedes agregar más items aquí si es necesario -->
+            </tbody>
+        </table>
+
+        <div class="totals">
+            <table class="totals-table">
+                <tr>
+                    <td>Subtotal:</td>
+                    <td class="text-right">${{ subtotal|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td>IVA ({{ factura.iva }}%):</td>
+                    <td class="text-right">${{ iva_amount|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td>TOTAL:</td>
+                    <td class="text-right">${{ factura.monto_total|floatformat:2 }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="payment-info">
+            <h3>INFORMACIÓN DE PAGO</h3>
+            <p><strong>Método de pago:</strong> Transferencia bancaria</p>
+            <p><strong>Banco:</strong> {{ empresa.banco_nombre }}</p>
+            <p><strong>Cuenta:</strong> {{ empresa.banco_cuenta }}</p>
+            <p><strong>RUT:</strong> {{ empresa.banco_rut }}</p>
+            <p><strong>Email para confirmación:</strong> {{ empresa.email_pagos }}</p>
+        </div>
+
+        <div class="footer">
+            <p>{{ empresa.nombre }} - {{ empresa.lema }}</p>
+            <p>{{ empresa.direccion }} | {{ empresa.ciudad }}, {{ empresa.pais }}</p>
+            <p>Tel: {{ empresa.telefono }} | Email: {{ empresa.email }} | Web: {{ empresa.website }}</p>
+            <p>Factura generada por: {{ factura.generada_por.get_full_name }} el {{ factura.fecha_creacion|date:"d/m/Y H:i" }}</p>
+        </div>
+    </div>
+</body>
+</html>
