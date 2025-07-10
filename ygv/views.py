@@ -379,6 +379,7 @@ def perfil_ingeniero(request):
         'perfil': perfil  # Use the profile we just got/created
     })
 
+
 @login_required
 def perfil_cliente(request):
     user = request.user
@@ -599,3 +600,10 @@ def guardar_firma(request, cotizacion_id):
             cotizacion.estado = 'aprobado'
             cotizacion.save()
         return redirect('detalle_cotizacion', id=cotizacion.id)
+
+from django.shortcuts import render, get_object_or_404
+from .models import Cotizacion
+
+def ver_factura(request, id):
+    cotizacion = get_object_or_404(Cotizacion, id=id)
+    return render(request, 'ingeniero/factura.html', {'cotizacion': cotizacion})

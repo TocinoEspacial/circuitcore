@@ -21,7 +21,8 @@ from ygv.views import (
     generar_contrato_pdf,
     Mantenimiento,
     Construccion,
-    Proyectos
+    Proyectos,
+    ver_factura
 )
 from django.contrib.auth import views as auth_views
 from django.conf import settings
@@ -52,6 +53,7 @@ urlpatterns = [
     path('cotizaciones/<int:cotizacion_id>/contrato/', generar_contrato_pdf, name='generar_contrato_pdf'),
     path('cotizaciones/cotizaciones/', generar_reporte_cotizaciones, name='generar_reporte_cotizaciones'),
     path('enviar-cotizacion/<int:cotizacion_id>/', enviar_cotizacion, name='enviar_cotizacion'),
+    path('factura/<int:id>/', ver_factura, name='ver_factura'),
     
     # URL de perfil
     path('ingeniero/perfil/', perfil_ingeniero, name='perfil_ingeniero'),
