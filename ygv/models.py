@@ -415,24 +415,3 @@ class Alerta(models.Model):
     nivel = models.CharField(max_length=10, choices=[('info', 'Info'), ('urgente', 'Urgente')])
     leida = models.BooleanField(default=False)
     fecha = models.DateTimeField(auto_now_add=True)
-
-from django.db import models
-from django.contrib.auth.models import User
-
-class Factura(models.Model):
-    cotizacion = models.OneToOneField('Cotizacion', on_delete=models.CASCADE, related_name='factura')
-    numero_factura = models.CharField(max_length=50, unique=True)
-    fecha_factura = models.DateField()
-    monto_total = models.DecimalField(max_digits=12, decimal_places=2)
-    iva = models.DecimalField(max_digits=5, decimal_places=2)
-    notas = models.TextField(blank=True)
-    generada_por = models.ForeignKey(User, on_delete=models.CASCADE)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    
-    def __str__(self):
-        return f"Factura {self.numero_factura} - {self.cotizacion}"
-    
-    class Meta:
-        verbose_name = 'Factura'
-        verbose_name_plural = 'Facturas'
-        ordering = ['-fecha_factura']
