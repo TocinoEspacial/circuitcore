@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Factura {{ cotizacion.numero_factura }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .company-info { width: 60%; }
+        .invoice-info { width: 35%; text-align: right; }
+        .title { text-align: center; font-size: 18px; font-weight: bold; margin: 20px 0; }
+        .client-info { margin-bottom: 20px; }
+        .table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .table th { background-color: #f2f2f2; text-align: left; padding: 8px; border: 1px solid #ddd; }
+        .table td { padding: 8px; border: 1px solid #ddd; }
+        .text-right { text-align: right; }
+        .totals { width: 30%; margin-left: auto; }
+        .signature { margin-top: 50px; display: flex; justify-content: space-between; }
+        .footer { margin-top: 50px; font-size: 10px; text-align: center; }
+        .page-break { page-break-after: always; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-info">
+            <h2>YGV Construcciones SAS</h2>
+            <p>NIT: 900.123.456-7</p>
+            <p>Dirección: Cra 45 #26-85, Bogotá D.C.</p>
+            <p>Teléfono: (601) 123 4567</p>
+            <p>Email: contacto@ygvconstrucciones.com</p>
+        </div>
+        
+        <div class="invoice-info">
+            <h2>FACTURA {{ cotizacion.numero_factura }}</h2>
+            <p><strong>Fecha:</strong> {{ cotizacion.fecha_factura|date:"d/m/Y" }}</p>
+            <p><strong>Estado:</strong> {{ cotizacion.get_estado_display }}</p>
+        </div>
+    </div>
+    
+    <div class="client-info">
+        <h3>Facturar a:</h3>
+        <p><strong>Nombre:</strong> {{ cotizacion.cliente.get_full_name }}</p>
+        <p><strong>Documento:</strong> {{ cotizacion.cliente.perfil.numero_documento|default:"No especificado" }}</p>
+        <p><strong>Dirección:</strong> {{ cotizacion.cliente.perfil.direccion|default:"No especificada" }}</p>
+        <p><strong>Teléfono:</strong> {{ cotizacion.cliente.perfil.telefono|default:"No especificado" }}</p>
+        <p><strong>Email:</strong> {{ cotizacion.cliente.email }}</p>
+    </div>
+    
+    <div class="title">
+        FACTURA POR SERVICIOS DE CONSTRUCCIÓN
+    </div>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Descripción</th>
+                <th class="text-right">Cantidad</th>
+                <th class="text-right">Valor Unitario</th>
+                <th class="text-right">Valor Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.descripcion }}</td>
+                <td class="text-right">{{ item.cantidad }} {{ item.unidad_medida }}</td>
+                <td class="text-right">${{ item.valor_unidad|floatformat:2 }}</td>
+                <td class="text-right">${{ item.valor_total|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="totals">
+        <table class="table">
+            <tr>
+                <th>Subtotal:</th>
+                <td class="text-right">${{ cotizacion.subtotal|floatformat:2 }}</td>
+            </tr>
+            {% if cotizacion.descuento > 0 %}
+            <tr>
+                <th>Descuento:</th>
+                <td class="text-right">${{ cotizacion.descuento|floatformat:2 }}</td>
+            </tr>
+            {% endif %}
+            {% if cotizacion.aplica_iva %}
+            <tr>
+                <th>IVA (19%):</th>
+                <td class="text-right">${{ cotizacion.iva|floatformat:2 }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th><strong>TOTAL:</strong></th>
+                <td class="text-right"><strong>${{ cotizacion.total|floatformat:2 }}</strong></td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="payment-info">
+        <h3>Información de Pago:</h3>
+        <p><strong>Forma de pago:</strong> {{ cotizacion.get_tipo_pago_display }}</p>
+        <p><strong>Banco:</strong> Banco de Bogotá</p>
+        <p><strong>Cuenta:</strong> 123-456789-00</p>
+        <p><strong>Tipo:</strong> Cuenta Corriente</p>
+        <p><strong>Titular:</strong> YGV Construcciones SAS</p>
+    </div>
+    
+    <div class="signature">
+        <div>
+            <p>__________________________</p>
+            <p>Firma Cliente</p>
+            <p>Nombre: {{ cotizacion.nombre_firmante|default:"" }}</p>
+            <p>Cargo: {{ cotizacion.cargo_firmante|default:"" }}</p>
+        </div>
+        <div>
+            <p>__________________________</p>
+            <p>Firma YGV Construcciones</p>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Esta factura es un documento legal. Para cualquier inquietud, contacte a nuestro equipo de soporte.</p>
+        <p>YGV Construcciones SAS - NIT 900.123.456-7 - Teléfono: (601) 123 4567</p>
+    </div>
+</body>
+</html>

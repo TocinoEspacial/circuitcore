@@ -336,22 +336,49 @@ def perfil_ingeniero(request):
         return redirect('home')
 
     perfil, created = PerfilUsuario.objects.get_or_create(user=user)
-
-    # Capturar filtro por estado desde GET
+    
+    # Obtener todos los parámetros de filtro
     estado = request.GET.get('estado')
+    cliente = request.GET.get('cliente')
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+    proyecto = request.GET.get('proyecto')
+    
+    # Base queryset
     cotizaciones = Cotizacion.objects.filter(ingeniero=user)
-
+    
+    # Aplicar filtros
     if estado:
         cotizaciones = cotizaciones.filter(estado=estado)
-
+    if cliente:
+        cotizaciones = cotizaciones.filter(cliente__username__icontains=cliente)
+    if fecha_inicio and fecha_fin:
+        cotizaciones = cotizaciones.filter(
+            fecha__gte=fecha_inicio,
+            fecha__lte=fecha_fin
+        )
+    if proyecto:
+        cotizaciones = cotizaciones.filter(proyecto__icontains=proyecto)
+    
+    # Ordenar
     cotizaciones = cotizaciones.order_by('-fecha')
-
+    
+    # Obtener lista de estados únicos para el dropdown
+    estados = Cotizacion.objects.filter(ingeniero=user).values_list('estado', flat=True).distinct()
+    
     context = {
         'cotizaciones': cotizaciones,
         'user': user,
         'perfil': perfil,
         'rol': 'Ingeniero',
-        'estado_actual': estado,
+        'estados': estados,
+        'filtros': {
+            'estado': estado,
+            'cliente': cliente,
+            'fecha_inicio': fecha_inicio,
+            'fecha_fin': fecha_fin,
+            'proyecto': proyecto,
+        },
         'avatar_url': perfil.avatar.url if perfil.avatar else '/static/images/default-avatar.png'
     }
 
@@ -609,9 +636,77 @@ def guardar_firma(request, cotizacion_id):
             cotizacion.save()
         return redirect('detalle_cotizacion', id=cotizacion.id)
 
-from django.shortcuts import render, get_object_or_404
-from .models import Cotizacion
+# En tus views.py
 
-def ver_factura(request, id):
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from io import BytesIO
+import os
+
+@login_required
+def generar_factura(request, id):
     cotizacion = get_object_or_404(Cotizacion, id=id)
-    return render(request, 'ingeniero/factura.html', {'cotizacion': cotizacion})
+    
+    # Permisos - solo ingenieros o superusuarios
+    if not (request.user == cotizacion.ingeniero or request.user.is_superuser):
+        messages.error(request, 'No tienes permiso para facturar esta cotización')
+        return redirect('home')
+    
+    # Validar estado
+    if not cotizacion.puede_facturar():
+        messages.error(request, 'La cotización no está en estado aprobado o ya fue facturada')
+        return redirect('detalle_cotizacion', id=id)
+    
+    # Generar factura
+    try:
+        cotizacion.estado = Cotizacion.Estados.FACTURADA
+        cotizacion.generar_numero_factura()
+        cotizacion.fecha_factura = timezone.now().date()
+        cotizacion.factura_generada = True
+        cotizacion.save()
+        
+        # Generar PDF
+        pdf_url = cotizacion.generar_pdf_factura()
+        
+        messages.success(request, f'Factura {cotizacion.numero_factura} generada exitosamente')
+        return redirect('ver_factura', id=id)
+        
+    except Exception as e:
+        messages.error(request, f'Error al generar factura: {str(e)}')
+        return redirect('detalle_cotizacion', id=id)
+
+@login_required
+def descargar_factura_pdf(request, id):
+    cotizacion = get_object_or_404(Cotizacion, id=id)
+    
+    if not cotizacion.pdf_factura:
+        messages.error(request, 'No existe el PDF de la factura')
+        return redirect('ver_factura', id=id)
+    
+    response = HttpResponse(cotizacion.pdf_factura, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="factura_{cotizacion.numero_factura}.pdf"'
+    return response
+
+@login_required
+def marcar_como_pagada(request, id):
+    cotizacion = get_object_or_404(Cotizacion, id=id)
+    
+    # Validar permisos
+    if not (request.user.is_superuser or request.user.groups.filter(name='Administrador').exists()):
+        messages.error(request, 'No tienes permiso para realizar esta acción')
+        return redirect('detalle_cotizacion', id=id)
+    
+    # Validar estado
+    if cotizacion.estado != Cotizacion.Estados.FACTURADA:
+        messages.error(request, 'Solo se pueden marcar como pagadas facturas en estado FACTURADA')
+        return redirect('detalle_cotizacion', id=id)
+    
+    # Actualizar estado
+    cotizacion.estado = Cotizacion.Estados.PAGADA
+    cotizacion.save()
+    
+    messages.success(request, f'Factura {cotizacion.numero_factura} marcada como pagada')
+    return redirect('detalle_cotizacion', id=id)

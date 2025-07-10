@@ -1,3 +1,4 @@
+from datetime import timezone
 from django.db import models
 from django.core.files.storage import default_storage
 from django.contrib.auth.models import User
@@ -119,10 +120,16 @@ from decimal import Decimal
 
 User = get_user_model()
 
+from django.db import models
+from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator
+from django.db.models import Sum, F
+from decimal import Decimal
+import uuid
+
 class Cotizacion(models.Model):
     """
-    Model representing a quotation/estimate in the system.
-    Contains all client and project information along with financial calculations.
+    Enhanced model representing a quotation/estimate with invoicing capabilities.
     """
     
     class Estados(models.TextChoices):
@@ -131,6 +138,8 @@ class Cotizacion(models.Model):
         APROBADA = 'APROBADA', 'Aprobada'
         RECHAZADA = 'RECHAZADA', 'Rechazada'
         COMPLETADA = 'COMPLETADA', 'Completada'
+        FACTURADA = 'FACTURADA', 'Facturada'
+        PAGADA = 'PAGADA', 'Pagada'
 
     class TipoPago(models.TextChoices):
         CONTADO = 'CONTADO', 'Contado'
@@ -142,8 +151,18 @@ class Cotizacion(models.Model):
         BOGOTA = 'BOGOTA_DC', 'Bogotá D.C.'
         MEDELLIN = 'MEDELLIN', 'Medellín, Antioquia'
         GIRARDOT = 'GIRARDOT', 'Girardot, Tolima'
+        CALI = 'CALI', 'Cali, Valle del Cauca'
+        BARRANQUILLA = 'BARRANQUILLA', 'Barranquilla, Atlántico'
 
-    # Client and engineer relationships
+    # Identificación única
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        verbose_name='Identificador único'
+    )
+
+    # Relaciones
     cliente = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -156,14 +175,28 @@ class Cotizacion(models.Model):
         null=True,
         blank=True,
         related_name='cotizaciones_aprobadas',
-        verbose_name='Ingeniero asignado'
+        verbose_name='Ingeniero asignado',
+        limit_choices_to={'groups__name': 'Ingeniero'}
     )
 
-    # Basic information
+    # Información básica
     contacto = models.CharField(
         max_length=100,
         verbose_name='Contacto del cliente'
     )
+    email_cliente = models.EmailField(
+        verbose_name='Email del cliente',
+        blank=True,
+        null=True
+    )
+    telefono_cliente = models.CharField(
+        max_length=20,
+        verbose_name='Teléfono del cliente',
+        blank=True,
+        null=True
+    )
+
+    # Fechas importantes
     fecha = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Fecha de creación'
@@ -172,22 +205,64 @@ class Cotizacion(models.Model):
         auto_now=True,
         verbose_name='Última actualización'
     )
+    fecha_aprobacion = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='Fecha de aprobación'
+    )
+    fecha_vencimiento = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name='Fecha de vencimiento'
+    )
 
-    # Project details
+    # Detalles del proyecto
     ciudad = models.CharField(
         max_length=45,
         choices=Ciudades.choices,
         default=Ciudades.BOGOTA,
         verbose_name='Ciudad del proyecto'
     )
+    direccion_proyecto = models.TextField(
+        verbose_name='Dirección del proyecto',
+        blank=True,
+        null=True
+    )
+    tipo_proyecto = models.CharField(
+        max_length=100,
+        verbose_name='Tipo de proyecto',
+        blank=True,
+        null=True
+    )
+    referencia = models.CharField(
+        max_length=100,
+        verbose_name='Referencia/Nombre del proyecto',
+        blank=True,
+        null=True
+    )
+
+    # Información de pago
     tipo_pago = models.CharField(
         max_length=45,
         choices=TipoPago.choices,
         default=TipoPago.CONTADO,
         verbose_name='Tipo de pago'
     )
+    plazo_entrega = models.CharField(
+        max_length=100,
+        verbose_name='Plazo de entrega',
+        blank=True,
+        null=True
+    )
+    validez_oferta = models.CharField(
+        max_length=100,
+        verbose_name='Validez de la oferta',
+        default='30 días',
+        blank=True,
+        null=True
+    )
 
-    # Financial fields
+    # Campos financieros
     subtotal = models.DecimalField(
         max_digits=20,
         decimal_places=2,
@@ -221,7 +296,31 @@ class Cotizacion(models.Model):
         verbose_name='Total'
     )
 
-    # Status and notes
+    # Facturación
+    factura_generada = models.BooleanField(
+        default=False,
+        verbose_name='Factura generada'
+    )
+    numero_factura = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+        verbose_name='Número de factura',
+        unique=True
+    )
+    fecha_factura = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name='Fecha de facturación'
+    )
+    pdf_factura = models.FileField(
+        upload_to='facturas/',
+        null=True,
+        blank=True,
+        verbose_name='PDF de factura'
+    )
+
+    # Estado y observaciones
     estado = models.CharField(
         max_length=45,
         choices=Estados.choices,
@@ -238,11 +337,31 @@ class Cotizacion(models.Model):
         null=True,
         verbose_name='Observaciones adicionales'
     )
+    condiciones = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name='Condiciones especiales',
+        default="""1. Precios sujetos a cambio sin previo aviso.\n2. Validez de la cotización: 30 días.\n3. Forma de pago: 50% anticipo, 50% contra entrega."""
+    )
 
+    # Firma digital
     firma_base64 = models.TextField(
         blank=True, 
         null=True, 
-        verbose_name='Firma del cliente')
+        verbose_name='Firma del cliente'
+    )
+    nombre_firmante = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Nombre del firmante'
+    )
+    cargo_firmante = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Cargo del firmante'
+    )
 
     class Meta:
         verbose_name = 'Cotización'
@@ -251,29 +370,42 @@ class Cotizacion(models.Model):
         permissions = [
             ('can_approve_quotation', 'Puede aprobar cotizaciones'),
             ('can_reject_quotation', 'Puede rechazar cotizaciones'),
+            ('can_generate_invoice', 'Puede generar facturas'),
+            ('can_view_reports', 'Puede ver reportes'),
+        ]
+        indexes = [
+            models.Index(fields=['estado']),
+            models.Index(fields=['cliente']),
+            models.Index(fields=['ingeniero']),
+            models.Index(fields=['fecha']),
+            models.Index(fields=['numero_factura']),
         ]
 
     def __str__(self):
-        return f"Cotización #{self.id} - {self.cliente.get_full_name() or self.cliente.username}"
+        return f"Cotización #{self.id} - {self.get_referencia_display()} - {self.get_estado_display()}"
 
-
+    def get_referencia_display(self):
+        return self.referencia or f"Proyecto {self.id}"
 
     def save(self, *args, **kwargs):
-        """
-        Override save method to ensure totals are calculated automatically.
-        First saves to get PK, then updates totals.
-        """
-        # First save to get PK if new
+        """Override save to handle invoice number generation and state transitions."""
+        # Generate invoice number if transitioning to FACTURADA state
+        if self.estado == Cotizacion.Estados.FACTURADA and not self.numero_factura:
+            self.generar_numero_factura()
+            self.fecha_factura = timezone.now().date()
+            self.factura_generada = True
+            
+        # Set approval date when approved
+        if self.estado == Cotizacion.Estados.APROBADA and not self.fecha_aprobacion:
+            self.fecha_aprobacion = timezone.now()
+            
         super().save(*args, **kwargs)
         
-        # Then update totals
+        # Always update totals after saving
         self.actualizar_totales()
 
     def actualizar_totales(self):
-        """
-        Calculates and updates subtotal, tax and total based on items.
-        Uses database aggregation for accurate calculations.
-        """
+        """Calculate and update financial totals based on items."""
         # Calculate subtotal (quantity * unit price for all items)
         resultado = self.items.aggregate(
             subtotal=Sum(F('cantidad') * F('valor_unidad')))
@@ -287,11 +419,57 @@ class Cotizacion(models.Model):
         self.total = self.subtotal + self.iva - self.descuento
         
         # Update only the calculated fields to avoid recursion
+        update_fields = ['subtotal', 'iva', 'total']
         Cotizacion.objects.filter(pk=self.pk).update(
             subtotal=self.subtotal,
             iva=self.iva,
             total=self.total
         )
+
+    def generar_numero_factura(self):
+        """Generate unique invoice number in format FAC-YYYYMMDD-XXXX."""
+        if not self.numero_factura:
+            today = timezone.now().date()
+            last_factura = Cotizacion.objects.filter(
+                fecha_factura=today
+            ).exclude(numero_factura='').count()
+            self.numero_factura = f"FAC-{today.strftime('%Y%m%d')}-{last_factura + 1:04d}"
+        return self.numero_factura
+
+    def puede_facturar(self):
+        """Check if quotation can be invoiced."""
+        return self.estado == Cotizacion.Estados.APROBADA and not self.factura_generada
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('detalle_cotizacion', args=[str(self.id)])
+
+    def generar_pdf_factura(self):
+        """Generate PDF invoice and save to pdf_factura field."""
+        from django.template.loader import render_to_string
+        from weasyprint import HTML
+        from io import BytesIO
+        import os
+        
+        if not self.numero_factura:
+            self.generar_numero_factura()
+        
+        # Render HTML template
+        html_string = render_to_string('factura/pdf_template.html', {
+            'cotizacion': self,
+            'items': self.items.all(),
+            'fecha_actual': timezone.now().strftime("%d/%m/%Y")
+        })
+        
+        # Generate PDF
+        html = HTML(string=html_string)
+        pdf_file = html.write_pdf()
+        
+        # Save to model
+        filename = f"factura_{self.numero_factura}.pdf"
+        self.pdf_factura.save(filename, BytesIO(pdf_file), save=True)
+        
+        return self.pdf_factura.url
 
 
 class CotizacionItem(models.Model):
