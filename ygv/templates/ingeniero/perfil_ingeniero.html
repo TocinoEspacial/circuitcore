@@ -556,10 +556,9 @@
         <div class="profile-header">
             <h3><i class="fas fa-user-tie"></i>Mi Perfil de Ingeniero</h3>
         </div>
-        
+
         <div class="profile-body">
             <div class="row">
-                <!-- Columna izquierda - Avatar e información básica -->
                 <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
                     <div class="avatar-section">
                         <form id="avatar-form" method="post" action="{% url 'editar_perfil' %}" enctype="multipart/form-data">
@@ -579,10 +578,10 @@
                                 <i class="fas fa-save"></i> Guardar Cambios
                             </button>
                         </form>
-                        
+
                         <h4 class="user-name mt-3">{{ user.get_full_name }}</h4>
                         <span class="user-username">{{ user.username }}</span>
-                        
+
                         <div class="mt-4">
                             <p class="user-detail">
                                 <i class="fas fa-calendar-alt"></i> 
@@ -591,10 +590,8 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Columna derecha - Información detallada -->
+
                 <div class="col-lg-8 col-md-12">
-                    <!-- Tarjeta de información personal -->
                     <div class="info-card">
                         <div class="info-header">
                             <h5 class="mb-0"><i class="fas fa-info-circle"></i> Información Personal</h5>
@@ -602,7 +599,7 @@
                                 <i class="fas fa-edit"></i> Editar
                             </a>
                         </div>
-                        
+
                         <div class="info-body">
                             <form method="post" action="{% url 'editar_perfil' %}">
                                 {% csrf_token %}
@@ -611,18 +608,18 @@
                                         <label class="form-label"><i class="fas fa-envelope"></i>Email</label>
                                         <input type="email" class="form-control" value="{{ user.email }}" disabled>
                                     </div>
-                                    
+
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label"><i class="fas fa-phone"></i>Teléfono</label>
                                         <input type="text" name="telefono" class="form-control" value="{{ perfil.telefono|default:'' }}">
                                     </div>
                                 </div>
-                                
+
                                 <div class="mb-3">
                                     <label class="form-label"><i class="fas fa-map-marker-alt"></i>Dirección</label>
                                     <input type="text" name="direccion" class="form-control" value="{{ perfil.direccion|default:'' }}">
                                 </div>
-                                
+
                                 <div class="text-end">
                                     <button type="submit" class="btn-primary">
                                         <i class="fas fa-save"></i> Guardar Cambios
@@ -631,14 +628,23 @@
                             </form>
                         </div>
                     </div>
-                    
-                    <!-- Tarjeta de cotizaciones como ingeniero -->
+
                     <div class="quotations-card mt-4">
                         <div class="info-header">
                             <h5 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> Mis Cotizaciones Asignadas</h5>
                         </div>
-                        
+
                         <div class="info-body">
+                            <form method="get" class="mb-4 d-flex gap-2 align-items-center flex-wrap">
+                                <label for="estado" class="form-label mb-0"><i class="fas fa-filter"></i> Filtrar por estado:</label>
+                                <select name="estado" id="estado" class="form-select" onchange="this.form.submit()" style="max-width: 200px;">
+                                    <option value="">Todos</option>
+                                    <option value="pendiente" {% if request.GET.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                                    <option value="aprobado" {% if request.GET.estado == 'aprobado' %}selected{% endif %}>Aprobado</option>
+                                    <option value="rechazado" {% if request.GET.estado == 'rechazado' %}selected{% endif %}>Rechazado</option>
+                                </select>
+                            </form>
+
                             {% if cotizaciones %}
                             <div class="table-responsive">
                                 <table class="table table-hover">
@@ -657,37 +663,26 @@
                                         <tr>
                                             <td class="d-none d-sm-table-cell"><strong>#{{ cotizacion.id }}</strong></td>
                                             <td class="table-date d-none d-md-table-cell">{{ cotizacion.fecha|date:"d/m/Y" }}</td>
-                                            <td class="d-none d-lg-table-cell">
-                                                <span class="project-name">
-                                                    {{ cotizacion.cliente.get_full_name|default:cotizacion.cliente.username }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span class="project-name">
-                                                    {% if cotizacion.proyecto %}
-                                                        {{ cotizacion.proyecto.tipo_proyecto|truncatechars:20 }}
-                                                    {% else %}
-                                                        Sin proyecto
-                                                    {% endif %}
-                                                </span>
-                                            </td>
+                                            <td class="d-none d-lg-table-cell">{{ cotizacion.cliente.get_full_name|default:cotizacion.cliente.username }}</td>
+                                            <td>{{ cotizacion.proyecto.tipo_proyecto|default:"Sin proyecto" }}</td>
                                             <td>
                                                 <span class="badge 
                                                     {% if cotizacion.estado == 'aprobado' %}bg-success
                                                     {% elif cotizacion.estado == 'rechazado' %}bg-danger
                                                     {% else %}bg-warning{% endif %}">
-                                                    {{ cotizacion.estado|title|slice:":3" }}
-                                                    <span class="d-none d-sm-inline">{{ cotizacion.estado|title|slice:"3:" }}</span>
+                                                    {{ cotizacion.estado|title }}
                                                 </span>
                                             </td>
                                             <td>
                                                 <div class="table-actions">
-                                                    <a href="{% url 'enviar_cotizacion' cotizacion.id %}" 
-                                                       class="btn-outline-accent btn-sm">
-                                                        <i class="fas fa-mail d-none d-sm-inline"></i>
-                                                        <span class="d-sm-none">Enviar</span>
-                                                        <span class="d-none d-sm-inline">Enviar Cotizacion</span>
+                                                    <a href="{% url 'enviar_cotizacion' cotizacion.id %}" class="btn-outline-accent btn-sm">
+                                                        <i class="fas fa-envelope"></i> Enviar
                                                     </a>
+                                                    {% if cotizacion.estado == 'aprobado' %}
+                                                    <a href="{% url 'ver_factura' cotizacion.id %}" class="btn-primary btn-sm">
+                                                        <i class="fas fa-file-invoice"></i> Facturar
+                                                    </a>
+                                                    {% endif %}
                                                 </div>
                                             </td>
                                         </tr>
@@ -704,6 +699,7 @@
                             {% endif %}
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
