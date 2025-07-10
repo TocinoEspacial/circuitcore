@@ -328,15 +328,6 @@ def editar_perfil(request):
         'perfil_form': perfil_form
     })
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from django.http import JsonResponse
-from django.db.models import Q
-from django.core.paginator import Paginator
-from decimal import Decimal
-from .models import PerfilUsuario, Cotizacion, Factura
-
 @login_required
 def perfil_ingeniero(request):
     user = request.user
@@ -346,38 +337,11 @@ def perfil_ingeniero(request):
     
     perfil, created = PerfilUsuario.objects.get_or_create(user=user)
     
-    # Obtener cotizaciones con filtros
+    # Obtener cotizaciones donde el usuario actual es el ingeniero asignado
     cotizaciones = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')
     
-    # Aplicar filtros
-    fecha_desde = request.GET.get('fecha_desde')
-    fecha_hasta = request.GET.get('fecha_hasta')
-    estado = request.GET.get('estado')
-    cliente = request.GET.get('cliente')
-    id_cotizacion = request.GET.get('id_cotizacion')
-    
-    if fecha_desde:
-        cotizaciones = cotizaciones.filter(fecha__gte=fecha_desde)
-    if fecha_hasta:
-        cotizaciones = cotizaciones.filter(fecha__lte=fecha_hasta)
-    if estado:
-        cotizaciones = cotizaciones.filter(estado=estado)
-    if cliente:
-        cotizaciones = cotizaciones.filter(
-            Q(cliente__first_name__icontains=cliente) |
-            Q(cliente__last_name__icontains=cliente) |
-            Q(cliente__username__icontains=cliente)
-        )
-    if id_cotizacion:
-        cotizaciones = cotizaciones.filter(id=id_cotizacion)
-    
-    # Paginación
-    paginator = Paginator(cotizaciones, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
     context = {
-        'cotizaciones': page_obj,
+        'cotizaciones': cotizaciones,
         'user': user,
         'perfil': perfil,
         'rol': 'Ingeniero',
@@ -385,43 +349,6 @@ def perfil_ingeniero(request):
     }
     
     return render(request, 'ingeniero/perfil_ingeniero.html', context)
-
-@login_required
-@require_POST
-def generar_factura(request):
-    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        try:
-            cotizacion_id = request.POST.get('cotizacion_id')
-            numero_factura = request.POST.get('numero_factura')
-            fecha_factura = request.POST.get('fecha_factura')
-            monto_total = Decimal(request.POST.get('monto_total'))
-            iva = Decimal(request.POST.get('iva'))
-            notas = request.POST.get('notas', '')
-            
-            cotizacion = Cotizacion.objects.get(id=cotizacion_id, ingeniero=request.user)
-            
-            # Crear la factura
-            factura = Factura.objects.create(
-                cotizacion=cotizacion,
-                numero_factura=numero_factura,
-                fecha_factura=fecha_factura,
-                monto_total=monto_total,
-                iva=iva,
-                notas=notas,
-                generada_por=request.user
-            )
-            
-            # Actualizar el estado de la cotización si es necesario
-            if cotizacion.estado != 'aprobado':
-                cotizacion.estado = 'aprobado'
-                cotizacion.save()
-            
-            return JsonResponse({'success': True, 'factura_id': factura.id})
-            
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
-    
-    return JsonResponse({'success': False, 'error': 'Método no permitido'})
 
 @login_required
 def perfil_cliente(request):
@@ -672,60 +599,3 @@ def guardar_firma(request, cotizacion_id):
             cotizacion.estado = 'aprobado'
             cotizacion.save()
         return redirect('detalle_cotizacion', id=cotizacion.id)
-
-from django.http import HttpResponse
-from django.template.loader import get_template
-from xhtml2pdf import pisa
-from django.conf import settings
-import os
-
-@login_required
-def descargar_factura(request, factura_id):
-    factura = get_object_or_404(Factura, id=factura_id, cotizacion__ingeniero=request.user)
-    
-    # Datos de la empresa (puedes mover esto a tu modelo de configuración)
-    empresa = {
-        'nombre': "Y.G.V construcciones",
-        'direccion': "calle 100c #130-61",
-        'ciudad': "Bogota D.C",
-        'pais': "Colombia",
-        'telefono': "+57 3163810053",
-        'email': "contacto@ygvconstrucciones.com",
-        'rut': "76.543.210-9",
-        'banco_nombre': "Banco Nacional",
-        'banco_cuenta': "Cuenta Corriente 123456789",
-        'banco_rut': "76.543.210-9",
-        'email_pagos': "pagos@ygvconstrucciones.com",
-        'website': "https://circuitcore.onrender.com",
-        'lema': "construyendo futuo, manteniendo excelencia"
-    }
-    
-    # Cálculos para la factura
-    subtotal = factura.monto_total / (1 + factura.iva / 100)
-    iva_amount = factura.monto_total - subtotal
-    
-    # Ruta del logo (asegúrate de tener un logo en tu directorio static)
-    logo_path = os.path.join(settings.STATIC_ROOT, 'ygv/images/logo.png')
-    logo_url = "file://" + logo_path
-    
-    context = {
-        'factura': factura,
-        'empresa': empresa,
-        'subtotal': subtotal,
-        'iva_amount': iva_amount,
-        'logo_url': logo_url
-    }
-    
-    template = get_template('ingeniero/factura.html')
-    html = template.render(context)
-    
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="factura_{factura.numero_factura}.pdf"'
-    
-    # Crear el PDF
-    pisa_status = pisa.CreatePDF(html, dest=response)
-    
-    if pisa_status.err:
-        return HttpResponse('Error al generar el PDF', status=500)
-    
-    return response
