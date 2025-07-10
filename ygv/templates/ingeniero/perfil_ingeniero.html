@@ -423,6 +423,73 @@
     .table-date {
         white-space: nowrap;
     }
+
+    /* Estilos para los filtros */
+    .filter-card {
+        background: rgba(26, 26, 29, 0.8);
+        border: 1px solid rgba(255, 107, 53, 0.3);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(0, 78, 137, 0.3) !important;
+        color: var(--accent) !important;
+        box-shadow: inset 0 -1px 0 rgba(255, 107, 53, 0.2);
+    }
+
+    .accordion-button:focus {
+        box-shadow: 0 0 0 0.25rem rgba(255, 107, 53, 0.2);
+        border-color: var(--primary);
+    }
+
+    /* Estilos para la paginación */
+    .page-link {
+        background-color: rgba(26, 26, 29, 0.9);
+        border: 1px solid rgba(255, 107, 53, 0.4);
+        color: var(--accent);
+        margin: 0 5px;
+        border-radius: 8px !important;
+    }
+
+    .page-item.active .page-link {
+        background-color: var(--primary);
+        border-color: var(--primary);
+        color: var(--dark);
+        font-weight: bold;
+    }
+
+    .page-link:hover {
+        background-color: rgba(255, 107, 53, 0.1);
+        color: var(--accent);
+    }
+
+    /* Estilos para el modal */
+    .modal-content {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid var(--primary);
+    }
+
+    .modal-footer {
+        border-top: 1px solid var(--primary);
+    }
+
+    .generar-factura-btn {
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .generar-factura-btn:hover {
+        background-color: var(--primary);
+        color: var(--dark);
+        transform: translateY(-2px);
+    }
     
     /* Media Queries para Responsividad */
     @media (max-width: 1199.98px) {
@@ -639,6 +706,60 @@
                         </div>
                         
                         <div class="info-body">
+                            <!-- Filtros de cotizaciones -->
+                            <div class="filter-card mb-4">
+                                <div class="accordion" id="filterAccordion">
+                                    <div class="accordion-item bg-transparent border-primary">
+                                        <h2 class="accordion-header" id="filterHeading">
+                                            <button class="accordion-button bg-dark text-accent" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
+                                                <i class="fas fa-filter me-2"></i>Filtrar Cotizaciones
+                                            </button>
+                                        </h2>
+                                        <div id="filterCollapse" class="accordion-collapse collapse" aria-labelledby="filterHeading" data-bs-parent="#filterAccordion">
+                                            <div class="accordion-body bg-dark">
+                                                <form id="filter-form" method="get" action="{% url 'perfil_ingeniero' %}">
+                                                    <div class="row g-3">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label"><i class="fas fa-calendar"></i> Desde</label>
+                                                            <input type="date" name="fecha_desde" class="form-control" value="{{ request.GET.fecha_desde }}">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label class="form-label"><i class="fas fa-calendar"></i> Hasta</label>
+                                                            <input type="date" name="fecha_hasta" class="form-control" value="{{ request.GET.fecha_hasta }}">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label class="form-label"><i class="fas fa-tag"></i> Estado</label>
+                                                            <select name="estado" class="form-select">
+                                                                <option value="">Todos</option>
+                                                                <option value="pendiente" {% if request.GET.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                                                                <option value="aprobado" {% if request.GET.estado == 'aprobado' %}selected{% endif %}>Aprobado</option>
+                                                                <option value="rechazado" {% if request.GET.estado == 'rechazado' %}selected{% endif %}>Rechazado</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label class="form-label"><i class="fas fa-user"></i> Cliente</label>
+                                                            <input type="text" name="cliente" class="form-control" placeholder="Nombre del cliente" value="{{ request.GET.cliente }}">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label class="form-label"><i class="fas fa-hashtag"></i> ID Cotización</label>
+                                                            <input type="text" name="id_cotizacion" class="form-control" placeholder="Número de cotización" value="{{ request.GET.id_cotizacion }}">
+                                                        </div>
+                                                        <div class="col-12 text-end">
+                                                            <button type="submit" class="btn-primary me-2">
+                                                                <i class="fas fa-filter"></i> Aplicar Filtros
+                                                            </button>
+                                                            <a href="{% url 'perfil_ingeniero' %}" class="btn-outline-accent">
+                                                                <i class="fas fa-times"></i> Limpiar
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             {% if cotizaciones %}
                             <div class="table-responsive">
                                 <table class="table table-hover">
@@ -649,6 +770,7 @@
                                             <th class="d-none d-lg-table-cell">Cliente</th>
                                             <th>Proyecto</th>
                                             <th>Estado</th>
+                                            <th class="d-none d-lg-table-cell">Factura</th>
                                             <th class="text-end">Acciones</th>
                                         </tr>
                                     </thead>
@@ -680,13 +802,33 @@
                                                     <span class="d-none d-sm-inline">{{ cotizacion.estado|title|slice:"3:" }}</span>
                                                 </span>
                                             </td>
+                                            <td class="d-none d-lg-table-cell">
+                                                {% if cotizacion.factura %}
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-file-invoice-dollar"></i> {{ cotizacion.factura.numero_factura }}
+                                                    </span>
+                                                {% else %}
+                                                    <button class="btn btn-sm btn-outline-primary generar-factura-btn" 
+                                                            data-cotizacion-id="{{ cotizacion.id }}"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#facturaModal">
+                                                        <i class="fas fa-file-invoice"></i> Generar
+                                                    </button>
+                                                {% endif %}
+                                            </td>
                                             <td>
                                                 <div class="table-actions">
                                                     <a href="{% url 'enviar_cotizacion' cotizacion.id %}" 
                                                        class="btn-outline-accent btn-sm">
                                                         <i class="fas fa-mail d-none d-sm-inline"></i>
                                                         <span class="d-sm-none">Enviar</span>
-                                                        <span class="d-none d-sm-inline">Enviar Cotizacion</span>
+                                                        <span class="d-none d-sm-inline">Enviar</span>
+                                                    </a>
+                                                    <a href="{% url 'detalle_cotizacion' cotizacion.id %}" 
+                                                       class="btn-outline-accent btn-sm ms-1">
+                                                        <i class="fas fa-eye d-none d-sm-inline"></i>
+                                                        <span class="d-sm-none">Ver</span>
+                                                        <span class="d-none d-sm-inline">Detalle</span>
                                                     </a>
                                                 </div>
                                             </td>
@@ -695,16 +837,116 @@
                                     </tbody>
                                 </table>
                             </div>
+                            
+                            <!-- Paginación -->
+                            {% if cotizaciones.has_other_pages %}
+                            <nav aria-label="Page navigation" class="mt-4">
+                                <ul class="pagination justify-content-center">
+                                    {% if cotizaciones.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ cotizaciones.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">&laquo;</span>
+                                    </li>
+                                    {% endif %}
+                                    
+                                    {% for i in cotizaciones.paginator.page_range %}
+                                    {% if cotizaciones.number == i %}
+                                    <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                                    {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ i }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ i }}</a>
+                                    </li>
+                                    {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if cotizaciones.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ cotizaciones.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">&raquo;</span>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                            {% endif %}
                             {% else %}
                             <div class="empty-state">
                                 <i class="fas fa-file-alt"></i>
                                 <h5>No tienes cotizaciones asignadas</h5>
-                                <p>Actualmente no hay cotizaciones asignadas a tu perfil de ingeniero</p>
+                                <p>No se encontraron cotizaciones que coincidan con tus criterios de búsqueda</p>
+                                <a href="{% url 'perfil_ingeniero' %}" class="btn-primary mt-3">
+                                    <i class="fas fa-sync-alt"></i> Reiniciar Filtros
+                                </a>
                             </div>
                             {% endif %}
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para generar factura -->
+<div class="modal fade" id="facturaModal" tabindex="-1" aria-labelledby="facturaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark border border-primary">
+            <div class="modal-header bg-gradient-primary">
+                <h5 class="modal-title text-accent" id="facturaModalLabel">
+                    <i class="fas fa-file-invoice-dollar me-2"></i>Generar Factura
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="facturaForm" method="post" action="{% url 'generar_factura' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="cotizacion_id" id="cotizacionIdInput">
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fas fa-hashtag"></i> Número de Factura</label>
+                            <input type="text" name="numero_factura" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fas fa-calendar"></i> Fecha de Factura</label>
+                            <input type="date" name="fecha_factura" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fas fa-money-bill-wave"></i> Monto Total</label>
+                            <input type="number" name="monto_total" class="form-control" step="0.01" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fas fa-percent"></i> IVA (%)</label>
+                            <input type="number" name="iva" class="form-control" value="19" step="0.01" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label"><i class="fas fa-sticky-note"></i> Notas</label>
+                        <textarea name="notas" class="form-control" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="text-end">
+                        <button type="button" class="btn-outline-accent me-2" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Generar Factura
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -821,6 +1063,69 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     detectTouch();
+
+    // Manejo del modal de facturación
+    const facturaModal = document.getElementById('facturaModal');
+    if (facturaModal) {
+        facturaModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const cotizacionId = button.getAttribute('data-cotizacion-id');
+            const modalInput = document.getElementById('cotizacionIdInput');
+            modalInput.value = cotizacionId;
+            
+            // Aquí podrías hacer una petición AJAX para obtener datos de la cotización
+            // y prellenar algunos campos del formulario de factura
+        });
+    }
+    
+    // Manejo del formulario de filtros
+    const filterForm = document.getElementById('filter-form');
+    if (filterForm) {
+        filterForm.addEventListener('submit', function(e) {
+            // Validación de fechas
+            const fechaDesde = document.querySelector('input[name="fecha_desde"]').value;
+            const fechaHasta = document.querySelector('input[name="fecha_hasta"]').value;
+            
+            if (fechaDesde && fechaHasta && new Date(fechaDesde) > new Date(fechaHasta)) {
+                e.preventDefault();
+                alert('La fecha "Desde" no puede ser mayor que la fecha "Hasta"');
+            }
+        });
+    }
+    
+    // Manejo del formulario de factura con AJAX
+    const facturaForm = document.getElementById('facturaForm');
+    if (facturaForm) {
+        facturaForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(facturaForm);
+            
+            fetch(facturaForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mostrar mensaje de éxito y recargar la página
+                    alert('Factura generada exitosamente');
+                    location.reload();
+                } else {
+                    // Mostrar errores
+                    alert(data.error || 'Error al generar la factura');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            });
+        });
+    }
 });
 </script>
 {% endblock %}
