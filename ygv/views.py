@@ -88,16 +88,16 @@ def cliente_home(request):
 def es_ingeniero(user):
     return user.groups.filter(name='ingeniero').exists()
 
-# ---------- Cotizaciones ----------
+# ---------- cotizacion ----------
 @login_required
 def cotizaciones_pendientes(request):
     if es_ingeniero(request.user):
-        cotizaciones = Cotizacion.objects.filter(estado='BORRADOR')
+        cotizacion = Cotizacion.objects.filter(estado='BORRADOR')
     else:
-        cotizaciones = Cotizacion.objects.filter(cliente=request.user, estado='pendiente')
+        cotizacion = Cotizacion.objects.filter(cliente=request.user, estado='pendiente')
     
     return render(request, 'cotizacion/lista_pendientes.html', {
-        'cotizaciones': cotizaciones
+        'cotizacion': cotizacion
     })
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -345,29 +345,29 @@ def perfil_ingeniero(request):
     proyecto = request.GET.get('proyecto')
     
     # Base queryset
-    cotizaciones = Cotizacion.objects.filter(ingeniero=user)
+    cotizacion = Cotizacion.objects.filter(ingeniero=user)
     
     # Aplicar filtros
     if estado:
-        cotizaciones = cotizaciones.filter(estado=estado)
+        cotizacion = cotizacion.filter(estado=estado)
     if cliente:
-        cotizaciones = cotizaciones.filter(cliente__username__icontains=cliente)
+        cotizacion = cotizacion.filter(cliente__username__icontains=cliente)
     if fecha_inicio and fecha_fin:
-        cotizaciones = cotizaciones.filter(
+        cotizacion = cotizacion.filter(
             fecha__gte=fecha_inicio,
             fecha__lte=fecha_fin
         )
     if proyecto:
-        cotizaciones = cotizaciones.filter(proyecto__icontains=proyecto)
+        cotizacion = cotizacion.filter(proyecto__icontains=proyecto)
     
     # Ordenar
-    cotizaciones = cotizaciones.order_by('-fecha')
+    cotizacion = cotizacion.order_by('-fecha')
     
     # Obtener lista de estados únicos para el dropdown
     estados = Cotizacion.objects.filter(ingeniero=user).values_list('estado', flat=True).distinct()
     
     context = {
-        'cotizaciones': cotizaciones,
+        'cotizacion': cotizacion,
         'user': user,
         'perfil': perfil,
         'rol': 'Ingeniero',
@@ -389,11 +389,11 @@ def perfil_ingeniero(request):
 def perfil_cliente(request):
     user = request.user
     perfil, created = PerfilUsuario.objects.get_or_create(user=user)
-    cotizaciones = Cotizacion.objects.filter(cliente=user).order_by('-fecha')[:5]
+    cotizacion = Cotizacion.objects.filter(cliente=user).order_by('-fecha')[:5]
     
     context = {
         'user': user,
-        'cotizaciones': cotizaciones,
+        'cotizacion': cotizacion,
         'perfil': perfil,
         'rol': 'Cliente',
         'avatar_url': perfil.avatar.url if perfil.avatar else '/static/images/default-avatar.png'
@@ -406,11 +406,11 @@ def perfil_ingeniero(request):
     user = request.user
     # Get or create the profile if it doesn't exist
     perfil, created = PerfilUsuario.objects.get_or_create(user=user)
-    cotizaciones = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')[:5]
+    cotizacion = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')[:5]
     
     return render(request, 'ingeniero/perfil_cliente.html', {
         'user': user,
-        'cotizaciones': cotizaciones,
+        'cotizacion': cotizacion,
         'perfil': perfil  # Use the profile we just got/created
     })
 
@@ -420,11 +420,11 @@ def perfil_cliente(request):
     user = request.user
     # Get or create the profile if it doesn't exist
     perfil, created = PerfilUsuario.objects.get_or_create(user=user)
-    cotizaciones = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')[:5]
+    cotizacion = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')[:5]
     
     return render(request, 'ingeniero/perfil_ingeniero.html', {
         'user': user,
-        'cotizaciones': cotizaciones,
+        'cotizacion': cotizacion,
         'perfil': perfil  # Use the profile we just got/created
     })
 
@@ -461,13 +461,13 @@ def perfil_view(request):
     
 
     if request.user.groups.filter(name='CLIENTE').exists():
-        cotizaciones = Cotizacion.objects.filter(cliente=request.user)
+        cotizacion = Cotizacion.objects.filter(cliente=request.user)
     else:
-        cotizaciones = Cotizacion.objects.all().order_by('-fecha')[:5]  \
+        cotizacion = Cotizacion.objects.all().order_by('-fecha')[:5]  \
     
     context = {
         'perfil': perfil,
-        'cotizaciones': cotizaciones,
+        'cotizacion': cotizacion,
     }
     return render(request, 'ingeniero/perfil_cliente.html', context)
 from django.shortcuts import get_object_or_404, render
@@ -554,12 +554,12 @@ def Proyectos(request):
 
 @login_required
 def generar_reporte_cotizaciones(request):
-    # Obtener cotizaciones pendientes
-    cotizaciones = Cotizacion.objects.filter(estado='BORRADOR').order_by('-fecha')
+    # Obtener cotizacion pendientes
+    cotizacion = Cotizacion.objects.filter(estado='BORRADOR').order_by('-fecha')
 
     # Preparar contexto
     context = {
-        'cotizaciones': cotizaciones,
+        'cotizacion': cotizacion,
         'fecha_reporte': timezone.now().strftime("%d/%m/%Y %H:%M"),
         'usuario': request.user.get_full_name() or request.user.username,
     }
