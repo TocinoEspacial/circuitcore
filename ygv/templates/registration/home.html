@@ -1082,14 +1082,14 @@
                         
                         <!-- Opciones según grupo -->
                         {% for group in user.groups.all %}
-                            {% if group.id == 1 %}
+                            {% if group.id == 2 %}
                                 <li data-aos="fade-left" data-aos-delay="200">
                                     <a href="{% url 'cotizaciones_pendientes' %}" class="dropdown-link">
                                         <i class="fas fa-file-invoice-dollar"></i>
                                         <span>Cotizaciones</span>
                                     </a>
                                 </li>
-                            {% elif group.id == 2 %}
+                            {% elif group.id == 1 %}
                                 <li data-aos="fade-left" data-aos-delay="200">
                                     <a href="{% url 'solicitar' %}" class="dropdown-link">
                                         <i class="fas fa-tools"></i>

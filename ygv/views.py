@@ -86,14 +86,16 @@ def cliente_home(request):
 
 # ---------- Utilidades ----------
 def es_ingeniero(user):
-    return user.groups.filter(name='cliente').exists()
+    return user.groups.filter(name='ingeniero').exists()
 
 # ---------- cotizacion ----------
 @login_required
 def cotizaciones_pendientes(request):
-
-    cotizacion = Cotizacion.objects.filter(estado='BORRADOR')
-
+    if es_ingeniero(request.user):
+        cotizacion = Cotizacion.objects.filter(estado='BORRADOR')
+    else:
+        cotizacion = Cotizacion.objects.filter(cliente=request.user, estado='pendiente')
+    
     return render(request, 'cotizacion/lista_pendientes.html', {
         'cotizacion': cotizacion
     })
