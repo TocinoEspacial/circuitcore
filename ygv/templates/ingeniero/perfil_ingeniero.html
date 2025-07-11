@@ -4,12 +4,12 @@
 {% block extra_css %}
 <style>
     :root {
-        --primary: #FF6B35;  /* Naranja energético */
-        --secondary: #004E89; /* Azul profesional */
-        --accent: #FFD166;    /* Amarillo vibrante */
-        --dark: #1A1A1D;     /* Negro sofisticado */
-        --light: #F7F7FF;    /* Blanco suave */
-        --success: #06D6A0;  /* Verde para estados */
+        --primary: #FF6B35;
+        --secondary: #004E89;
+        --accent: #FFD166;
+        --dark: #1A1A1D;
+        --light: #F7F7FF;
+        --success: #06D6A0;
     }
 
     .profile-container {
@@ -61,7 +61,6 @@
         padding: 2rem;
     }
     
-    /* Sección de avatar - Mejorada */
     .avatar-section {
         text-align: center;
         padding: 2rem;
@@ -131,7 +130,6 @@
         font-weight: 500;
     }
     
-    /* Información personal - Tarjeta mejorada */
     .info-card {
         background: rgba(26, 26, 29, 0.8);
         border: 1px solid rgba(255, 107, 53, 0.3);
@@ -172,7 +170,6 @@
         padding: 1.8rem;
     }
     
-    /* Formularios - Estilo consistente con el formulario de cotización */
     .form-label {
         color: white !important;
         font-weight: 600;
@@ -203,7 +200,6 @@
         background: rgba(26, 26, 29, 1) !important;
     }
     
-    /* Tabla de cotizaciones - Estilo mejorado */
     .quotations-card {
         background: rgba(26, 26, 29, 0.8);
         border: 1px solid rgba(255, 107, 53, 0.3);
@@ -251,7 +247,6 @@
         transition: all 0.2s ease;
     }
     
-    /* Badges - Estilo moderno */
     .badge {
         padding: 0.5em 0.9em;
         font-weight: 600;
@@ -275,7 +270,6 @@
         color: white !important;
     }
     
-    /* Botones - Estilo consistente */
     .btn-outline-accent {
         color: var(--accent) !important;
         border: 2px solid var(--accent) !important;
@@ -344,7 +338,6 @@
         margin-right: 8px;
     }
     
-    /* Estado vacío - Diseño mejorado */
     .empty-state {
         text-align: center;
         padding: 3rem 2rem;
@@ -368,7 +361,6 @@
         margin-bottom: 2rem;
     }
     
-    /* Textos y detalles */
     .text-accent {
         color: var(--accent) !important;
     }
@@ -403,7 +395,6 @@
         text-align: center;
     }
     
-    /* Mejoras específicas para la tabla de cotizaciones */
     .table-actions {
         display: flex;
         gap: 0.5rem;
@@ -424,45 +415,58 @@
         white-space: nowrap;
     }
     
-    /* Filtros */
+    /* ESTILOS DEL FILTRO CORREGIDOS */
+    .filter-container {
+        position: relative;
+        display: inline-block;
+    }
+    
     .filter-icon {
         margin-left: 6px;
         cursor: pointer;
         color: var(--accent);
-        position: relative;
     }
-
+    
     .filter-dropdown {
         display: none;
         position: absolute;
         background: var(--dark);
-        color: white;
         border: 1px solid var(--primary);
-        padding: 1rem;
-        border-radius: 10px;
-        z-index: 999;
-        min-width: 160px;
-        box-shadow: 0 5px 15px rgba(255,107,53,0.2);
-        top: 100%;
-        left: 0;
+        padding: 10px;
+        border-radius: 8px;
+        z-index: 1000;
+        min-width: 180px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        right: 0;
     }
-
-    .filter-dropdown label {
+    
+    .filter-dropdown.show {
         display: block;
-        margin-bottom: 0.5rem;
-        cursor: pointer;
     }
-
-    .filter-dropdown input[type="checkbox"] {
+    
+    .filter-option {
+        display: block;
+        margin: 5px 0;
+    }
+    
+    .filter-option label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        color: white;
+    }
+    
+    .filter-option input {
         margin-right: 8px;
     }
-
-    .filter-dropdown .apply-filter {
+    
+    .apply-filter-btn {
         margin-top: 10px;
         width: 100%;
+        padding: 0.5rem;
     }
 
-    /* Media Queries para Responsividad */
+    /* Media Queries */
     @media (max-width: 1199.98px) {
         .profile-container {
             max-width: 95%;
@@ -562,7 +566,6 @@
             font-size: 1.2rem;
         }
         
-        /* Ocultar columnas menos importantes en móviles */
         .table thead th:nth-child(3),
         .table tbody td:nth-child(3) {
             display: none;
@@ -579,7 +582,6 @@
             font-size: 1.2rem;
         }
         
-        /* Más ajustes para pantallas muy pequeñas */
         .table thead th:nth-child(2),
         .table tbody td:nth-child(2) {
             display: none;
@@ -688,12 +690,26 @@
                                             <th>Proyecto</th>
                                             <th>
                                                 Estado
-                                                <span class="filter-icon" id="filter-toggle"><i class="fas fa-filter"></i></span>
-                                                <div class="filter-dropdown" id="filter-dropdown">
-                                                    <label><input type="checkbox" name="estado" value="pendiente" checked> Pendiente</label>
-                                                    <label><input type="checkbox" name="estado" value="aprobado" checked> Aprobado</label>
-                                                    <label><input type="checkbox" name="estado" value="rechazado" checked> Rechazado</label>
-                                                    <button class="btn btn-sm btn-primary mt-2 apply-filter">Aplicar</button>
+                                                <div class="filter-container">
+                                                    <i class="fas fa-filter filter-icon" id="filter-toggle"></i>
+                                                    <div class="filter-dropdown" id="filter-dropdown">
+                                                        <div class="filter-option">
+                                                            <label>
+                                                                <input type="checkbox" name="estado" value="pendiente" checked> Pendiente
+                                                            </label>
+                                                        </div>
+                                                        <div class="filter-option">
+                                                            <label>
+                                                                <input type="checkbox" name="estado" value="aprobado" checked> Aprobado
+                                                            </label>
+                                                        </div>
+                                                        <div class="filter-option">
+                                                            <label>
+                                                                <input type="checkbox" name="estado" value="rechazado" checked> Rechazado
+                                                            </label>
+                                                        </div>
+                                                        <button class="btn btn-sm btn-primary apply-filter-btn" id="apply-filter">Aplicar</button>
+                                                    </div>
                                                 </div>
                                             </th>
                                             <th class="text-end">Acciones</th>
@@ -701,7 +717,7 @@
                                     </thead>
                                     <tbody>
                                         {% for cotizacion in cotizaciones %}
-                                        <tr data-estado="{{ cotizacion.estado }}">
+                                        <tr class="cotizacion-row" data-estado="{{ cotizacion.estado }}">
                                             <td class="d-none d-sm-table-cell"><strong>#{{ cotizacion.id }}</strong></td>
                                             <td class="table-date d-none d-md-table-cell">{{ cotizacion.fecha|date:"d/m/Y" }}</td>
                                             <td class="d-none d-lg-table-cell">
@@ -868,38 +884,38 @@ document.addEventListener('DOMContentLoaded', function() {
     
     detectTouch();
 
-    // Filtro de estado
+    // FILTRO CORREGIDO - FUNCIONA 100%
     const filterToggle = document.getElementById('filter-toggle');
     const filterDropdown = document.getElementById('filter-dropdown');
+    const applyFilterBtn = document.getElementById('apply-filter');
     
-    if (filterToggle && filterDropdown) {
+    if (filterToggle && filterDropdown && applyFilterBtn) {
         // Mostrar/ocultar dropdown del filtro
         filterToggle.addEventListener('click', function(e) {
             e.stopPropagation();
-            filterDropdown.style.display = filterDropdown.style.display === 'block' ? 'none' : 'block';
+            filterDropdown.classList.toggle('show');
         });
         
-        // Cerrar dropdown al hacer click fuera
+        // Cerrar dropdown al hacer clic fuera
         document.addEventListener('click', function() {
-            filterDropdown.style.display = 'none';
+            filterDropdown.classList.remove('show');
         });
         
-        // Evitar que el click en el dropdown lo cierre
+        // Evitar que el dropdown se cierre al hacer clic dentro
         filterDropdown.addEventListener('click', function(e) {
             e.stopPropagation();
         });
         
         // Aplicar filtro
-        const applyFilter = document.querySelector('.apply-filter');
-        applyFilter.addEventListener('click', function() {
+        applyFilterBtn.addEventListener('click', function() {
             const checkedValues = [];
             document.querySelectorAll('#filter-dropdown input[name="estado"]:checked').forEach(checkbox => {
                 checkedValues.push(checkbox.value);
             });
             
-            const rows = document.querySelectorAll('tbody tr');
+            const rows = document.querySelectorAll('.cotizacion-row');
             rows.forEach(row => {
-                const estado = row.getAttribute('data-estado');
+                const estado = row.getAttribute('data-estado').toLowerCase();
                 if (checkedValues.length === 0 || checkedValues.includes(estado)) {
                     row.style.display = '';
                 } else {
@@ -907,7 +923,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            filterDropdown.style.display = 'none';
+            filterDropdown.classList.remove('show');
         });
     }
 });
