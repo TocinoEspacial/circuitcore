@@ -424,6 +424,44 @@
         white-space: nowrap;
     }
     
+    /* Filtros */
+    .filter-icon {
+        margin-left: 6px;
+        cursor: pointer;
+        color: var(--accent);
+        position: relative;
+    }
+
+    .filter-dropdown {
+        display: none;
+        position: absolute;
+        background: var(--dark);
+        color: white;
+        border: 1px solid var(--primary);
+        padding: 1rem;
+        border-radius: 10px;
+        z-index: 999;
+        min-width: 160px;
+        box-shadow: 0 5px 15px rgba(255,107,53,0.2);
+        top: 100%;
+        left: 0;
+    }
+
+    .filter-dropdown label {
+        display: block;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+    }
+
+    .filter-dropdown input[type="checkbox"] {
+        margin-right: 8px;
+    }
+
+    .filter-dropdown .apply-filter {
+        margin-top: 10px;
+        width: 100%;
+    }
+
     /* Media Queries para Responsividad */
     @media (max-width: 1199.98px) {
         .profile-container {
@@ -547,28 +585,6 @@
             display: none;
         }
     }
-    .filter-icon {
-    margin-left: 6px;
-    cursor: pointer;
-    color: var(--accent);
-    position: relative;
-}
-
-.filter-dropdown {
-    display: none;
-    position: absolute;
-    background: var(--dark);
-    color: white;
-    border: 1px solid var(--primary);
-    padding: 1rem;
-    border-radius: 10px;
-    z-index: 999;
-    min-width: 160px;
-    box-shadow: 0 5px 15px rgba(255,107,53,0.2);
-    top: 100%;
-    left: 0;
-}
-
 </style>
 {% endblock %}
 
@@ -671,22 +687,21 @@
                                             <th class="d-none d-lg-table-cell">Cliente</th>
                                             <th>Proyecto</th>
                                             <th>
-            Estado
-    <span class="filter-icon" data-column="estado"><i class="fas fa-filter"></i></span>
-    <div class="filter-dropdown" id="estado-filter">
-        <label><input type="checkbox" value="pendiente" checked> Pendiente</label><br>
-        <label><input type="checkbox" value="aprobado" checked> Aprobado</label><br>
-        <label><input type="checkbox" value="rechazado" checked> Rechazado</label><br>
-        <button class="btn btn-sm btn-primary mt-2 apply-filter">Aplicar</button>
-    </div>
-</th>
-
+                                                Estado
+                                                <span class="filter-icon" id="filter-toggle"><i class="fas fa-filter"></i></span>
+                                                <div class="filter-dropdown" id="filter-dropdown">
+                                                    <label><input type="checkbox" name="estado" value="pendiente" checked> Pendiente</label>
+                                                    <label><input type="checkbox" name="estado" value="aprobado" checked> Aprobado</label>
+                                                    <label><input type="checkbox" name="estado" value="rechazado" checked> Rechazado</label>
+                                                    <button class="btn btn-sm btn-primary mt-2 apply-filter">Aplicar</button>
+                                                </div>
+                                            </th>
                                             <th class="text-end">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for cotizacion in cotizaciones %}
-                                        <tr>
+                                        <tr data-estado="{{ cotizacion.estado }}">
                                             <td class="d-none d-sm-table-cell"><strong>#{{ cotizacion.id }}</strong></td>
                                             <td class="table-date d-none d-md-table-cell">{{ cotizacion.fecha|date:"d/m/Y" }}</td>
                                             <td class="d-none d-lg-table-cell">
@@ -708,7 +723,7 @@
                                                     {% if cotizacion.estado == 'aprobado' %}bg-success
                                                     {% elif cotizacion.estado == 'rechazado' %}bg-danger
                                                     {% else %}bg-warning{% endif %}">
-                                                    <span class="d-none d-sm-inline">{{ cotizacion.estado}}</span>
+                                                    {{ cotizacion.estado }}
                                                 </span>
                                             </td>
                                             <td>
@@ -852,54 +867,49 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     detectTouch();
-});
 
-function setupFilterButtons() {
-    document.querySelectorAll('.apply-filter').forEach(button => {
-        // Remover event listeners previos para evitar duplicados
-        button.removeEventListener('click', handleFilterClick);
-        button.addEventListener('click', handleFilterClick);
-    });
-}
-
-function handleFilterClick(e) {
-    e.preventDefault();
+    // Filtro de estado
+    const filterToggle = document.getElementById('filter-toggle');
+    const filterDropdown = document.getElementById('filter-dropdown');
     
-    const dropdown = this.closest('.filter-dropdown');
-    const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]:checked');
-    
-    // Si no hay checkboxes seleccionados, mostrar todas las filas
-    if (checkboxes.length === 0) {
-        document.querySelectorAll('tbody tr').forEach(row => {
-            row.style.display = '';
+    if (filterToggle && filterDropdown) {
+        // Mostrar/ocultar dropdown del filtro
+        filterToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            filterDropdown.style.display = filterDropdown.style.display === 'block' ? 'none' : 'block';
         });
-        return;
+        
+        // Cerrar dropdown al hacer click fuera
+        document.addEventListener('click', function() {
+            filterDropdown.style.display = 'none';
+        });
+        
+        // Evitar que el click en el dropdown lo cierre
+        filterDropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        // Aplicar filtro
+        const applyFilter = document.querySelector('.apply-filter');
+        applyFilter.addEventListener('click', function() {
+            const checkedValues = [];
+            document.querySelectorAll('#filter-dropdown input[name="estado"]:checked').forEach(checkbox => {
+                checkedValues.push(checkbox.value);
+            });
+            
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const estado = row.getAttribute('data-estado');
+                if (checkedValues.length === 0 || checkedValues.includes(estado)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            filterDropdown.style.display = 'none';
+        });
     }
-    
-    const selectedValues = Array.from(checkboxes).map(cb => cb.value.trim().toLowerCase());
-    
-    document.querySelectorAll('tbody tr').forEach(row => {
-        const estadoCell = row.querySelector('td[data-column="estado"]') || 
-                          row.querySelector('td:nth-child(5)'); // fallback
-        if (!estadoCell) {
-            console.warn('No se encontró celda de estado en la fila', row);
-            return;
-        }
-        
-        const estadoText = estadoCell.textContent.trim().toLowerCase();
-        const shouldShow = selectedValues.some(value => 
-            estadoText === value || // Comparación exacta
-            estadoText.includes(value) // Comparación parcial (opcional)
-        );
-        
-        row.style.display = shouldShow ? '' : 'none';
-    });
-}
-
-// Inicializar al cargar la página
-document.addEventListener('DOMContentLoaded', setupFilterButtons);
-
-
-
+});
 </script>
 {% endblock %}
