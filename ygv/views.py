@@ -338,10 +338,10 @@ def perfil_ingeniero(request):
     perfil, created = PerfilUsuario.objects.get_or_create(user=user)
     
     # Obtener cotizaciones donde el usuario actual es el ingeniero asignado
-    cotizaciones = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')
+    cotizacion = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')
     
     context = {
-        'cotizaciones': cotizaciones,
+        'cotizaciones': cotizacion,
         'user': user,
         'perfil': perfil,
         'rol': 'Ingeniero',
