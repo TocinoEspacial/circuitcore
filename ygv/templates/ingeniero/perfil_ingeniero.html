@@ -636,16 +636,6 @@
                         </div>
 
                         <div class="info-body">
-                            <form method="get" class="mb-4 d-flex gap-2 align-items-center flex-wrap">
-                                <label for="estado" class="form-label mb-0"><i class="fas fa-filter"></i> Filtrar por estado:</label>
-                                <select name="estado" id="estado" class="form-select" onchange="this.form.submit()" style="max-width: 200px;">
-                                    <option value="">Todos</option>
-                                    <option value="pendiente" {% if request.GET.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
-                                    <option value="aprobado" {% if request.GET.estado == 'aprobado' %}selected{% endif %}>Aprobado</option>
-                                    <option value="rechazado" {% if request.GET.estado == 'rechazado' %}selected{% endif %}>Rechazado</option>
-                                </select>
-                            </form>
-
                            {% if cotizaciones %}
   <div class="table-responsive">
       <table class="table table-hover">
