@@ -337,17 +337,13 @@ def perfil_ingeniero(request):
 
     perfil, created = PerfilUsuario.objects.get_or_create(user=user)
 
-    # Sin filtros, solo cotizaciones del ingeniero
     cotizaciones = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')
-
-    estados = Cotizacion.objects.filter(ingeniero=user).values_list('estado', flat=True).distinct()
 
     context = {
         'cotizaciones': cotizaciones,
         'user': user,
         'perfil': perfil,
         'rol': 'Ingeniero',
-        'estados': estados,
         'avatar_url': perfil.avatar.url if perfil.avatar else '/static/images/default-avatar.png'
     }
 
