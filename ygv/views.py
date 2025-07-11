@@ -86,7 +86,7 @@ def cliente_home(request):
 
 # ---------- Utilidades ----------
 def es_ingeniero(user):
-    return user.groups.filter(name='ingeniero').exists()
+    return user.groups.filter(name='cliente').exists()
 
 # ---------- cotizacion ----------
 @login_required
