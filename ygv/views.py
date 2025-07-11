@@ -337,49 +337,22 @@ def perfil_ingeniero(request):
 
     perfil, created = PerfilUsuario.objects.get_or_create(user=user)
 
-    # Filtros
-    estado = request.GET.get('estado')
-    cliente = request.GET.get('cliente')
-    fecha_inicio = request.GET.get('fecha_inicio')
-    fecha_fin = request.GET.get('fecha_fin')
-    proyecto = request.GET.get('proyecto')
-
-    # Base queryset
-    cotizaciones = Cotizacion.objects.filter(ingeniero=user)
-
-    if estado:
-        cotizaciones = cotizaciones.filter(estado=estado)
-    if cliente:
-        cotizaciones = cotizaciones.filter(cliente__username__icontains=cliente)
-    if fecha_inicio and fecha_fin:
-        cotizaciones = cotizaciones.filter(
-            fecha__gte=fecha_inicio,
-            fecha__lte=fecha_fin
-        )
-    if proyecto:
-        cotizaciones = cotizaciones.filter(proyecto__icontains=proyecto)
-
-    cotizaciones = cotizaciones.order_by('-fecha')
+    # Sin filtros, solo cotizaciones del ingeniero
+    cotizaciones = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')
 
     estados = Cotizacion.objects.filter(ingeniero=user).values_list('estado', flat=True).distinct()
 
     context = {
-        'cotizaciones': cotizaciones,  # <- CAMBIADO AQUÍ
+        'cotizaciones': cotizaciones,
         'user': user,
         'perfil': perfil,
         'rol': 'Ingeniero',
         'estados': estados,
-        'filtros': {
-            'estado': estado,
-            'cliente': cliente,
-            'fecha_inicio': fecha_inicio,
-            'fecha_fin': fecha_fin,
-            'proyecto': proyecto,
-        },
         'avatar_url': perfil.avatar.url if perfil.avatar else '/static/images/default-avatar.png'
     }
 
     return render(request, 'ingeniero/perfil_ingeniero.html', context)
+
 
 
 
