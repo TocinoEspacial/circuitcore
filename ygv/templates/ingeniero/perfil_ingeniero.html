@@ -708,8 +708,8 @@
                                                     {% if cotizacion.estado == 'aprobado' %}bg-success
                                                     {% elif cotizacion.estado == 'rechazado' %}bg-danger
                                                     {% else %}bg-warning{% endif %}">
-                                                    {{ cotizacion.estado|title|slice:":3" }}
-                                                    <span class="d-none d-sm-inline">{{ cotizacion.estado|title|slice:"3:" }}</span>
+                                                    {{ cotizacion.estado}}
+                                                    <span class="d-none d-sm-inline">{{ cotizacion.estado}}</span>
                                                 </span>
                                             </td>
                                             <td>
@@ -855,39 +855,29 @@ document.addEventListener('DOMContentLoaded', function() {
     detectTouch();
 });
 
-// Filtro estilo Excel por estado
-document.querySelectorAll('.filter-icon').forEach(icon => {
-    icon.addEventListener('click', function (e) {
-        e.stopPropagation();
-        // Cierra otros dropdowns
-        document.querySelectorAll('.filter-dropdown').forEach(d => d.style.display = 'none');
-        // Abre el correspondiente
-        const dropdown = this.nextElementSibling;
-        dropdown.style.display = 'block';
+document.querySelectorAll('.apply-filter').forEach(button => {
+    button.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const dropdown = this.closest('.filter-dropdown');
+        const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
+        let selected = Array.from(checkboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value.toLowerCase());
+
+        document.querySelectorAll('tbody tr').forEach(row => {
+            const estadoCell = row.querySelector('td:nth-child(5)');
+            if (!estadoCell) return;
+            const estadoText = estadoCell.textContent.toLowerCase().trim();
+            if (selected.some(estado => estadoText.includes(estado))) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
     });
 });
 
-document.addEventListener('click', function () {
-    document.querySelectorAll('.filter-dropdown').forEach(d => d.style.display = 'none');
-});
-
-document.querySelector('.apply-filter').addEventListener('click', function () {
-    const checkboxes = document.querySelectorAll('#estado-filter input[type="checkbox"]');
-    let selected = Array.from(checkboxes)
-        .filter(cb => cb.checked)
-        .map(cb => cb.value.toLowerCase());
-
-    document.querySelectorAll('tbody tr').forEach(row => {
-        const estadoCell = row.querySelector('td:nth-child(5)');
-        if (!estadoCell) return;
-        const estadoText = estadoCell.textContent.toLowerCase().trim();
-        if (selected.includes(estadoText)) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
-});
 
 </script>
 {% endblock %}
