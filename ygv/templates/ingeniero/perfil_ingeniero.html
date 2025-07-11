@@ -854,34 +854,50 @@ document.addEventListener('DOMContentLoaded', function() {
     detectTouch();
 });
 
-document.querySelectorAll('.apply-filter').forEach(button => {
-    button.addEventListener('click', function (e) {
-        e.preventDefault();
-
-        const dropdown = this.closest('.filter-dropdown');
-        const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
-
-        const selected = Array.from(checkboxes)
-            .filter(cb => cb.checked)
-            .map(cb => cb.value.toLowerCase());
-
-        console.log('Estados seleccionados:', selected);
-
-        document.querySelectorAll('tbody tr').forEach(row => {
-            const estadoCell = row.querySelector('td:nth-child(5)');
-            if (!estadoCell) return;
-
-            const estadoText = estadoCell.textContent.toLowerCase().trim();
-            console.log('Estado en la fila:', estadoText);
-
-            if (selected.some(s => estadoText.includes(s))) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
+function setupFilterButtons() {
+    document.querySelectorAll('.apply-filter').forEach(button => {
+        // Remover event listeners previos para evitar duplicados
+        button.removeEventListener('click', handleFilterClick);
+        button.addEventListener('click', handleFilterClick);
     });
-});
+}
+
+function handleFilterClick(e) {
+    e.preventDefault();
+    
+    const dropdown = this.closest('.filter-dropdown');
+    const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]:checked');
+    
+    // Si no hay checkboxes seleccionados, mostrar todas las filas
+    if (checkboxes.length === 0) {
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.style.display = '';
+        });
+        return;
+    }
+    
+    const selectedValues = Array.from(checkboxes).map(cb => cb.value.trim().toLowerCase());
+    
+    document.querySelectorAll('tbody tr').forEach(row => {
+        const estadoCell = row.querySelector('td[data-column="estado"]') || 
+                          row.querySelector('td:nth-child(5)'); // fallback
+        if (!estadoCell) {
+            console.warn('No se encontró celda de estado en la fila', row);
+            return;
+        }
+        
+        const estadoText = estadoCell.textContent.trim().toLowerCase();
+        const shouldShow = selectedValues.some(value => 
+            estadoText === value || // Comparación exacta
+            estadoText.includes(value) // Comparación parcial (opcional)
+        );
+        
+        row.style.display = shouldShow ? '' : 'none';
+    });
+}
+
+// Inicializar al cargar la página
+document.addEventListener('DOMContentLoaded', setupFilterButtons);
 
 
 
