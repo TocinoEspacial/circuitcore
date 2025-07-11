@@ -708,7 +708,6 @@
                                                     {% if cotizacion.estado == 'aprobado' %}bg-success
                                                     {% elif cotizacion.estado == 'rechazado' %}bg-danger
                                                     {% else %}bg-warning{% endif %}">
-                                                    {{ cotizacion.estado}}
                                                     <span class="d-none d-sm-inline">{{ cotizacion.estado}}</span>
                                                 </span>
                                             </td>
@@ -861,15 +860,21 @@ document.querySelectorAll('.apply-filter').forEach(button => {
 
         const dropdown = this.closest('.filter-dropdown');
         const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
-        let selected = Array.from(checkboxes)
+
+        const selected = Array.from(checkboxes)
             .filter(cb => cb.checked)
             .map(cb => cb.value.toLowerCase());
+
+        console.log('Estados seleccionados:', selected);
 
         document.querySelectorAll('tbody tr').forEach(row => {
             const estadoCell = row.querySelector('td:nth-child(5)');
             if (!estadoCell) return;
+
             const estadoText = estadoCell.textContent.toLowerCase().trim();
-            if (selected.some(estado => estadoText.includes(estado))) {
+            console.log('Estado en la fila:', estadoText);
+
+            if (selected.some(s => estadoText.includes(s))) {
                 row.style.display = '';
             } else {
                 row.style.display = 'none';
@@ -877,6 +882,7 @@ document.querySelectorAll('.apply-filter').forEach(button => {
         });
     });
 });
+
 
 
 </script>
