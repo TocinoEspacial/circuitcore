@@ -205,6 +205,7 @@
         border: 1px solid rgba(255, 107, 53, 0.3);
         border-radius: 12px;
         overflow: hidden;
+        margin-left: -310px;
         transition: all 0.4s ease;
     }
 
@@ -502,58 +503,6 @@
         display: block;
     }
 
-    /* Estilo para el botón de factura */
-    .btn-factura {
-        background: linear-gradient(135deg, #28a745, #218838) !important;
-        color: white !important;
-        border: none !important;
-        font-weight: 600;
-        padding: 0.6rem 1.2rem;
-        border-radius: 8px;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        display: inline-flex;
-        align-items: center;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .btn-factura:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
-    }
-    
-    .btn-factura::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-            to right,
-            rgba(255, 255, 255, 0) 20%,
-            rgba(255, 255, 255, 0.2) 50%,
-            rgba(255, 255, 255, 0) 80%
-        );
-        transform: translateX(-100%);
-        transition: all 0.6s ease;
-    }
-    
-    .btn-factura:hover::after {
-        transform: translateX(100%);
-    }
-    
-    .btn-factura i {
-        margin-right: 8px;
-        font-size: 0.9rem;
-    }
-    
-    .btn-factura span {
-        position: relative;
-        z-index: 1;
-    }
-
     /* Media Queries */
     @media (max-width: 1199.98px) {
         .profile-container {
@@ -682,6 +631,68 @@
         .table tbody td:nth-child(2) {
             display: none;
         }
+    }
+        :root {
+        --primary: #FF6B35;
+        --secondary: #004E89;
+        --accent: #FFD166;
+        --dark: #1A1A1D;
+        --light: #F7F7FF;
+        --success: #06D6A0;
+    }
+
+    /* [Todos tus estilos anteriores permanecen igual] */
+
+    /* Estilo para el botón de factura */
+    .btn-factura {
+        background: linear-gradient(135deg, #28a745, #218838) !important;
+        color: white !important;
+        border: none !important;
+        font-weight: 600;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-factura:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+    }
+    
+    .btn-factura::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0) 20%,
+            rgba(255, 255, 255, 0.2) 50%,
+            rgba(255, 255, 255, 0) 80%
+        );
+        transform: translateX(-100%);
+        transition: all 0.6s ease;
+    }
+    
+    .btn-factura:hover::after {
+        transform: translateX(100%);
+    }
+    
+    .btn-factura i {
+        margin-right: 8px;
+        font-size: 0.9rem;
+    }
+    
+    .btn-factura span {
+        position: relative;
+        z-index: 1;
     }
 </style>
 {% endblock %}
@@ -871,26 +882,26 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <div class="table-actions">
-                                                    <a href="{% url 'enviar_cotizacion' cotizacion.id %}" 
-                                                       class="btn-outline-accent btn-sm">
-                                                        <i class="fas fa-mail d-none d-sm-inline"></i>
-                                                        <span class="d-sm-none">Enviar</span>
-                                                        <span class="d-none d-sm-inline">Enviar Cotización</span>
-                                                    </a>
-                                                    <button class="btn-factura btn-sm generar-factura" 
-                                                            data-cotizacion-id="{{ cotizacion.id }}"
-                                                            data-cliente="{{ cotizacion.cliente.get_full_name|default:cotizacion.cliente.username }}"
-                                                            data-cliente-doc="{{ cotizacion.cliente.documento|default:'CC 123456789' }}"
-                                                            data-proyecto="{% if cotizacion.proyecto %}{{ cotizacion.proyecto.tipo_proyecto }}{% else %}Sin proyecto específico{% endif %}"
-                                                            data-valor="{{ cotizacion.valor_total|default:1000000 }}"
-                                                            data-fecha="{{ cotizacion.fecha|date:'d/m/Y' }}"
-                                                            data-descripcion="Servicios profesionales de construcción y diseño">
-                                                        <i class="fas fa-file-invoice-dollar"></i>
-                                                        <span>Factura</span>
-                                                    </button>
-                                                </div>
-                                            </td>
+            <div class="table-actions">
+                <a href="{% url 'enviar_cotizacion' cotizacion.id %}" 
+                   class="btn-outline-accent btn-sm">
+                    <i class="fas fa-mail d-none d-sm-inline"></i>
+                    <span class="d-sm-none">Enviar</span>
+                    <span class="d-none d-sm-inline">Enviar Cotización</span>
+                </a>
+                <button class="btn-factura btn-sm generar-factura" 
+                        data-cotizacion-id="{{ cotizacion.id }}"
+                        data-cliente="{{ cotizacion.cliente.get_full_name|default:cotizacion.cliente.username }}"
+                        data-cliente-doc="{{ cotizacion.cliente.documento|default:'CC 123456789' }}"
+                        data-proyecto="{% if cotizacion.proyecto %}{{ cotizacion.proyecto.tipo_proyecto }}{% else %}Sin proyecto específico{% endif %}"
+                        data-valor="{{ cotizacion.valor_total|default:1000000 }}"
+                        data-fecha="{{ cotizacion.fecha|date:'d/m/Y' }}"
+                        data-descripcion="Servicios profesionales de construcción y diseño">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Factura</span>
+                </button>
+            </div>
+        </td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -910,13 +921,11 @@
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+const { jsPDF } = window.jspdf;
+
+document.addEventListener('DOMContentLoaded', function() {
     // Manejo del cambio de avatar con efectos mejorados
     const avatarInput = document.getElementById('avatar-input');
     const avatarPreview = document.getElementById('avatar-preview');
@@ -1101,78 +1110,119 @@
         });
     }
 });
-
- document.querySelectorAll('.generar-factura').forEach(btn => {
+    document.querySelectorAll('.generar-factura').forEach(btn => {
         btn.addEventListener('click', function() {
             const cotizacionId = this.getAttribute('data-cotizacion-id');
             const cliente = this.getAttribute('data-cliente');
+            const clienteDoc = this.getAttribute('data-cliente-doc');
             const proyecto = this.getAttribute('data-proyecto');
             const valor = parseFloat(this.getAttribute('data-valor'));
             const fecha = this.getAttribute('data-fecha');
+            const descripcion = this.getAttribute('data-descripcion');
             
-            generarFacturaPDF(cotizacionId, cliente, proyecto, valor, fecha);
+            generarFacturaPremium(cotizacionId, cliente, clienteDoc, proyecto, valor, fecha, descripcion);
         });
     });
     
-    function generarFacturaPDF(cotizacionId, cliente, proyecto, valor, fecha) {
-        // Crear documento PDF
-        const doc = new jsPDF();
+    function generarFacturaPremium(cotizacionId, cliente, clienteDoc, proyecto, valor, fecha, descripcion) {
+        // Crear documento PDF en formato horizontal
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'letter'
+        });
         
         // Configuración de la empresa
         const empresa = {
             nombre: "YGV CONSTRUCCIONES S.A.S.",
             nit: "901.234.567-8",
-            direccion: "Calle 123 #45-67, Bogotá D.C.",
-            telefono: "(601) 123 4567",
-            email: "contacto@ygvconstrucciones.com",
+            direccion: "Carrera 45 #26-85, Bogotá D.C., Colombia",
+            telefono: "+57 (601) 234 5678",
+            email: "facturacion@ygvconstrucciones.com",
             regimen: "Régimen Común",
-            actividad: "Construcción de obras civiles"
+            actividad: "Construcción de Edificios Residenciales y Comerciales",
+            resolucion: "18764021870099789",
+            fechaResolucion: "15/12/2022",
+            logo: "https://i.imgur.com/JAvw6fQ.png" // Reemplaza con tu logo
         };
         
-        // Configuración del cliente
+        // Configuración de colores
+        const colores = {
+            primario: [255, 107, 53],    // Naranja YGV
+            secundario: [0, 78, 137],    // Azul YGV
+            texto: [51, 51, 51],
+            textoClaro: [119, 119, 119],
+            fondo: [250, 250, 250]
+        };
+        
+        // Cálculos financieros
         const iva = valor * 0.19;
         const subtotal = valor - iva;
         const total = valor;
         
-        // Encabezado de la factura
+        // Margenes
+        const margin = 15;
+        let y = margin;
+        
+        // --- ENCABEZADO ---
+        doc.setFillColor(...colores.primario);
+        doc.rect(0, 0, doc.internal.pageSize.width, 30, 'F');
+        
+        // Logo (centrado)
+        doc.addImage(empresa.logo, 'PNG', margin, 5, 40, 20);
+        
+        // Número de factura
         doc.setFontSize(18);
-        doc.setTextColor(40, 40, 40);
-        doc.text("FACTURA DE VENTA", 105, 20, { align: 'center' });
+        doc.setTextColor(255, 255, 255);
+        doc.setFont(undefined, 'bold');
+        doc.text(`FACTURA #${cotizacionId.toString().padStart(6, '0')}`, doc.internal.pageSize.width - margin, 20, { align: 'right' });
         
+        // Fecha
         doc.setFontSize(10);
-        doc.text(`No. ${cotizacionId.toString().padStart(6, '0')}`, 105, 28, { align: 'center' });
+        doc.text(`Fecha: ${fecha}`, doc.internal.pageSize.width - margin, 28, { align: 'right' });
         
-        // Logo de la empresa (puedes reemplazar con tu propio logo)
-        doc.addImage("https://via.placeholder.com/150x50?text=YGV+CONSTRUCCIONES", 'JPEG', 30, 35, 40, 15);
+        y = 40;
         
-        // Información de la empresa
+        // --- INFORMACIÓN EMPRESA ---
         doc.setFontSize(10);
-        doc.setTextColor(80, 80, 80);
-        doc.text(empresa.nombre, 140, 35);
-        doc.text(`NIT: ${empresa.nit}`, 140, 40);
-        doc.text(empresa.direccion, 140, 45);
-        doc.text(`Tel: ${empresa.telefono}`, 140, 50);
-        doc.text(`Email: ${empresa.email}`, 140, 55);
-        doc.text(`Regimen: ${empresa.regimen}`, 140, 60);
+        doc.setTextColor(...colores.texto);
+        doc.setFont(undefined, 'bold');
+        doc.text(empresa.nombre, margin, y);
+        doc.setFont(undefined, 'normal');
+        doc.text(`NIT: ${empresa.nit}`, margin, y + 5);
+        doc.text(empresa.direccion, margin, y + 10);
+        doc.text(`Teléfono: ${empresa.telefono} | Email: ${empresa.email}`, margin, y + 15);
+        doc.text(`Actividad Económica: ${empresa.actividad}`, margin, y + 20);
         
-        // Línea separadora
-        doc.setDrawColor(200, 200, 200);
-        doc.line(20, 65, 190, 65);
+        // --- INFORMACIÓN CLIENTE ---
+        y += 30;
+        doc.setFillColor(...colores.fondo);
+        doc.rect(margin, y - 5, doc.internal.pageSize.width - margin * 2, 30, 'F');
         
-        // Información del cliente
         doc.setFontSize(12);
-        doc.setTextColor(40, 40, 40);
-        doc.text("DATOS DEL CLIENTE", 20, 75);
+        doc.setTextColor(...colores.secundario);
+        doc.setFont(undefined, 'bold');
+        doc.text("DATOS DEL CLIENTE", margin, y);
         
         doc.setFontSize(10);
-        doc.text(`Nombre: ${cliente}`, 20, 82);
-        doc.text(`Proyecto: ${proyecto}`, 20, 88);
-        doc.text(`Fecha: ${fecha}`, 20, 94);
+        doc.setTextColor(...colores.texto);
+        doc.setFont(undefined, 'normal');
+        doc.text(`Nombre/Razón Social: ${cliente}`, margin + 5, y + 8);
+        doc.text(`Documento: ${clienteDoc}`, margin + 5, y + 14);
+        doc.text(`Proyecto: ${proyecto}`, margin + 5, y + 20);
+        
+        // --- DETALLE DE FACTURA ---
+        y += 30;
+        doc.setFontSize(12);
+        doc.setTextColor(...colores.secundario);
+        doc.setFont(undefined, 'bold');
+        doc.text("DETALLE DE LA FACTURA", margin, y);
         
         // Tabla de items
         const items = [
             {
-                descripcion: `Servicios de construcción para ${proyecto}`,
+                codigo: cotizacionId,
+                descripcion: descripcion,
                 cantidad: 1,
                 valorUnitario: subtotal,
                 iva: iva,
@@ -1180,59 +1230,110 @@
             }
         ];
         
-        // Configurar tabla
+        // Configurar tabla con estilo mejorado
         doc.autoTable({
-            startY: 100,
-            head: [['Descripción', 'Cantidad', 'Valor Unitario', 'IVA (19%)', 'Total']],
+            startY: y + 5,
+            head: [
+                [
+                    {content: 'Código', styles: {fillColor: colores.secundario, textColor: 255, fontStyle: 'bold'}},
+                    {content: 'Descripción', styles: {fillColor: colores.secundario, textColor: 255, fontStyle: 'bold'}},
+                    {content: 'Cantidad', styles: {fillColor: colores.secundario, textColor: 255, fontStyle: 'bold'}},
+                    {content: 'V. Unitario', styles: {fillColor: colores.secundario, textColor: 255, fontStyle: 'bold'}},
+                    {content: 'IVA (19%)', styles: {fillColor: colores.secundario, textColor: 255, fontStyle: 'bold'}},
+                    {content: 'Total', styles: {fillColor: colores.secundario, textColor: 255, fontStyle: 'bold'}}
+                ]
+            ],
             body: items.map(item => [
+                item.codigo,
                 item.descripcion,
                 item.cantidad,
-                `$${item.valorUnitario.toLocaleString('es-CO')}`,
-                `$${item.iva.toLocaleString('es-CO')}`,
-                `$${item.total.toLocaleString('es-CO')}`
+                {content: `$${item.valorUnitario.toLocaleString('es-CO')}`, styles: {halign: 'right'}},
+                {content: `$${item.iva.toLocaleString('es-CO')}`, styles: {halign: 'right'}},
+                {content: `$${item.total.toLocaleString('es-CO')}`, styles: {halign: 'right', fontStyle: 'bold'}}
             ]),
             styles: {
-                fontSize: 8,
+                fontSize: 9,
                 cellPadding: 3,
-                valign: 'middle'
+                valign: 'middle',
+                textColor: colores.texto
             },
-            headStyles: {
-                fillColor: [40, 40, 40],
-                textColor: 255,
-                fontStyle: 'bold'
+            alternateRowStyles: {
+                fillColor: [245, 245, 245]
             },
             columnStyles: {
-                0: { cellWidth: 80 },
-                1: { cellWidth: 20 },
-                2: { cellWidth: 30 },
-                3: { cellWidth: 30 },
-                4: { cellWidth: 30 }
-            }
+                0: {cellWidth: 20, halign: 'center'},
+                1: {cellWidth: 70},
+                2: {cellWidth: 15, halign: 'center'},
+                3: {cellWidth: 25, halign: 'right'},
+                4: {cellWidth: 25, halign: 'right'},
+                5: {cellWidth: 25, halign: 'right'}
+            },
+            margin: {left: margin, right: margin}
         });
         
-        // Totales
+        // --- TOTALES ---
         const finalY = doc.lastAutoTable.finalY + 10;
         
         doc.setFontSize(10);
-        doc.text("Subtotal:", 140, finalY);
-        doc.text(`$${subtotal.toLocaleString('es-CO')}`, 170, finalY, { align: 'right' });
+        doc.setTextColor(...colores.texto);
+        doc.text("Subtotal:", doc.internal.pageSize.width - 60, finalY);
+        doc.text(`$${subtotal.toLocaleString('es-CO')}`, doc.internal.pageSize.width - margin, finalY, { align: 'right' });
         
-        doc.text("IVA (19%):", 140, finalY + 6);
-        doc.text(`$${iva.toLocaleString('es-CO')}`, 170, finalY + 6, { align: 'right' });
+        doc.text("IVA (19%):", doc.internal.pageSize.width - 60, finalY + 6);
+        doc.text(`$${iva.toLocaleString('es-CO')}`, doc.internal.pageSize.width - margin, finalY + 6, { align: 'right' });
         
         doc.setFontSize(12);
         doc.setFont(undefined, 'bold');
-        doc.text("TOTAL:", 140, finalY + 15);
-        doc.text(`$${total.toLocaleString('es-CO')}`, 170, finalY + 15, { align: 'right' });
+        doc.setTextColor(...colores.primario);
+        doc.text("TOTAL:", doc.internal.pageSize.width - 60, finalY + 15);
+        doc.text(`$${total.toLocaleString('es-CO')}`, doc.internal.pageSize.width - margin, finalY + 15, { align: 'right' });
         
-        // Pie de página
+        // Línea de separación
+        doc.setDrawColor(...colores.primario);
+        doc.setLineWidth(0.5);
+        doc.line(margin, finalY + 20, doc.internal.pageSize.width - margin, finalY + 20);
+        
+        // --- MÉTODO DE PAGO ---
+        doc.setFontSize(10);
+        doc.setTextColor(...colores.texto);
+        doc.setFont(undefined, 'normal');
+        doc.text("Método de Pago: Transferencia Bancaria", margin, finalY + 25);
+        doc.text("Banco: Bancolombia", margin, finalY + 30);
+        doc.text("Cuenta Corriente No.: 123-456-789", margin, finalY + 35);
+        doc.text("Titular: YGV CONSTRUCCIONES S.A.S.", margin, finalY + 40);
+        doc.text("NIT: 901.234.567-8", margin, finalY + 45);
+        
+        // --- FIRMAS ---
+        const firmaY = finalY + 55;
+        doc.line(margin, firmaY, margin + 60, firmaY);
+        doc.line(doc.internal.pageSize.width - margin - 60, firmaY, doc.internal.pageSize.width - margin, firmaY);
+        
+        doc.text("Firma Cliente", margin + 30, firmaY + 5, { align: 'center' });
+        doc.text("Firma YGV Construcciones", doc.internal.pageSize.width - margin - 30, firmaY + 5, { align: 'center' });
+        
+        // --- PIE DE PÁGINA ---
+        const footerY = doc.internal.pageSize.height - 20;
+        
         doc.setFontSize(8);
-        doc.setTextColor(100, 100, 100);
-        doc.text("Factura generada electrónicamente - Esta factura de venta se asimila en todos sus efectos legales a una letra de cambio", 105, 280, { align: 'center' });
-        doc.text("Art. 774 del Código de Comercio - Resolución DIAN 18764021870099789 del 15/12/2022", 105, 285, { align: 'center' });
+        doc.setTextColor(...colores.textoClaro);
+        doc.text("Esta factura de venta se asimila en todos sus efectos legales a una letra de cambio según Art. 774 del Código de Comercio", 
+                doc.internal.pageSize.width / 2, footerY, { align: 'center' });
+        
+        doc.text(`Resolución DIAN No. ${empresa.resolucion} del ${empresa.fechaResolucion} - Factura electrónica`, 
+                doc.internal.pageSize.width / 2, footerY + 5, { align: 'center' });
+        
+        doc.text("YGV CONSTRUCCIONES S.A.S. - Todos los derechos reservados © " + new Date().getFullYear(), 
+                doc.internal.pageSize.width / 2, footerY + 10, { align: 'center' });
+        
+        // --- MARCA DE AGUA ---
+        doc.setFontSize(60);
+        doc.setTextColor(230, 230, 230);
+        doc.setFont(undefined, 'bold');
+        doc.text("YGV", doc.internal.pageSize.width / 2, doc.internal.pageSize.height / 2, 
+                { align: 'center', angle: 45 });
         
         // Guardar el PDF
-        doc.save(`Factura_YGV_${cotizacionId}.pdf`);
+        doc.save(`Factura_YGV_${cotizacionId}_${fecha.replace(/\//g, '-')}.pdf`);
     }
 ;
 </script>
