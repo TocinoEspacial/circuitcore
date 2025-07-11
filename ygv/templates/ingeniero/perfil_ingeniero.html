@@ -547,6 +547,28 @@
             display: none;
         }
     }
+    .filter-icon {
+    margin-left: 6px;
+    cursor: pointer;
+    color: var(--accent);
+    position: relative;
+}
+
+.filter-dropdown {
+    display: none;
+    position: absolute;
+    background: var(--dark);
+    color: white;
+    border: 1px solid var(--primary);
+    padding: 1rem;
+    border-radius: 10px;
+    z-index: 999;
+    min-width: 160px;
+    box-shadow: 0 5px 15px rgba(255,107,53,0.2);
+    top: 100%;
+    left: 0;
+}
+
 </style>
 {% endblock %}
 
@@ -648,7 +670,17 @@
                                             <th class="d-none d-md-table-cell">Fecha</th>
                                             <th class="d-none d-lg-table-cell">Cliente</th>
                                             <th>Proyecto</th>
-                                            <th>Estado</th>
+                                            <th>
+    Estado
+    <span class="filter-icon" data-column="estado"><i class="fas fa-filter"></i></span>
+    <div class="filter-dropdown" id="estado-filter">
+        <label><input type="checkbox" value="pendiente" checked> Pendiente</label><br>
+        <label><input type="checkbox" value="aprobado" checked> Aprobado</label><br>
+        <label><input type="checkbox" value="rechazado" checked> Rechazado</label><br>
+        <button class="btn btn-sm btn-primary mt-2 apply-filter">Aplicar</button>
+    </div>
+</th>
+
                                             <th class="text-end">Acciones</th>
                                         </tr>
                                     </thead>
@@ -822,5 +854,40 @@ document.addEventListener('DOMContentLoaded', function() {
     
     detectTouch();
 });
+
+// Filtro estilo Excel por estado
+document.querySelectorAll('.filter-icon').forEach(icon => {
+    icon.addEventListener('click', function (e) {
+        e.stopPropagation();
+        // Cierra otros dropdowns
+        document.querySelectorAll('.filter-dropdown').forEach(d => d.style.display = 'none');
+        // Abre el correspondiente
+        const dropdown = this.nextElementSibling;
+        dropdown.style.display = 'block';
+    });
+});
+
+document.addEventListener('click', function () {
+    document.querySelectorAll('.filter-dropdown').forEach(d => d.style.display = 'none');
+});
+
+document.querySelector('.apply-filter').addEventListener('click', function () {
+    const checkboxes = document.querySelectorAll('#estado-filter input[type="checkbox"]');
+    let selected = Array.from(checkboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value.toLowerCase());
+
+    document.querySelectorAll('tbody tr').forEach(row => {
+        const estadoCell = row.querySelector('td:nth-child(5)');
+        if (!estadoCell) return;
+        const estadoText = estadoCell.textContent.toLowerCase().trim();
+        if (selected.includes(estadoText)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
 </script>
 {% endblock %}
