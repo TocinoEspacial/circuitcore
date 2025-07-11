@@ -336,35 +336,38 @@ def perfil_ingeniero(request):
         return redirect('home')
 
     perfil, created = PerfilUsuario.objects.get_or_create(user=user)
-
-    # Filtros
+    
+    # Obtener todos los parámetros de filtro
     estado = request.GET.get('estado')
     cliente = request.GET.get('cliente')
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
     proyecto = request.GET.get('proyecto')
-
+    
     # Base queryset
-    cotizaciones = Cotizacion.objects.filter(ingeniero=user)
-
+    cotizacion = Cotizacion.objects.filter(ingeniero=perfil)
+    
+    # Aplicar filtros
     if estado:
-        cotizaciones = cotizaciones.filter(estado=estado)
+        cotizacion = cotizacion.filter(estado=estado)
     if cliente:
-        cotizaciones = cotizaciones.filter(cliente__username__icontains=cliente)
+        cotizacion = cotizacion.filter(cliente__username__icontains=cliente)
     if fecha_inicio and fecha_fin:
-        cotizaciones = cotizaciones.filter(
+        cotizacion = cotizacion.filter(
             fecha__gte=fecha_inicio,
             fecha__lte=fecha_fin
         )
     if proyecto:
-        cotizaciones = cotizaciones.filter(proyecto__icontains=proyecto)
-
-    cotizaciones = cotizaciones.order_by('-fecha')
-
-    estados = Cotizacion.objects.filter(ingeniero=user).values_list('estado', flat=True).distinct()
-
+        cotizacion = cotizacion.filter(proyecto__icontains=proyecto)
+    
+    # Ordenar
+    cotizacion = cotizacion.order_by('-fecha')
+    
+    # Obtener lista de estados únicos para el dropdown
+    estados = Cotizacion.objects.filter(ingeniero=perfil).values_list('estado', flat=True).distinct()
+    
     context = {
-        'cotizaciones': cotizaciones,  # <- CAMBIADO AQUÍ
+        'cotizaciones': cotizacion,
         'user': user,
         'perfil': perfil,
         'rol': 'Ingeniero',
@@ -380,7 +383,6 @@ def perfil_ingeniero(request):
     }
 
     return render(request, 'ingeniero/perfil_ingeniero.html', context)
-
 
 
 @login_required
