@@ -632,17 +632,7 @@
             display: none;
         }
     }
-        :root {
-        --primary: #FF6B35;
-        --secondary: #004E89;
-        --accent: #FFD166;
-        --dark: #1A1A1D;
-        --light: #F7F7FF;
-        --success: #06D6A0;
-    }
-
-    /* [Todos tus estilos anteriores permanecen igual] */
-
+    
     /* Estilo para el botón de factura */
     .btn-factura {
         background: linear-gradient(135deg, #28a745, #218838) !important;
@@ -882,26 +872,26 @@
                                                 </span>
                                             </td>
                                             <td>
-            <div class="table-actions">
-                <a href="{% url 'enviar_cotizacion' cotizacion.id %}" 
-                   class="btn-outline-accent btn-sm">
-                    <i class="fas fa-mail d-none d-sm-inline"></i>
-                    <span class="d-sm-none">Enviar</span>
-                    <span class="d-none d-sm-inline">Enviar Cotización</span>
-                </a>
-                <button class="btn-factura btn-sm generar-factura" 
-                        data-cotizacion-id="{{ cotizacion.id }}"
-                        data-cliente="{{ cotizacion.cliente.get_full_name|default:cotizacion.cliente.username }}"
-                        data-cliente-doc="{{ cotizacion.cliente.documento|default:'CC 123456789' }}"
-                        data-proyecto="{% if cotizacion.proyecto %}{{ cotizacion.proyecto.tipo_proyecto }}{% else %}Sin proyecto específico{% endif %}"
-                        data-valor="{{ cotizacion.valor_total|default:1000000 }}"
-                        data-fecha="{{ cotizacion.fecha|date:'d/m/Y' }}"
-                        data-descripcion="Servicios profesionales de construcción y diseño">
-                    <i class="fas fa-file-invoice-dollar"></i>
-                    <span>Factura</span>
-                </button>
-            </div>
-        </td>
+                                                <div class="table-actions">
+                                                    <a href="{% url 'enviar_cotizacion' cotizacion.id %}" 
+                                                       class="btn-outline-accent btn-sm">
+                                                        <i class="fas fa-mail d-none d-sm-inline"></i>
+                                                        <span class="d-sm-none">Enviar</span>
+                                                        <span class="d-none d-sm-inline">Enviar Cotización</span>
+                                                    </a>
+                                                    <button class="btn-factura btn-sm generar-factura" 
+                                                            data-cotizacion-id="{{ cotizacion.id }}"
+                                                            data-cliente="{{ cotizacion.cliente.get_full_name|default:cotizacion.cliente.username }}"
+                                                            data-cliente-doc="{{ cotizacion.cliente.documento|default:'CC 123456789' }}"
+                                                            data-proyecto="{% if cotizacion.proyecto %}{{ cotizacion.proyecto.tipo_proyecto }}{% else %}Sin proyecto específico{% endif %}"
+                                                            data-valor="{{ cotizacion.valor_total|default:1000000 }}"
+                                                            data-fecha="{{ cotizacion.fecha|date:'d/m/Y' }}"
+                                                            data-descripcion="Servicios profesionales de construcción y diseño">
+                                                        <i class="fas fa-file-invoice-dollar"></i>
+                                                        <span>Factura</span>
+                                                    </button>
+                                                </div>
+                                            </td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -921,8 +911,15 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Incluir jsPDF desde CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
 <script>
+// Inicializar jsPDF
 const { jsPDF } = window.jspdf;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1109,7 +1106,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (filterDropdown) filterDropdown.classList.remove('show');
         });
     }
-});
+
+    // Generación de facturas
     document.querySelectorAll('.generar-factura').forEach(btn => {
         btn.addEventListener('click', function() {
             const cotizacionId = this.getAttribute('data-cotizacion-id');
@@ -1335,6 +1333,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Guardar el PDF
         doc.save(`Factura_YGV_${cotizacionId}_${fecha.replace(/\//g, '-')}.pdf`);
     }
-;
+});
 </script>
 {% endblock %}
