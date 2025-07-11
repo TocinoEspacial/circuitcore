@@ -88,16 +88,16 @@ def cliente_home(request):
 def es_ingeniero(user):
     return user.groups.filter(name='ingeniero').exists()
 
-# ---------- cotizacion ----------
+# ---------- Cotizaciones ----------
 @login_required
 def cotizaciones_pendientes(request):
     if es_ingeniero(request.user):
-        cotizacion = Cotizacion.objects.filter(estado='BORRADOR')
+        cotizaciones = Cotizacion.objects.filter(estado='BORRADOR')
     else:
-        cotizacion = Cotizacion.objects.filter(cliente=request.user, estado='pendiente')
+        cotizaciones = Cotizacion.objects.filter(cliente=request.user, estado='pendiente')
     
     return render(request, 'cotizacion/lista_pendientes.html', {
-        'cotizacion': cotizacion
+        'cotizaciones': cotizaciones
     })
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -331,14 +331,15 @@ def editar_perfil(request):
 @login_required
 def perfil_ingeniero(request):
     user = request.user
-
+    
     if not user.groups.filter(name='Ingeniero').exists():
         return redirect('home')
-
+    
     perfil, created = PerfilUsuario.objects.get_or_create(user=user)
-
-    cotizaciones = Cotizacion.objects.filter(ingeniero_id=user.id).order_by('-fecha')
-
+    
+    # Obtener cotizaciones donde el usuario actual es el ingeniero asignado
+    cotizaciones = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')
+    
     context = {
         'cotizaciones': cotizaciones,
         'user': user,
@@ -346,22 +347,18 @@ def perfil_ingeniero(request):
         'rol': 'Ingeniero',
         'avatar_url': perfil.avatar.url if perfil.avatar else '/static/images/default-avatar.png'
     }
-
+    
     return render(request, 'ingeniero/perfil_ingeniero.html', context)
-
-
-
-
 
 @login_required
 def perfil_cliente(request):
     user = request.user
     perfil, created = PerfilUsuario.objects.get_or_create(user=user)
-    cotizacion = Cotizacion.objects.filter(cliente=user).order_by('-fecha')[:5]
+    cotizaciones = Cotizacion.objects.filter(cliente=user).order_by('-fecha')[:5]
     
     context = {
         'user': user,
-        'cotizacion': cotizacion,
+        'cotizaciones': cotizaciones,
         'perfil': perfil,
         'rol': 'Cliente',
         'avatar_url': perfil.avatar.url if perfil.avatar else '/static/images/default-avatar.png'
@@ -369,17 +366,29 @@ def perfil_cliente(request):
     
     return render(request, 'ingeniero/perfil_cliente.html', context)
 
+@login_required
+def perfil_ingeniero(request):
+    user = request.user
+    # Get or create the profile if it doesn't exist
+    perfil, created = PerfilUsuario.objects.get_or_create(user=user)
+    cotizaciones = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')[:5]
+    
+    return render(request, 'ingeniero/perfil_cliente.html', {
+        'user': user,
+        'cotizaciones': cotizaciones,
+        'perfil': perfil  # Use the profile we just got/created
+    })
 
 @login_required
 def perfil_cliente(request):
     user = request.user
     # Get or create the profile if it doesn't exist
     perfil, created = PerfilUsuario.objects.get_or_create(user=user)
-    cotizacion = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')[:5]
+    cotizaciones = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')[:5]
     
     return render(request, 'ingeniero/perfil_ingeniero.html', {
         'user': user,
-        'cotizacion': cotizacion,
+        'cotizaciones': cotizaciones,
         'perfil': perfil  # Use the profile we just got/created
     })
 
@@ -416,13 +425,13 @@ def perfil_view(request):
     
 
     if request.user.groups.filter(name='CLIENTE').exists():
-        cotizacion = Cotizacion.objects.filter(cliente=request.user)
+        cotizaciones = Cotizacion.objects.filter(cliente=request.user)
     else:
-        cotizacion = Cotizacion.objects.all().order_by('-fecha')[:5]  \
+        cotizaciones = Cotizacion.objects.all().order_by('-fecha')[:5]  \
     
     context = {
         'perfil': perfil,
-        'cotizacion': cotizacion,
+        'cotizaciones': cotizaciones,
     }
     return render(request, 'ingeniero/perfil_cliente.html', context)
 from django.shortcuts import get_object_or_404, render
@@ -509,12 +518,12 @@ def Proyectos(request):
 
 @login_required
 def generar_reporte_cotizaciones(request):
-    # Obtener cotizacion pendientes
-    cotizacion = Cotizacion.objects.filter(estado='BORRADOR').order_by('-fecha')
+    # Obtener cotizaciones pendientes
+    cotizaciones = Cotizacion.objects.filter(estado='BORRADOR').order_by('-fecha')
 
     # Preparar contexto
     context = {
-        'cotizacion': cotizacion,
+        'cotizaciones': cotizaciones,
         'fecha_reporte': timezone.now().strftime("%d/%m/%Y %H:%M"),
         'usuario': request.user.get_full_name() or request.user.username,
     }
@@ -590,117 +599,3 @@ def guardar_firma(request, cotizacion_id):
             cotizacion.estado = 'aprobado'
             cotizacion.save()
         return redirect('detalle_cotizacion', id=cotizacion.id)
-
-# En tus views.py
-
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib import messages
-from django.http import HttpResponse
-from django.template.loader import render_to_string
-from weasyprint import HTML
-from io import BytesIO
-import os
-
-@login_required
-def generar_factura(request, id):
-    cotizacion = get_object_or_404(Cotizacion, id=id)
-    
-    # Permisos - solo ingenieros o superusuarios
-    if not (request.user == cotizacion.ingeniero or request.user.is_superuser):
-        messages.error(request, 'No tienes permiso para facturar esta cotización')
-        return redirect('home')
-    
-    # Validar estado
-    if not cotizacion.puede_facturar():
-        messages.error(request, 'La cotización no está en estado aprobado o ya fue facturada')
-        return redirect('detalle_cotizacion', id=id)
-    
-    # Generar factura
-    try:
-        cotizacion.estado = Cotizacion.Estados.FACTURADA
-        cotizacion.generar_numero_factura()
-        cotizacion.fecha_factura = timezone.now().date()
-        cotizacion.factura_generada = True
-        cotizacion.save()
-        
-        # Generar PDF
-        pdf_url = cotizacion.generar_pdf_factura()
-        
-        messages.success(request, f'Factura {cotizacion.numero_factura} generada exitosamente')
-        return redirect('ver_factura', id=id)
-        
-    except Exception as e:
-        messages.error(request, f'Error al generar factura: {str(e)}')
-        return redirect('detalle_cotizacion', id=id)
-
-@login_required
-def descargar_factura_pdf(request, id):
-    cotizacion = get_object_or_404(Cotizacion, id=id)
-    
-    if not cotizacion.pdf_factura:
-        messages.error(request, 'No existe el PDF de la factura')
-        return redirect('ver_factura', id=id)
-    
-    response = HttpResponse(cotizacion.pdf_factura, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="factura_{cotizacion.numero_factura}.pdf"'
-    return response
-
-@login_required
-def marcar_como_pagada(request, id):
-    cotizacion = get_object_or_404(Cotizacion, id=id)
-    
-    # Validar permisos
-    if not (request.user.is_superuser or request.user.groups.filter(name='Administrador').exists()):
-        messages.error(request, 'No tienes permiso para realizar esta acción')
-        return redirect('detalle_cotizacion', id=id)
-    
-    # Validar estado
-    if cotizacion.estado != Cotizacion.Estados.FACTURADA:
-        messages.error(request, 'Solo se pueden marcar como pagadas facturas en estado FACTURADA')
-        return redirect('detalle_cotizacion', id=id)
-    
-    # Actualizar estado
-    cotizacion.estado = Cotizacion.Estados.PAGADA
-    cotizacion.save()
-    
-    messages.success(request, f'Factura {cotizacion.numero_factura} marcada como pagada')
-    return redirect('detalle_cotizacion', id=id)
-
-from django.shortcuts import get_object_or_404, render
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from num2words import num2words
-
-@login_required
-def ver_factura(request, id):
-    cotizacion = get_object_or_404(
-        Cotizacion.objects.select_related('cliente', 'ingeniero')
-                         .prefetch_related('items'),
-        id=id
-    )
-    
-    # Verificar permisos
-    if not (request.user == cotizacion.cliente or 
-            request.user == cotizacion.ingeniero or 
-            request.user.is_superuser):
-        messages.error(request, 'No tienes permiso para ver esta factura')
-        return redirect('home')
-    
-    # Convertir total a palabras
-    total_en_palabras = num2words(cotizacion.total, lang='es').capitalize()
-    
-    # Datos para la factura
-    context = {
-        'cotizacion': cotizacion,
-        'items': cotizacion.items.all(),
-        'total_en_palabras': total_en_palabras,
-        'puede_facturar': (
-            request.user == cotizacion.ingeniero and 
-            cotizacion.estado == Cotizacion.Estados.APROBADA and
-            not cotizacion.factura_generada
-        ),
-        'es_cliente': request.user == cotizacion.cliente,
-        'hoy': timezone.now().strftime("%d/%m/%Y"),
-    }
-    
-    return render(request, 'factura/factura.html', context)

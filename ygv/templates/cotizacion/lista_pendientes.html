@@ -2,29 +2,29 @@
 {% load static %}
 
 {% block content %}
-<div class="cotizacion-container">
+<div class="cotizaciones-container">
     <!-- Tarjeta principal -->
-    <div class="cotizacion-card">
+    <div class="cotizaciones-card">
         <!-- Encabezado con gradiente -->
-        <div class="cotizacion-header">
+        <div class="cotizaciones-header">
             <div class="header-title">
                 <i class="fas fa-file-invoice-dollar"></i>
-                <h2>cotizacion PENDIENTES</h2>
+                <h2>COTIZACIONES PENDIENTES</h2>
             </div>
             <div class="header-badge">
                 <span class="badge-naranja">
                     <i class="fas fa-clock"></i>
-                    {{ cotizacion|length }} PENDIENTES
+                    {{ cotizaciones|length }} PENDIENTES
                 </span>
             </div>
         </div>
 
         <!-- Cuerpo -->
-        <div class="cotizacion-body">
-            {% if cotizacion %}
-            <!-- Tabla de cotizacion -->
-            <div class="cotizacion-table-container">
-                <table class="cotizacion-table">
+        <div class="cotizaciones-body">
+            {% if cotizaciones %}
+            <!-- Tabla de cotizaciones -->
+            <div class="cotizaciones-table-container">
+                <table class="cotizaciones-table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -36,7 +36,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for cot in cotizacion %}
+                        {% for cot in cotizaciones %}
                         <tr>
                             <td class="id-cell">
                                 <span class="badge-azul">#{{ cot.id }}</span>
@@ -80,7 +80,7 @@
 <!-- En tu archivo template (dentro del bloque content) -->
 <div class="table-footer">
     <div class="footer-info">
-        Mostrando {{ cotizacion|length }} cotizacion
+        Mostrando {{ cotizaciones|length }} cotizaciones
     </div>
     <form method="post" action="{% url 'generar_reporte_cotizaciones' %}">
         {% csrf_token %}
@@ -96,8 +96,8 @@
                 <div class="empty-icon">
                     <i class="fas fa-file-alt"></i>
                 </div>
-                <h3>NO HAY cotizacion PENDIENTES</h3>
-                <p>Cuando recibas nuevas cotizacion, aparecerán aquí</p>
+                <h3>NO HAY COTIZACIONES PENDIENTES</h3>
+                <p>Cuando recibas nuevas cotizaciones, aparecerán aquí</p>
             </div>
             {% endif %}
         </div>
@@ -113,13 +113,13 @@
         --claro: #F7F7FF;
     }
 
-    .cotizacion-container {
+    .cotizaciones-container {
         max-width: 1200px;
         margin: 2rem auto;
         padding: 0 1rem;
     }
 
-    .cotizacion-card {
+    .cotizaciones-card {
         background: rgba(26, 26, 29, 0.8);
         border-radius: 12px;
         overflow: hidden;
@@ -127,7 +127,7 @@
         border: 1px solid rgba(255, 107, 53, 0.3);
     }
 
-    .cotizacion-header {
+    .cotizaciones-header {
         background: linear-gradient(to right, var(--oscuro), var(--azul));
         color: var(--amarillo);
         padding: 1.5rem 2rem;
@@ -165,22 +165,22 @@
         font-size: 0.9rem;
     }
 
-    .cotizacion-body {
+    .cotizaciones-body {
         padding: 2rem;
     }
 
-    .cotizacion-table-container {
+    .cotizaciones-table-container {
         overflow-x: auto;
         border-radius: 8px;
     }
 
-    .cotizacion-table {
+    .cotizaciones-table {
         width: 100%;
         border-collapse: collapse;
         color: var(--claro);
     }
 
-    .cotizacion-table th {
+    .cotizaciones-table th {
         background: linear-gradient(to right, var(--oscuro), var(--azul));
         color: var(--amarillo);
         padding: 1rem;
@@ -191,14 +191,14 @@
         border-bottom: 2px solid var(--naranja);
     }
 
-    .cotizacion-table td {
+    .cotizaciones-table td {
         padding: 1.2rem 1rem;
         border-bottom: 1px solid rgba(255, 107, 53, 0.2);
         vertical-align: middle;
         background: rgba(26, 26, 29, 0.7);
     }
 
-    .cotizacion-table tr:hover td {
+    .cotizaciones-table tr:hover td {
         background: rgba(255, 107, 53, 0.1);
     }
 
@@ -351,14 +351,14 @@
 
     /* Responsive */
     @media (max-width: 768px) {
-        .cotizacion-header {
+        .cotizaciones-header {
             flex-direction: column;
             align-items: flex-start;
             gap: 1rem;
             padding: 1.2rem;
         }
         
-        .cotizacion-body {
+        .cotizaciones-body {
             padding: 1.2rem;
         }
         
@@ -368,7 +368,7 @@
             gap: 0.5rem;
         }
         
-        .cotizacion-table td {
+        .cotizaciones-table td {
             padding: 0.8rem 0.5rem;
         }
     }

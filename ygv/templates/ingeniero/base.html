@@ -613,14 +613,14 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark text-small shadow-lg" style="background: var(--dark); border: 1px solid rgba(255, 209, 102, 0.1);">
                       {% for group in user.groups.all %}
-                            {% if group.id == 1 %}
+                            {% if group.id == 2 %}
                         <li data-aos="fade-left" data-aos-delay="150"></li>
                             <a href="{% url 'perfil_ingeniero' %}" class="dropdown-link">
                                 <i class="fas fa-user"></i> 
                                 <span>Mi perfil</span>
                             </a>
                         </li>
-                            {% elif group.id == 2 %}
+                            {% elif group.id == 1 %}
                         <li data-aos="fade-left" data-aos-delay="150"></li>
                             <a href="{% url 'perfil_cliente' %}" class="dropdown-link">
                                 <i class="fas fa-user"></i> 

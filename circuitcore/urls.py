@@ -1,13 +1,10 @@
 from django.contrib import admin
 from django.urls import path, include
 from ygv.views import (
-    descargar_factura_pdf,
     editar_perfil,
     enviar_cotizacion,
-    generar_factura,
     generar_reporte_cotizaciones,
     guardar_firma,
-    marcar_como_pagada,
     perfil_ingeniero,
     register, 
     home,
@@ -24,8 +21,7 @@ from ygv.views import (
     generar_contrato_pdf,
     Mantenimiento,
     Construccion,
-    Proyectos,
-    ver_factura
+    Proyectos
 )
 from django.contrib.auth import views as auth_views
 from django.conf import settings
@@ -56,11 +52,6 @@ urlpatterns = [
     path('cotizaciones/<int:cotizacion_id>/contrato/', generar_contrato_pdf, name='generar_contrato_pdf'),
     path('cotizaciones/cotizaciones/', generar_reporte_cotizaciones, name='generar_reporte_cotizaciones'),
     path('enviar-cotizacion/<int:cotizacion_id>/', enviar_cotizacion, name='enviar_cotizacion'),
-    path('factura/<int:id>/', ver_factura, name='ver_factura'),
-    path('factura/generar/<int:id>/', generar_factura, name='generar_factura'),
-    path('factura/<int:id>/pdf/', descargar_factura_pdf, name='descargar_factura_pdf'),
-    path('factura/marcar-pagada/<int:id>/', marcar_como_pagada, name='marcar_como_pagada'),
-    path('factura/<int:id>/', ver_factura, name='ver_factura'),
     
     # URL de perfil
     path('ingeniero/perfil/', perfil_ingeniero, name='perfil_ingeniero'),
