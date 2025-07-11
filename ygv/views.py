@@ -331,19 +331,15 @@ def editar_perfil(request):
 @login_required
 def perfil_ingeniero(request):
     user = request.user
-
+    
     if not user.groups.filter(name='Ingeniero').exists():
         return redirect('home')
-
-    perfil, created = PerfilUsuario.objects.get_or_create(user=user)
-
-    print("ID del usuario logueado:", user.id)
     
-    cotizaciones = Cotizacion.objects.filter(ingeniero_id=user.id).order_by('-fecha')
-    print("Cotizaciones encontradas:", cotizaciones.count())
-    for cot in cotizaciones:
-        print(f"ID: {cot.id}, ingeniero_id: {cot.ingeniero_id}, cliente: {cot.cliente.username}")
-
+    perfil, created = PerfilUsuario.objects.get_or_create(user=user)
+    
+    # Obtener cotizaciones donde el usuario actual es el ingeniero asignado
+    cotizaciones = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')
+    
     context = {
         'cotizaciones': cotizaciones,
         'user': user,
@@ -351,9 +347,8 @@ def perfil_ingeniero(request):
         'rol': 'Ingeniero',
         'avatar_url': perfil.avatar.url if perfil.avatar else '/static/images/default-avatar.png'
     }
-
+    
     return render(request, 'ingeniero/perfil_ingeniero.html', context)
-
 
 
 
