@@ -203,7 +203,7 @@
         background: rgba(26, 26, 29, 1) !important;
     }
     
-    /* Tabla de cotizaciones - Estilo mejorado */
+    /* Tabla de cotizacion - Estilo mejorado */
     .quotations-card {
         background: rgba(26, 26, 29, 0.8);
         border: 1px solid rgba(255, 107, 53, 0.3);
@@ -404,7 +404,7 @@
         text-align: center;
     }
     
-    /* Mejoras específicas para la tabla de cotizaciones */
+    /* Mejoras específicas para la tabla de cotizacion */
     .table-actions {
         display: flex;
         gap: 0.5rem;
@@ -632,7 +632,7 @@
 
                     <div class="quotations-card mt-4">
                         <div class="info-header">
-                            <h5 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> Mis Cotizaciones Asignadas</h5>
+                            <h5 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> Mis cotizacion Asignadas</h5>
                         </div>
 
                         <div class="info-body">
@@ -646,58 +646,59 @@
                                 </select>
                             </form>
 
-                            {% if cotizaciones %}
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th class="d-none d-sm-table-cell">ID</th>
-                                            <th class="d-none d-md-table-cell">Fecha</th>
-                                            <th class="d-none d-lg-table-cell">Cliente</th>
-                                            <th>Proyecto</th>
-                                            <th>Estado</th>
-                                            <th class="text-end">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for cotizacion in cotizaciones %}
-                                        <tr>
-                                            <td class="d-none d-sm-table-cell"><strong>#{{ cotizacion.id }}</strong></td>
-                                            <td class="table-date d-none d-md-table-cell">{{ cotizacion.fecha|date:"d/m/Y" }}</td>
-                                            <td class="d-none d-lg-table-cell">{{ cotizacion.cliente.get_full_name|default:cotizacion.cliente.username }}</td>
-                                            <td>{{ cotizacion.proyecto.tipo_proyecto|default:"Sin proyecto" }}</td>
-                                            <td>
-                                                <span class="badge 
-                                                    {% if cotizacion.estado == 'aprobado' %}bg-success
-                                                    {% elif cotizacion.estado == 'rechazado' %}bg-danger
-                                                    {% else %}bg-warning{% endif %}">
-                                                    {{ cotizacion.estado|title }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div class="table-actions">
-                                                    <a href="{% url 'enviar_cotizacion' cotizacion.id %}" class="btn-outline-accent btn-sm">
-                                                        <i class="fas fa-envelope"></i> Enviar
-                                                    </a>
-                                                    {% if cotizacion.estado == 'aprobado' %}
-                                                    <a href="{% url 'ver_factura' cotizacion.id %}" class="btn-primary btn-sm">
-                                                        <i class="fas fa-file-invoice"></i> Facturar
-                                                    </a>
-                                                    {% endif %}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                            {% else %}
-                            <div class="empty-state">
-                                <i class="fas fa-file-alt"></i>
-                                <h5>No tienes cotizaciones asignadas</h5>
-                                <p>Actualmente no hay cotizaciones asignadas a tu perfil de ingeniero</p>
-                            </div>
-                            {% endif %}
+                           {% if cotizaciones %}
+  <div class="table-responsive">
+      <table class="table table-hover">
+          <thead>
+              <tr>
+                  <th class="d-none d-sm-table-cell">ID</th>
+                  <th class="d-none d-md-table-cell">Fecha</th>
+                  <th class="d-none d-lg-table-cell">Cliente</th>
+                  <th>Proyecto</th>
+                  <th>Estado</th>
+                  <th class="text-end">Acciones</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for cotizacion in cotizaciones %}
+              <tr>
+                  <td class="d-none d-sm-table-cell"><strong>#{{ cotizacion.id }}</strong></td>
+                  <td class="table-date d-none d-md-table-cell">{{ cotizacion.fecha|date:"d/m/Y" }}</td>
+                  <td class="d-none d-lg-table-cell">{{ cotizacion.cliente.get_full_name|default:cotizacion.cliente.username }}</td>
+                  <td>{{ cotizacion.proyecto.tipo_proyecto|default:"Sin proyecto" }}</td>
+                  <td>
+                      <span class="badge 
+                          {% if cotizacion.estado == 'aprobado' %}bg-success
+                          {% elif cotizacion.estado == 'rechazado' %}bg-danger
+                          {% else %}bg-warning{% endif %}">
+                          {{ cotizacion.estado|title }}
+                      </span>
+                  </td>
+                  <td class="text-end">
+                      <div class="table-actions">
+                          <a href="{% url 'enviar_cotizacion' cotizacion.id %}" class="btn-outline-accent btn-sm">
+                              <i class="fas fa-envelope"></i> Enviar
+                          </a>
+                          {% if cotizacion.estado == 'aprobado' %}
+                          <a href="{% url 'ver_factura' cotizacion.id %}" class="btn-primary btn-sm">
+                              <i class="fas fa-file-invoice"></i> Facturar
+                          </a>
+                          {% endif %}
+                      </div>
+                  </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </div>
+{% else %}
+  <div class="empty-state">
+      <i class="fas fa-file-alt"></i>
+      <h5>No tienes cotizaciones asignadas</h5>
+      <p>Actualmente no hay cotizaciones asignadas a tu perfil de ingeniero</p>
+  </div>
+{% endif %}
+
                         </div>
                     </div>
 
