@@ -337,7 +337,12 @@ def perfil_ingeniero(request):
 
     perfil, created = PerfilUsuario.objects.get_or_create(user=user)
 
-    cotizaciones = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')
+    print("ID del usuario logueado:", user.id)
+    
+    cotizaciones = Cotizacion.objects.filter(ingeniero_id=user.id).order_by('-fecha')
+    print("Cotizaciones encontradas:", cotizaciones.count())
+    for cot in cotizaciones:
+        print(f"ID: {cot.id}, ingeniero_id: {cot.ingeniero_id}, cliente: {cot.cliente.username}")
 
     context = {
         'cotizaciones': cotizaciones,
@@ -348,6 +353,7 @@ def perfil_ingeniero(request):
     }
 
     return render(request, 'ingeniero/perfil_ingeniero.html', context)
+
 
 
 
