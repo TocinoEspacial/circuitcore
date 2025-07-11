@@ -367,7 +367,7 @@ def perfil_ingeniero(request):
     estados = Cotizacion.objects.filter(ingeniero=perfil).values_list('estado', flat=True).distinct()
     
     context = {
-        'cotizacion': cotizacion,
+        'cotizaciones': cotizacion,
         'user': user,
         'perfil': perfil,
         'rol': 'Ingeniero',
