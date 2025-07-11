@@ -345,7 +345,7 @@ def perfil_ingeniero(request):
     proyecto = request.GET.get('proyecto')
     
     # Base queryset
-    cotizacion = Cotizacion.objects.filter(ingeniero=user)
+    cotizacion = Cotizacion.objects.filter(ingeniero=perfil)
     
     # Aplicar filtros
     if estado:
@@ -364,7 +364,7 @@ def perfil_ingeniero(request):
     cotizacion = cotizacion.order_by('-fecha')
     
     # Obtener lista de estados únicos para el dropdown
-    estados = Cotizacion.objects.filter(ingeniero=user).values_list('estado', flat=True).distinct()
+    estados = Cotizacion.objects.filter(ingeniero=perfil).values_list('estado', flat=True).distinct()
     
     context = {
         'cotizacion': cotizacion,
