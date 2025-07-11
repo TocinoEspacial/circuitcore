@@ -369,19 +369,6 @@ def perfil_cliente(request):
     
     return render(request, 'ingeniero/perfil_cliente.html', context)
 
-@login_required
-def perfil_ingeniero(request):
-    user = request.user
-    # Get or create the profile if it doesn't exist
-    perfil, created = PerfilUsuario.objects.get_or_create(user=user)
-    cotizacion = Cotizacion.objects.filter(ingeniero=user).order_by('-fecha')[:5]
-    
-    return render(request, 'ingeniero/perfil_cliente.html', {
-        'user': user,
-        'cotizacion': cotizacion,
-        'perfil': perfil  # Use the profile we just got/created
-    })
-
 
 @login_required
 def perfil_cliente(request):
